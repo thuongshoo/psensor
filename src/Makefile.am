@@ -115,6 +115,7 @@ gsettings_SCHEMAS=psensor.gschema.xml
 
 EXTRA_DIST = description.txt\
 	$(gsettings_SCHEMAS)\
+	paths.h.in\
 	rsensor.c\
 	ui_appindicator.c\
 	ui_notify.c\

@@ -414,6 +414,7 @@ static GtkBuilder *load_ui(struct ui_psensor *ui)
 	error = NULL;
 
 	builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "psensor");
 	ok = gtk_builder_add_from_file
 		(builder,
 		 PACKAGE_DATA_DIR G_DIR_SEPARATOR_S "sensor-edit.glade",

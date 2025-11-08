@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include <cfg.h>
+#include <paths.h>
 #include <slog.h>
 #include <ui.h>
 #include <ui_appindicator.h>
@@ -202,7 +203,7 @@ on_delete_event_cb(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 void ui_show_about_dialog(GtkWindow *parent)
 {
-	static const char *const authors[] = { "jeanfi@gmail.com", NULL };
+	static const char *const authors[] = { "jeanfi@gmail.com", "Le Hoai Thanh yuyoonshoo@gmail.com", NULL };
 
 	log_fct("parent=%p", parent);
 
@@ -328,12 +329,23 @@ void ui_window_create(struct ui_psensor *ui)
 	log_fct("ui=%p", ui);
 
 	builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "psensor");
+	gtk_builder_set_translation_domain(builder, "psensor");
 
 	error = NULL;
-	ok = gtk_builder_add_from_file
-		(builder,
-		 PACKAGE_DATA_DIR G_DIR_SEPARATOR_S "psensor.glade",
-		 &error);
+	char *data_path = get_data_path();
+	log_printf(LOG_INFO, "Data path: %s", data_path);
+	char *glade_path = malloc(strlen(data_path) + 32);
+	sprintf(glade_path, "%s/psensor.glade", data_path);
+	log_printf(LOG_INFO, "Loading glade file: %s", glade_path);
+	
+	// Test translation
+	log_printf(LOG_INFO, "Testing translation of 'About Psensor': %s", _("About Psensor"));
+	log_printf(LOG_INFO, "Testing translation of 'Failed to load Psensor icon.': %s", _("Failed to load Psensor icon."));
+	
+	ok = gtk_builder_add_from_file(builder, glade_path, &error);
+	free(data_path);
+	free(glade_path);
 
 	if (!ok) {
 		log_printf(LOG_ERR, error->message);

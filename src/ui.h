@@ -19,7 +19,8 @@
 #ifndef _PSENSOR_UI_H_
 #define _PSENSOR_UI_H_
 
-#include "config.h"
+#include <config.h>
+#include <paths.h>
 
 #include <pthread.h>
 

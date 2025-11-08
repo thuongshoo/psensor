@@ -103,6 +103,7 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 	cfg = ui->config;
 
 	builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "psensor");
 
 	ok = gtk_builder_add_from_file
 		(builder,
