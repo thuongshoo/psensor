@@ -232,10 +232,25 @@ AM_CONDITIONAL(GTOP, test -n "$GTOP_LIBS")
 AC_SUBST(GTOP_CFLAGS)
 AC_SUBST(GTOP_LIBS)
 
+# Ensure datarootdir and pkgdatadir are absolute paths
+if test "x$prefix" = "xNONE"; then
+  prefix="/usr/local"
+fi
+
+eval datarootdir="$datadir"
+if test "x$datarootdir" = "x\${datarootdir}"; then
+  datarootdir="$prefix/share"
+fi
+
+eval pkgdatadir="$datarootdir/psensor"
+AC_SUBST([pkgdatadir])
+AC_SUBST([datarootdir])
+
 AC_CONFIG_FILES([
  Makefile
  doc/Makefile
  src/Makefile
+ src/paths.h
  src/glade/Makefile
  src/lib/Makefile
  src/server/Makefile

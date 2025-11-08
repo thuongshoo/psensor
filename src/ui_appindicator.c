@@ -140,6 +140,7 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	log_fct_enter();
 
 	builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "psensor");
 
 	error = NULL;
 	ok = gtk_builder_add_from_file(builder, GLADE_FILE, &error);

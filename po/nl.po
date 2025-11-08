@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: psensor\n"
-"Report-Msgid-Bugs-To: jeanfi@gmail.com\n"
-"POT-Creation-Date: 2016-08-24 23:30+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-07 16:40+0000\n"
 "PO-Revision-Date: 2014-09-20 11:25+0000\n"
 "Last-Translator: Jean-Philippe Orsini <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -17,6 +17,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-09-21 08:56+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
+
+#: src/ui_sensorpref.c:290 src/ui_sensorpref.c:296 src/ui_sensorpref.c:304
+msgid "Unknown"
+msgstr "Onbekend"
+
+#: src/ui_sensorlist.c:259
+msgid "Hide"
+msgstr ""
+
+#: src/ui_sensorlist.c:269
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#: src/ui_sensorlist.c:303
+#, fuzzy
+msgid "Select sensor color"
+msgstr "Kies voorgrondkleur"
+
+#: src/ui_appindicator.c:148
+#, fuzzy, c-format
+msgid "Failed to load glade file %s: %s"
+msgstr "Kon logboeken bijhouden niet inschakelen voor sensoren."
 
 #: src/cfg.c:501
 #, fuzzy, c-format
@@ -32,576 +54,6 @@ msgstr "Kon logboeken bijhouden niet inschakelen voor sensoren."
 #, fuzzy, c-format
 msgid "Failed to save configuration file %s."
 msgstr "Kon logboeken bijhouden niet inschakelen voor sensoren."
-
-#: src/glade/psensor.glade:6 src/glade/psensor-appindicator.glade:6
-msgid "About"
-msgstr "Over"
-
-#: src/glade/psensor.glade:10 src/glade/psensor-appindicator.glade:10
-#: src/glade/psensor-appindicator.glade:11
-#: src/glade/psensor-appindicator.glade:20 src/ui_sensorlist.c:269
-msgid "Preferences"
-msgstr "Voorkeuren"
-
-#: src/glade/psensor.glade:14 src/glade/psensor-appindicator.glade:24
-msgid "Quit"
-msgstr "Afsluiten"
-
-#: src/glade/psensor.glade:18 src/glade/psensor-appindicator.glade:15
-#: src/glade/psensor-appindicator.glade:16
-#: src/glade/psensor-appindicator.glade:28
-msgid "Sensor Preferences"
-msgstr "Sensorvoorkeuren"
-
-#: src/glade/psensor.glade:99
-msgid "Psensor - Temperature Monitor"
-msgstr "Psensor - Temperatuurbewaker"
-
-#: src/glade/psensor.glade:114
-msgid "_Psensor"
-msgstr "_Psensor"
-
-#: src/glade/psensor.glade:161
-msgid "_Help"
-msgstr "_Hulp"
-
-#: src/glade/psensor.glade:225
-msgid "Sensor"
-msgstr "Sensor"
-
-#: src/glade/psensor.glade:236
-msgid "Value"
-msgstr "Waarde"
-
-#: src/glade/psensor.glade:247
-msgid "Min"
-msgstr "Min"
-
-#: src/glade/psensor.glade:258
-msgid "Max"
-msgstr "Max"
-
-#: src/glade/psensor.glade:269
-msgid "Color"
-msgstr "Kleur"
-
-#: src/glade/psensor.glade:280 src/glade/psensor-pref.glade:753
-#: src/glade/sensor-edit.glade:480
-msgid "Graph"
-msgstr "Grafiek"
-
-#: src/glade/psensor-appindicator.glade:84
-msgid "Show"
-msgstr "Tonen"
-
-#: src/glade/psensor-pref.glade:24
-msgctxt "psensor"
-msgid "Right"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:27
-msgid "Left"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:30
-msgid "Top"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:33
-msgid "Bottom"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:60
-msgid "Edit Preferences"
-msgstr "Voorkeuren bewerken"
-
-#: src/glade/psensor-pref.glade:126
-msgid "Hide window decoration"
-msgstr "Vensteromlijsting verbergen"
-
-#: src/glade/psensor-pref.glade:146
-msgid "Keep window below"
-msgstr "Houd venster eronder"
-
-#: src/glade/psensor-pref.glade:166
-msgid "Enable menu"
-msgstr "Menu inschakelen"
-
-#: src/glade/psensor-pref.glade:186
-msgid "Enable Unity Launcher counter"
-msgstr "Teller voor Unity-starter inschakelen"
-
-#: src/glade/psensor-pref.glade:190
-#, fuzzy
-msgid "Psensor has not been build with Unity Launcher support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/psensor-pref.glade:215
-msgid "Celsius"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:216
-msgid "Fahrenheit"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:258
-msgid "Temperature unit:"
-msgstr "Temperatuureenheid:"
-
-#: src/glade/psensor-pref.glade:275
-msgid "Position of sensors table:"
-msgstr "Positie van sensorentabel:"
-
-#: src/glade/psensor-pref.glade:292
-msgid "Interface"
-msgstr "Bedieningsschil"
-
-#: src/glade/psensor-pref.glade:308
-msgid "Launch on session startup"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:327
-msgid "Hide window on startup"
-msgstr "Venster bij opstarten verbergen"
-
-#: src/glade/psensor-pref.glade:345
-msgid "Restore window position and size"
-msgstr "Vensterpositie en -grootte herstellen"
-
-#: src/glade/psensor-pref.glade:374
-msgid "Startup"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:416
-msgid "Foreground:"
-msgstr "Voorgrond:"
-
-#: src/glade/psensor-pref.glade:432
-msgid "Background:"
-msgstr "Achtergrond:"
-
-#: src/glade/psensor-pref.glade:464
-msgid "Background opacity:"
-msgstr "Ondoorzichtigheid van achtergrond:"
-
-#: src/glade/psensor-pref.glade:480
-msgid "Colors"
-msgstr "Kleuren"
-
-#: src/glade/psensor-pref.glade:500
-msgid "Monitoring duration:"
-msgstr "Duur van bewaking:"
-
-#: src/glade/psensor-pref.glade:516
-msgid "Update interval:"
-msgstr "Tussenpoze voor bijwerken:"
-
-#: src/glade/psensor-pref.glade:532
-msgid "Measures"
-msgstr "Metingen"
-
-#: src/glade/psensor-pref.glade:558
-msgid "<i>Min</i>"
-msgstr "<i>Min</i>"
-
-#: src/glade/psensor-pref.glade:585
-msgid "<i>Max</i>"
-msgstr "<i>Max</i>"
-
-#: src/glade/psensor-pref.glade:636 src/glade/psensor-pref.glade:813
-msgid "second(s)"
-msgstr "seconde(n)"
-
-#: src/glade/psensor-pref.glade:686
-msgid "minute(s)"
-msgstr "minu(u)t(en)"
-
-#: src/glade/psensor-pref.glade:702
-msgid "Smooth curves"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:728
-msgid "Curves"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:780
-msgid "Measure update interval:"
-msgstr "Tussenpoze voor bijwerken van meting:"
-
-#: src/glade/psensor-pref.glade:822
-msgid "Enable sensors logging"
-msgstr "Logboeken bijhouden inschakelen voor sensoren"
-
-#: src/glade/psensor-pref.glade:866
-msgid "Sensors logging interval:"
-msgstr "Tussenpoze voor bijhouden van logboeken voor sensoren:"
-
-#: src/glade/psensor-pref.glade:881
-msgid "seconds(s)"
-msgstr "seconden(s)"
-
-#: src/glade/psensor-pref.glade:896
-msgid "Script executed when an alarm is raised:"
-msgstr "Script dat wordt uitgevoerd wanneer er een alarm plaatsvindt:"
-
-#: src/glade/psensor-pref.glade:934
-msgid "Sensors"
-msgstr "Sensoren"
-
-#: src/glade/psensor-pref.glade:952
-msgid "Enable support of lm-sensors"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:970
-msgid "Enable support of NVCtrl (NVidia)"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:974
-#, fuzzy
-msgid "Psensor has not been build with NVCtrl support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/psensor-pref.glade:989
-msgid "Enable support of ATI ADL"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:993
-#, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/psensor-pref.glade:1008
-msgid "Enable support of gtop2"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1012
-#, fuzzy
-msgid "Psensor has not been build with gtop2 support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/psensor-pref.glade:1027
-msgid "Enable support of hddtemp daemon"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1045
-msgid "Enable support of libatasmart"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1049
-#, fuzzy
-msgid "Psensor has not been build with libatasmart support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/psensor-pref.glade:1064
-msgid "Enable support of udisks2"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1068
-#, fuzzy
-msgid "Psensor has not been build with udisks2 support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/psensor-pref.glade:1090
-msgid "The changes are applied after the restart of psensor."
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1110
-msgid "Hard disk drive"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1131
-msgid "CPU and memory usage"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1152
-msgid "GPU with proprietary driver"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1173
-msgid "Motherboard, CPU and GPU"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1194
-msgid "Providers"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:29
-msgid "Edit Sensor Preferences"
-msgstr "Sensorvoorkeuren bewerken"
-
-#: src/glade/sensor-edit.glade:97
-msgid "Name"
-msgstr "Naam"
-
-#: src/glade/sensor-edit.glade:164
-msgid "Type:"
-msgstr "Soort:"
-
-#: src/glade/sensor-edit.glade:183 src/glade/sensor-edit.glade:220
-#: src/glade/sensor-edit.glade:276 src/glade/sensor-edit.glade:575
-#: src/glade/sensor-edit.glade:630 src/lib/psensor.c:430 src/ui_notify.c:81
-msgid "N/A"
-msgstr "N.v.t."
-
-#: src/glade/sensor-edit.glade:202
-msgid "Chip:"
-msgstr "Chip:"
-
-#: src/glade/sensor-edit.glade:239
-msgid "Name:"
-msgstr "Naam:"
-
-#: src/glade/sensor-edit.glade:258
-msgid "Id:"
-msgstr "Id:"
-
-#: src/glade/sensor-edit.glade:296
-msgid "Min:"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:315
-msgid "Max:"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:333 src/glade/sensor-edit.glade:351
-msgid "label"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:370
-msgid "Details"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:388
-msgid "Draw sensor curve"
-msgstr "Sensor-curve tekenen"
-
-#: src/glade/sensor-edit.glade:417
-msgid "Color:"
-msgstr "Kleur:"
-
-#: src/glade/sensor-edit.glade:448
-#, fuzzy
-msgid "Display sensor in the list of sensors"
-msgstr "Sensor tonen in het menu van de Toepassingsindicator"
-
-#: src/glade/sensor-edit.glade:499
-msgid "Activate desktop notifications"
-msgstr "Bureaubladmeldingen inschakelen"
-
-#: src/glade/sensor-edit.glade:528
-msgid "High threshold:"
-msgstr "Drempel voor hoog:"
-
-#: src/glade/sensor-edit.glade:550
-msgid "0"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:604
-msgid "-1"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:656
-msgid "Low threshold:"
-msgstr "Drempel voor laag:"
-
-#: src/glade/sensor-edit.glade:678
-msgid "Alarm"
-msgstr "Alarm"
-
-#: src/glade/sensor-edit.glade:697
-msgid "Display sensor in the menu"
-msgstr "Sensor tonen in het menu van de Toepassingsindicator"
-
-#: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
-#, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
-msgstr ""
-"Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
-
-#: src/glade/sensor-edit.glade:719
-#, fuzzy
-msgid "Display sensor in the label (experimental)"
-msgstr "Sensor tonen in het menu van de Toepassingsindicator"
-
-#: src/glade/sensor-edit.glade:752
-#, fuzzy
-msgid "Application Indicator"
-msgstr "Ubuntu Toepassingsindicator"
-
-#: src/graph.c:460
-msgid "No graphs enabled"
-msgstr ""
-
-#: src/lib/amd.c:171
-msgid "AMD: cannot found ADL library."
-msgstr "AMD: kan ADL-bibliotheekbestand niet vinden"
-
-#: src/lib/amd.c:198
-msgid "AMD: missing ADL's API."
-msgstr "AMD: ontbrekende ADL's API."
-
-#: src/lib/amd.c:208
-msgid "AMD: failed to initialize ADL."
-msgstr "AMD: kon ADL niet initialiseren."
-
-#: src/lib/amd.c:214
-msgid "AMD: cannot get the number of adapters."
-msgstr "AMD: kan het aantal videokaarten niet bepalen."
-
-#: src/lib/amd.c:253
-#, c-format
-msgid "Number of AMD/ATI adapters: %d"
-msgstr "Aantal AMD/ATI-videokaarten: %d"
-
-#: src/lib/amd.c:254
-#, c-format
-msgid "Number of active AMD/ATI adapters: %d"
-msgstr "Aantal actieve AMD/ATI-videokaarten: %d"
-
-#: src/lib/hdd_atasmart.c:70 src/lib/hdd_hddtemp.c:125
-msgid "Disk"
-msgstr ""
-
-#: src/lib/hdd_atasmart.c:153
-#, fuzzy, c-format
-msgid "%s: sk_disk_open() failure: %s."
-msgstr "atasmart: sk_disk_open() mislukking: %s."
-
-#: src/lib/hdd_hddtemp.c:62
-#, c-format
-msgid "%s: failed to open socket."
-msgstr "%s: kon contactpunt niet openen."
-
-#: src/lib/hdd_hddtemp.c:75
-#, c-format
-msgid "%s: failed to open connection."
-msgstr "%s: kon verbinding niet openen."
-
-#: src/lib/hdd_hddtemp.c:190 src/lib/hdd_hddtemp.c:270
-#, c-format
-msgid "%s: wrong string: %s."
-msgstr "%s: verkeerde tekenreeks: %s."
-
-#: src/lib/lmsensor.c:73
-#, c-format
-msgid "%s: Cannot get value of subfeature %s: %s."
-msgstr "%s: kan waarde van subfunctie %s niet bepalen: %s."
-
-#: src/lib/lmsensor.c:174
-#, c-format
-msgid "%s: Wrong feature type."
-msgstr "%s: verkeerd functietype."
-
-#: src/lib/lmsensor.c:203
-msgid "Intel CPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:207
-msgid "AMD CPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:209
-msgid "NVIDIA GPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:211
-msgid "VIA CPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:213
-msgid "ACPI"
-msgstr ""
-
-#: src/lib/lmsensor.c:245
-#, c-format
-msgid "%s: initialization failure: %s."
-msgstr "%s: opstartfout: %s."
-
-#: src/lib/pgtop2.c:42
-msgid "CPU usage"
-msgstr ""
-
-#: src/lib/pgtop2.c:47
-msgid "CPU"
-msgstr ""
-
-#: src/lib/pgtop2.c:63
-msgid "free memory"
-msgstr ""
-
-#: src/lib/pgtop2.c:64
-msgid "memory"
-msgstr ""
-
-#: src/lib/plog.c:43
-#, c-format
-msgid "Cannot open log file: %s"
-msgstr "Kan logboekbestand niet openen: %s"
-
-#: src/lib/nvidia.c:69
-#, fuzzy, c-format
-msgid "%s: Unknown NVIDIA product name for GPU %d"
-msgstr "Kon Nvidia-informatie niet ophalen."
-
-#: src/lib/nvidia.c:74
-#, fuzzy, c-format
-msgid "%s: Failed to retrieve NVIDIA product name for GPU %d"
-msgstr "Kon Nvidia-informatie niet ophalen."
-
-#: src/lib/nvidia.c:240
-#, fuzzy, c-format
-msgid "%s: Failed to retrieve measure of type %x for NVIDIA GPU %d"
-msgstr "Kon Nvidia-informatie niet ophalen."
-
-#: src/lib/nvidia.c:317
-#, c-format
-msgid "%s: Cannot open connection to X11 server."
-msgstr "%s: Kan verbinding met X11-server niet openen."
-
-#: src/lib/nvidia.c:325
-#, c-format
-msgid "%s: Failed to retrieve NVIDIA information."
-msgstr "%s: Kon Nvidia-informatie niet ophalen."
-
-#: src/lib/nvidia.c:394
-#, fuzzy, c-format
-msgid "%s: Failed to retrieve number of fans."
-msgstr "Kon Nvidia-informatie niet ophalen."
-
-#: src/lib/psensor.c:426 tests/test_psensor_type_to_unit_str.c:62
-msgid "RPM"
-msgstr "RPM"
-
-#: src/lib/psensor.c:428
-msgid "%"
-msgstr "%"
-
-#: src/lib/slog.c:87
-msgid "HOME variable not set."
-msgstr "Variabele voor HOME niet ingesteld."
-
-#: src/lib/slog.c:96
-msgid "Sensor log file already open."
-msgstr "Logboekbestand van sensor is al geopend."
-
-#: src/lib/slog.c:105
-#, c-format
-msgid "Cannot open sensor log file: %s."
-msgstr "Kan logboekbestand van sensor niet openen: %s."
-
-#: src/lib/slog.c:136
-msgid "Sensor log file not open."
-msgstr "Logboekbestand van sensor niet geopend."
-
-#: src/lib/slog.c:192
-msgid "Sensor log not open, cannot close."
-msgstr "Logboekbestand van sensor niet geopend, kan niet sluiten."
 
 #: src/main.c:61 src/server/server.c:88
 #, c-format
@@ -694,20 +146,184 @@ msgstr "Er bestaat reeds een instantie van Psensor."
 msgid "Failed to create thread for monitoring sensors"
 msgstr "Kon geen webserver maken."
 
-#: src/rsensor.c:115
-#, fuzzy, c-format
-msgid "%s: Fail to connect to: %s"
-msgstr "Kon niet verbinden met: %s"
+#: src/lib/lmsensor.c:73
+#, c-format
+msgid "%s: Cannot get value of subfeature %s: %s."
+msgstr "%s: kan waarde van subfunctie %s niet bepalen: %s."
 
-#: src/rsensor.c:152
-#, fuzzy, c-format
-msgid "%s: Invalid content: %s"
-msgstr "Ongeldige inhoud: %s"
+#: src/lib/lmsensor.c:174
+#, c-format
+msgid "%s: Wrong feature type."
+msgstr "%s: verkeerd functietype."
 
-#: src/rsensor.c:192
+#: src/lib/lmsensor.c:203
+msgid "Intel CPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:207
+msgid "AMD CPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:209
+msgid "NVIDIA GPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:211
+msgid "VIA CPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:213
+msgid "ACPI"
+msgstr ""
+
+#: src/lib/lmsensor.c:245
+#, c-format
+msgid "%s: initialization failure: %s."
+msgstr "%s: opstartfout: %s."
+
+#: src/lib/psensor.c:426
+msgid "RPM"
+msgstr "RPM"
+
+#: src/lib/psensor.c:428
+msgid "%"
+msgstr "%"
+
+#: src/lib/psensor.c:430 src/ui_notify.c:81
+msgid "N/A"
+msgstr "N.v.t."
+
+#: src/lib/nvidia.c:69
 #, fuzzy, c-format
-msgid "%s: Invalid JSON: %s"
-msgstr "Ongeldige JSON: %s"
+msgid "%s: Unknown NVIDIA product name for GPU %d"
+msgstr "Kon Nvidia-informatie niet ophalen."
+
+#: src/lib/nvidia.c:74
+#, fuzzy, c-format
+msgid "%s: Failed to retrieve NVIDIA product name for GPU %d"
+msgstr "Kon Nvidia-informatie niet ophalen."
+
+#: src/lib/nvidia.c:240
+#, fuzzy, c-format
+msgid "%s: Failed to retrieve measure of type %x for NVIDIA GPU %d"
+msgstr "Kon Nvidia-informatie niet ophalen."
+
+#: src/lib/nvidia.c:317
+#, c-format
+msgid "%s: Cannot open connection to X11 server."
+msgstr "%s: Kan verbinding met X11-server niet openen."
+
+#: src/lib/nvidia.c:325
+#, c-format
+msgid "%s: Failed to retrieve NVIDIA information."
+msgstr "%s: Kon Nvidia-informatie niet ophalen."
+
+#: src/lib/nvidia.c:394
+#, fuzzy, c-format
+msgid "%s: Failed to retrieve number of fans."
+msgstr "Kon Nvidia-informatie niet ophalen."
+
+#: src/lib/slog.c:87
+msgid "HOME variable not set."
+msgstr "Variabele voor HOME niet ingesteld."
+
+#: src/lib/slog.c:96
+msgid "Sensor log file already open."
+msgstr "Logboekbestand van sensor is al geopend."
+
+#: src/lib/slog.c:105
+#, c-format
+msgid "Cannot open sensor log file: %s."
+msgstr "Kan logboekbestand van sensor niet openen: %s."
+
+#: src/lib/slog.c:136
+msgid "Sensor log file not open."
+msgstr "Logboekbestand van sensor niet geopend."
+
+#: src/lib/slog.c:192
+msgid "Sensor log not open, cannot close."
+msgstr "Logboekbestand van sensor niet geopend, kan niet sluiten."
+
+#: src/lib/amd.c:171
+msgid "AMD: cannot found ADL library."
+msgstr "AMD: kan ADL-bibliotheekbestand niet vinden"
+
+#: src/lib/amd.c:198
+msgid "AMD: missing ADL's API."
+msgstr "AMD: ontbrekende ADL's API."
+
+#: src/lib/amd.c:208
+msgid "AMD: failed to initialize ADL."
+msgstr "AMD: kon ADL niet initialiseren."
+
+#: src/lib/amd.c:214
+msgid "AMD: cannot get the number of adapters."
+msgstr "AMD: kan het aantal videokaarten niet bepalen."
+
+#: src/lib/amd.c:253
+#, c-format
+msgid "Number of AMD/ATI adapters: %d"
+msgstr "Aantal AMD/ATI-videokaarten: %d"
+
+#: src/lib/amd.c:254
+#, c-format
+msgid "Number of active AMD/ATI adapters: %d"
+msgstr "Aantal actieve AMD/ATI-videokaarten: %d"
+
+#: src/lib/pgtop2.c:42
+msgid "CPU usage"
+msgstr ""
+
+#: src/lib/pgtop2.c:47
+msgid "CPU"
+msgstr ""
+
+#: src/lib/pgtop2.c:63
+msgid "free memory"
+msgstr ""
+
+#: src/lib/pgtop2.c:64
+msgid "memory"
+msgstr ""
+
+#: src/lib/plog.c:43
+#, c-format
+msgid "Cannot open log file: %s"
+msgstr "Kan logboekbestand niet openen: %s"
+
+#: src/lib/pudisks2.c:62 src/ui_notify.c:48
+msgid "gettimeofday failed."
+msgstr "gettimeofday (tijdbepaling) is mislukt."
+
+#: src/lib/pudisks2.c:142
+#, c-format
+msgid "%s: cannot get the udisks2 client"
+msgstr ""
+
+#: src/lib/pudisks2.c:193 src/lib/pudisks2.c:194 src/lib/hdd_hddtemp.c:125
+#: src/lib/hdd_atasmart.c:70
+msgid "Disk"
+msgstr ""
+
+#: src/lib/hdd_hddtemp.c:62
+#, c-format
+msgid "%s: failed to open socket."
+msgstr "%s: kon contactpunt niet openen."
+
+#: src/lib/hdd_hddtemp.c:75
+#, c-format
+msgid "%s: failed to open connection."
+msgstr "%s: kon verbinding niet openen."
+
+#: src/lib/hdd_hddtemp.c:190 src/lib/hdd_hddtemp.c:270
+#, c-format
+msgid "%s: wrong string: %s."
+msgstr "%s: verkeerde tekenreeks: %s."
+
+#: src/lib/hdd_atasmart.c:153
+#, fuzzy, c-format
+msgid "%s: sk_disk_open() failure: %s."
+msgstr "atasmart: sk_disk_open() mislukking: %s."
 
 #: src/server/server.c:58
 msgid "<html><body><p>Server stop requested</p></body></html>"
@@ -839,27 +455,13 @@ msgstr ""
 msgid "Psensor Homepage"
 msgstr "Thuispagina van Psensor"
 
-#: src/ui.c:363
+#: src/ui.c:367
 msgid "Failed to load Psensor icon."
 msgstr "Kon pictogram van Psensor niet laden."
 
-#: src/ui_sensorlist.c:259
-msgid "Hide"
+#: src/graph.c:460
+msgid "No graphs enabled"
 msgstr ""
-
-#: src/ui_sensorlist.c:303
-#, fuzzy
-msgid "Select sensor color"
-msgstr "Kies voorgrondkleur"
-
-#: src/ui_appindicator.c:148
-#, fuzzy, c-format
-msgid "Failed to load glade file %s: %s"
-msgstr "Kon logboeken bijhouden niet inschakelen voor sensoren."
-
-#: src/ui_notify.c:48
-msgid "gettimeofday failed."
-msgstr "gettimeofday (tijdbepaling) is mislukt."
 
 #: src/ui_notify.c:77
 msgid "Temperature alert"
@@ -870,9 +472,226 @@ msgstr "Temperatuurwaarschuwing"
 msgid "Fan speed alert"
 msgstr "Ventilatorwaarschuwing"
 
-#: src/ui_sensorpref.c:290 src/ui_sensorpref.c:296 src/ui_sensorpref.c:304
-msgid "Unknown"
-msgstr "Onbekend"
+#: src/rsensor.c:115
+#, fuzzy, c-format
+msgid "%s: Fail to connect to: %s"
+msgstr "Kon niet verbinden met: %s"
+
+#: src/rsensor.c:152
+#, fuzzy, c-format
+msgid "%s: Invalid content: %s"
+msgstr "Ongeldige inhoud: %s"
+
+#: src/rsensor.c:192
+#, fuzzy, c-format
+msgid "%s: Invalid JSON: %s"
+msgstr "Ongeldige JSON: %s"
+
+#~ msgid "About"
+#~ msgstr "Over"
+
+#~ msgid "Quit"
+#~ msgstr "Afsluiten"
+
+#~ msgid "Sensor Preferences"
+#~ msgstr "Sensorvoorkeuren"
+
+#~ msgid "Psensor - Temperature Monitor"
+#~ msgstr "Psensor - Temperatuurbewaker"
+
+#~ msgid "_Psensor"
+#~ msgstr "_Psensor"
+
+#~ msgid "_Help"
+#~ msgstr "_Hulp"
+
+#~ msgid "Sensor"
+#~ msgstr "Sensor"
+
+#~ msgid "Value"
+#~ msgstr "Waarde"
+
+#~ msgid "Min"
+#~ msgstr "Min"
+
+#~ msgid "Max"
+#~ msgstr "Max"
+
+#~ msgid "Color"
+#~ msgstr "Kleur"
+
+#~ msgid "Graph"
+#~ msgstr "Grafiek"
+
+#~ msgid "Show"
+#~ msgstr "Tonen"
+
+#~ msgid "Edit Preferences"
+#~ msgstr "Voorkeuren bewerken"
+
+#~ msgid "Hide window decoration"
+#~ msgstr "Vensteromlijsting verbergen"
+
+#~ msgid "Keep window below"
+#~ msgstr "Houd venster eronder"
+
+#~ msgid "Enable menu"
+#~ msgstr "Menu inschakelen"
+
+#~ msgid "Enable Unity Launcher counter"
+#~ msgstr "Teller voor Unity-starter inschakelen"
+
+#, fuzzy
+#~ msgid "Psensor has not been build with Unity Launcher support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#~ msgid "Temperature unit:"
+#~ msgstr "Temperatuureenheid:"
+
+#~ msgid "Position of sensors table:"
+#~ msgstr "Positie van sensorentabel:"
+
+#~ msgid "Interface"
+#~ msgstr "Bedieningsschil"
+
+#~ msgid "Hide window on startup"
+#~ msgstr "Venster bij opstarten verbergen"
+
+#~ msgid "Restore window position and size"
+#~ msgstr "Vensterpositie en -grootte herstellen"
+
+#~ msgid "Foreground:"
+#~ msgstr "Voorgrond:"
+
+#~ msgid "Background:"
+#~ msgstr "Achtergrond:"
+
+#~ msgid "Background opacity:"
+#~ msgstr "Ondoorzichtigheid van achtergrond:"
+
+#~ msgid "Colors"
+#~ msgstr "Kleuren"
+
+#~ msgid "Monitoring duration:"
+#~ msgstr "Duur van bewaking:"
+
+#~ msgid "Update interval:"
+#~ msgstr "Tussenpoze voor bijwerken:"
+
+#~ msgid "Measures"
+#~ msgstr "Metingen"
+
+#~ msgid "<i>Min</i>"
+#~ msgstr "<i>Min</i>"
+
+#~ msgid "<i>Max</i>"
+#~ msgstr "<i>Max</i>"
+
+#~ msgid "second(s)"
+#~ msgstr "seconde(n)"
+
+#~ msgid "minute(s)"
+#~ msgstr "minu(u)t(en)"
+
+#~ msgid "Measure update interval:"
+#~ msgstr "Tussenpoze voor bijwerken van meting:"
+
+#~ msgid "Enable sensors logging"
+#~ msgstr "Logboeken bijhouden inschakelen voor sensoren"
+
+#~ msgid "Sensors logging interval:"
+#~ msgstr "Tussenpoze voor bijhouden van logboeken voor sensoren:"
+
+#~ msgid "seconds(s)"
+#~ msgstr "seconden(s)"
+
+#~ msgid "Script executed when an alarm is raised:"
+#~ msgstr "Script dat wordt uitgevoerd wanneer er een alarm plaatsvindt:"
+
+#~ msgid "Sensors"
+#~ msgstr "Sensoren"
+
+#, fuzzy
+#~ msgid "Psensor has not been build with NVCtrl support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with ATI ADL support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with gtop2 support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with libatasmart support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with udisks2 support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#~ msgid "Edit Sensor Preferences"
+#~ msgstr "Sensorvoorkeuren bewerken"
+
+#~ msgid "Name"
+#~ msgstr "Naam"
+
+#~ msgid "Type:"
+#~ msgstr "Soort:"
+
+#~ msgid "Chip:"
+#~ msgstr "Chip:"
+
+#~ msgid "Name:"
+#~ msgstr "Naam:"
+
+#~ msgid "Id:"
+#~ msgstr "Id:"
+
+#~ msgid "Draw sensor curve"
+#~ msgstr "Sensor-curve tekenen"
+
+#~ msgid "Color:"
+#~ msgstr "Kleur:"
+
+#, fuzzy
+#~ msgid "Display sensor in the list of sensors"
+#~ msgstr "Sensor tonen in het menu van de Toepassingsindicator"
+
+#~ msgid "Activate desktop notifications"
+#~ msgstr "Bureaubladmeldingen inschakelen"
+
+#~ msgid "High threshold:"
+#~ msgstr "Drempel voor hoog:"
+
+#~ msgid "Low threshold:"
+#~ msgstr "Drempel voor laag:"
+
+#~ msgid "Alarm"
+#~ msgstr "Alarm"
+
+#~ msgid "Display sensor in the menu"
+#~ msgstr "Sensor tonen in het menu van de Toepassingsindicator"
+
+#, fuzzy
+#~ msgid "Psensor has not been build with AppIndicator support"
+#~ msgstr ""
+#~ "Psensor os niet gecompileerd met ondersteuning voor sensoren op afstand."
+
+#, fuzzy
+#~ msgid "Display sensor in the label (experimental)"
+#~ msgstr "Sensor tonen in het menu van de Toepassingsindicator"
+
+#, fuzzy
+#~ msgid "Application Indicator"
+#~ msgstr "Ubuntu Toepassingsindicator"
 
 #~ msgid "Sensor Information"
 #~ msgstr "Sensorinformatie"

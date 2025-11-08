@@ -305,7 +305,7 @@ create_response(const char *nurl, const char *method, unsigned int *rp_code)
 					       MHD_RESPMEM_MUST_FREE);
 }
 
-static int cbk_http_request(void *cls,
+static enum MHD_Result cbk_http_request(void *cls,
 			    struct MHD_Connection *connection,
 			    const char *url,
 			    const char *method,

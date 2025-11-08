@@ -1,0 +1,55 @@
+#ifndef _PATHS_H_
+#define _PATHS_H_
+
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <slog.h>
+
+#define PACKAGE_DATA_DIR "@pkgdatadir@"
+
+static inline char *get_data_path(void) {
+    char *path;
+    char selfpath[1024];
+    ssize_t len;
+    const char *env_data_dir;
+
+    // First try environment variable
+    env_data_dir = getenv("PSENSOR_DATA_DIR");
+    if (env_data_dir && access(env_data_dir, F_OK) == 0) {
+        return strdup(env_data_dir);
+    }
+
+    // Then try installed location
+    if (access(PACKAGE_DATA_DIR "/psensor.glade", F_OK) == 0) {
+        return strdup(PACKAGE_DATA_DIR);
+    }
+
+    // Then try relative to executable
+    len = readlink("/proc/self/exe", selfpath, sizeof(selfpath) - 1);
+    if (len != -1) {
+        selfpath[len] = '\0';
+        char *last_slash = strrchr(selfpath, '/');
+        if (last_slash) {
+            *last_slash = '\0';
+            path = malloc(strlen(selfpath) + 32);
+            sprintf(path, "%s/share/psensor", selfpath);
+            if (access(path, F_OK) == 0) {
+                return path;
+            }
+            free(path);
+            
+            // Try src/glade in source tree
+            path = malloc(strlen(selfpath) + 32);
+            sprintf(path, "%s/src/glade", selfpath);
+            if (access(path, F_OK) == 0) {
+                return path;
+            }
+            free(path);
+        }
+    }
+
+    return strdup(PACKAGE_DATA_DIR);
+}
+
+#endif

@@ -432,11 +432,21 @@ int main(int argc, char **argv)
 
 	program_name = argv[0];
 
-	setlocale(LC_ALL, "");
+	char *current_locale = setlocale(LC_ALL, "");
+        printf("Current locale: %s\n", current_locale ? current_locale : "NULL");
+        printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "NULL");
+        printf("LANG=%s\n", getenv("LANG") ? getenv("LANG") : "NULL");
+        printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "NULL");
 
 #if ENABLE_NLS
+        printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
+        char *bound_dir = bindtextdomain(PACKAGE, NULL);
+        printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
+        printf("Current textdomain: %s\n", textdomain(NULL));
+#else
+        printf("NLS not enabled\n");
 #endif
 
 	new_instance = 0;

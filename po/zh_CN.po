@@ -59,7 +59,7 @@ msgstr "Psensor - 温度监视器"
 
 #: src/glade/psensor.glade:114
 msgid "_Psensor"
-msgstr ""
+msgstr "_Psensor"
 
 #: src/glade/psensor.glade:161
 msgid "_Help"
@@ -132,17 +132,16 @@ msgid "Enable Unity Launcher counter"
 msgstr "启用 Unity 启动器计数器"
 
 #: src/glade/psensor-pref.glade:190
-#, fuzzy
 msgid "Psensor has not been build with Unity Launcher support"
-msgstr "Psensor 不支持远程传感器。"
+msgstr "Psensor 未编译 Unity 启动器支持。"
 
 #: src/glade/psensor-pref.glade:215
 msgid "Celsius"
-msgstr ""
+msgstr "摄氏"
 
 #: src/glade/psensor-pref.glade:216
 msgid "Fahrenheit"
-msgstr ""
+msgstr "华氏"
 
 #: src/glade/psensor-pref.glade:258
 msgid "Temperature unit:"
@@ -158,7 +157,7 @@ msgstr "界面"
 
 #: src/glade/psensor-pref.glade:308
 msgid "Launch on session startup"
-msgstr ""
+msgstr "会话启动时运行"
 
 #: src/glade/psensor-pref.glade:327
 msgid "Hide window on startup"
@@ -170,7 +169,7 @@ msgstr "恢复窗口位置和大小"
 
 #: src/glade/psensor-pref.glade:374
 msgid "Startup"
-msgstr ""
+msgstr "启动"
 
 #: src/glade/psensor-pref.glade:416
 msgid "Foreground:"
@@ -218,11 +217,11 @@ msgstr "分钟"
 
 #: src/glade/psensor-pref.glade:702
 msgid "Smooth curves"
-msgstr ""
+msgstr "平滑曲线"
 
 #: src/glade/psensor-pref.glade:728
 msgid "Curves"
-msgstr ""
+msgstr "曲线"
 
 #: src/glade/psensor-pref.glade:780
 msgid "Measure update interval:"
@@ -257,9 +256,8 @@ msgid "Enable support of NVCtrl (NVidia)"
 msgstr ""
 
 #: src/glade/psensor-pref.glade:974
-#, fuzzy
 msgid "Psensor has not been build with NVCtrl support"
-msgstr "Psensor 不支持远程传感器。"
+msgstr "Psensor 未编译 NVCtrl 支持。"
 
 #: src/glade/psensor-pref.glade:989
 msgid "Enable support of ATI ADL"
@@ -380,9 +378,8 @@ msgid "Color:"
 msgstr "颜色："
 
 #: src/glade/sensor-edit.glade:448
-#, fuzzy
 msgid "Display sensor in the list of sensors"
-msgstr "在应用指示器菜单中显示监视器"
+msgstr "在传感器列表中显示此传感器"
 
 #: src/glade/sensor-edit.glade:499
 msgid "Activate desktop notifications"
@@ -827,7 +824,7 @@ msgstr "无法加载 Psensor 图标。"
 
 #: src/ui_sensorlist.c:259
 msgid "Hide"
-msgstr ""
+msgstr "隐藏"
 
 #: src/ui_sensorlist.c:303
 #, fuzzy
