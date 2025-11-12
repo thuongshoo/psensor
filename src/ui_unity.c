@@ -43,14 +43,14 @@ static double get_max_current_value(struct psensor **sensors, unsigned int type)
 	double m, v;
 	struct psensor *s;
 
-	m = UNKNOWN_DBL_VALUE;
+	m = UNKNOWN_DOUBLE_VALUE;
 	while (*sensors) {
 		s = *sensors;
 
 		if ((s->type & type) && config_is_sensor_graph_enabled(s->id)) {
 			v = psensor_get_current_value(s);
 
-			if (m == UNKNOWN_DBL_VALUE || v > m)
+			if (m == UNKNOWN_DOUBLE_VALUE || v > m)
 				m = v;
 		}
 
@@ -69,7 +69,7 @@ void ui_unity_launcher_entry_update(struct psensor **sensors)
 
 	v = get_max_current_value(sensors, SENSOR_TYPE_TEMP);
 
-	if (v != UNKNOWN_DBL_VALUE) {
+	if (v != UNKNOWN_DOUBLE_VALUE) {
 		if (config_get_temperature_unit() == FAHRENHEIT)
 			v = celsius_to_fahrenheit(v);
 

@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_UI_COLOR_H_
-#define _PSENSOR_UI_COLOR_H_
+#ifndef PSENSOR_UI_COLOR_H
+#define PSENSOR_UI_COLOR_H
 
 #include <bool.h>
 

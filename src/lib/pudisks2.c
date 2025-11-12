@@ -68,7 +68,7 @@ static void smart_update(struct psensor *s, UDisksDriveAta *ata)
 	    (t.tv_sec - data->last_smart_update.tv_sec < SMART_UPDATE_INTERVAL))
 		return;
 
-	log_fct("%s: update SMART data for %s", PROVIDER_NAME, data->path);
+	log_functionname("%s: update SMART data for %s", PROVIDER_NAME, data->path);
 
 	variant = g_variant_new_parsed("{'nowakeup': %v}",
 				       g_variant_new_boolean(TRUE));
@@ -79,7 +79,7 @@ static void smart_update(struct psensor *s, UDisksDriveAta *ata)
 						      NULL);
 
 	if (!ret) {
-		log_fct("%s: SMART update failed for %s",
+		log_functionname("%s: SMART update failed for %s",
 			PROVIDER_NAME,
 			data->path);
 	}
@@ -122,7 +122,7 @@ void udisks2_psensor_list_update(struct psensor **sensors)
 	}
 }
 
-void udisks2_psensor_list_append(struct psensor ***sensors, int values_length)
+void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_length)
 {
 	UDisksClient *client;
 	GList *objects, *cur;
@@ -134,13 +134,13 @@ void udisks2_psensor_list_append(struct psensor ***sensors, int values_length)
 	struct psensor *s;
 	struct udisks_data *data;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	client = udisks_client_new_sync(NULL, NULL);
 
 	if (!client) {
 		log_err(_("%s: cannot get the udisks2 client"), PROVIDER_NAME);
-		log_fct_exit();
+		log_functionname_exit();
 		return;
 	}
 
@@ -158,22 +158,22 @@ void udisks2_psensor_list_append(struct psensor ***sensors, int values_length)
 			     NULL);
 
 		if (!drive) {
-			log_fct("Not a drive: %s", path);
+			log_functionname("Not a drive: %s", path);
 			continue;
 		}
 
 		if (!drive_ata) {
-			log_fct("Not an ATA drive: %s", path);
+			log_functionname("Not an ATA drive: %s", path);
 			continue;
 		}
 
 		if (!udisks_drive_ata_get_smart_enabled(drive_ata)) {
-			log_fct("SMART not enabled: %s", path);
+			log_functionname("SMART not enabled: %s", path);
 			continue;
 		}
 
 		if (!udisks_drive_ata_get_smart_temperature(drive_ata)) {
-			log_fct("No temperature available: %s", path);
+			log_functionname("No temperature available: %s", path);
 			continue;
 		}
 
@@ -212,5 +212,5 @@ void udisks2_psensor_list_append(struct psensor ***sensors, int values_length)
 
 	g_list_free(objects);
 
-	log_fct_exit();
+	log_functionname_exit();
 }

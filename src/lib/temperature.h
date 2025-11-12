@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_TEMPERATURE_H_
-#define _PSENSOR_TEMPERATURE_H_
+#ifndef PSENSOR_TEMPERATURE_H
+#define PSENSOR_TEMPERATURE_H
 
 double celsius_to_fahrenheit(double c);
 double fahrenheit_to_celsius(double c);

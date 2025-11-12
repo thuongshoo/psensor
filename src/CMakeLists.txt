@@ -61,6 +61,7 @@ endif()
 # ATI/ADL optional
 find_path(LIBATIADL_INCLUDE adl_sdk.h PATHS /usr/include /usr/local/include)
 find_library(LIBATIADL_LIB atiadlxx)
+find_library(LIB_RT rt)
 if(LIBATIADL_INCLUDE AND LIBATIADL_LIB)
     add_definitions(-DHAVE_LIBATIADL)
     include_directories(${LIBATIADL_INCLUDE})
@@ -86,6 +87,7 @@ target_link_libraries(psensor
     ${APPINDICATOR3_LIBRARIES}
     ${PSENSOR_EXTRA_LIBS}
     ${CMAKE_THREAD_LIBS_INIT}
+    ${LIB_RT}
     m
 )
 

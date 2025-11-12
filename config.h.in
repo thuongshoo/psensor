@@ -112,6 +112,9 @@
 /* Use Unity */
 #undef HAVE_UNITY
 
+/* Location of gettext message catalogs */
+#undef LOCALEDIR
+
 /* Name of package */
 #undef PACKAGE
 

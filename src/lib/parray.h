@@ -16,8 +16,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  *   02110-1301 USA
  */
-#ifndef _P_ARRAY_H_
-#define _P_ARRAY_H_
+#ifndef PSENSOR_ARRAY_H
+#define PSENSOR_ARRAY_H
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 

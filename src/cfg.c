@@ -31,7 +31,7 @@
 
 #include <cfg.h>
 #include <graph.h>
-#include <pio.h>
+#include <io.h>
 #include <plog.h>
 
 /* Properties of each sensor */
@@ -174,6 +174,11 @@ static int get_int(const char *k)
 	return g_settings_get_int(settings, k);
 }
 
+static unsigned int get_uint(const char *k)
+{
+	return g_settings_get_uint(settings, k);
+}
+
 char *config_get_notif_script(void)
 {
 	char *str;
@@ -303,7 +308,7 @@ static void slog_enabled_changed_cbk(GSettings *settings,
 
 void config_set_slog_enabled_changed_cbk(void (*cbk)(void *), void *data)
 {
-	log_fct_enter();
+	log_functionname_enter();
 
 	slog_enabled_cbk = cbk;
 
@@ -312,7 +317,7 @@ void config_set_slog_enabled_changed_cbk(void (*cbk)(void *), void *data)
 			       G_CALLBACK(slog_enabled_changed_cbk),
 			       data);
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 int config_get_slog_interval(void)
@@ -370,12 +375,12 @@ static bool config_get_default_sensor_alarm_enabled(void)
 
 static void init(void)
 {
-	log_fct_enter();
+	log_functionname_enter();
 
 	if (!settings)
 		settings = g_settings_new("psensor");
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 void config_cleanup(void)
@@ -435,6 +440,7 @@ struct config *config_load(void)
 	if (c->graph_monitoring_duration < 1)
 		c->graph_monitoring_duration = 10;
 
+	c->hide_on_startup = get_bool(KEY_INTERFACE_HIDE_ON_STARTUP);
 	c->window_restore_enabled
 		= get_bool(KEY_INTERFACE_WINDOW_RESTORE_ENABLED);
 
@@ -487,7 +493,7 @@ const char *get_psensor_user_dir(void)
 {
 	const char *home;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	if (!user_dir) {
 		home = getenv("HOME");
@@ -507,7 +513,7 @@ const char *get_psensor_user_dir(void)
 		}
 	}
 
-	log_fct_exit();
+	log_functionname_exit();
 
 	return user_dir;
 }
@@ -528,7 +534,7 @@ static const char *get_sensor_config_path(void)
 
 static GKeyFile *get_sensor_key_file(void)
 {
-	int ret;
+	
 	GError *err;
 	const char *path;
 
@@ -538,7 +544,7 @@ static GKeyFile *get_sensor_key_file(void)
 		key_file = g_key_file_new();
 
 		err = NULL;
-		ret = g_key_file_load_from_file(key_file,
+		int ret = g_key_file_load_from_file(key_file,
 						path,
 						G_KEY_FILE_KEEP_COMMENTS
 						| G_KEY_FILE_KEEP_TRANSLATIONS,
@@ -561,7 +567,7 @@ static void save_sensor_key_file(void)
 	const char *path;
 	char *data;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	kfile = get_sensor_key_file();
 
@@ -574,16 +580,16 @@ static void save_sensor_key_file(void)
 
 	free(data);
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 void config_sync(void)
 {
-	log_fct_enter();
+	log_functionname_enter();
 	if (settings)
 		g_settings_sync();
 	save_sensor_key_file();
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 static void sensor_set_str(const char *sid, const char *att, const char *str)
@@ -743,7 +749,7 @@ GdkRGBA *config_get_sensor_color(const char *sid)
 {
 	GdkRGBA rgba;
 	char *str;
-	gboolean ret;
+	gboolean ret = FALSE;
 
 	str = sensor_get_str(sid, ATT_SENSOR_COLOR);
 

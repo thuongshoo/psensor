@@ -17,8 +17,8 @@
  *   02110-1301 USA
  */
 
-#ifndef _P_IO_H
-#define _P_IO_H
+#ifndef PSENSOR_IO_H
+#define PSENSOR_IO_H
 
 #define P_IO_VER 6
 

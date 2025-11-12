@@ -41,21 +41,19 @@ static const char *PROVIDER_NAME = "hddtemp";
 
 static const char *HDDTEMP_SERVER_IP_ADDRESS = "127.0.0.1";
 static const int HDDTEMP_PORT_NUMBER = 7634;
-static const int HDDTEMP_OUTPUT_BUFFER_LENGTH = 4048;
+static const size_t HDDTEMP_OUTPUT_BUFFER_LENGTH = 4048;
 
 struct hdd_info {
-	char *name;
 	int temp;
+	char *name;
 };
 
 static char *fetch(void)
 {
-	int sockfd, output_length;
-	ssize_t n = 1;
+	int sockfd;
+	size_t n = 1, output_length = 0;
 	char *pc, *buffer;
 	struct sockaddr_in address;
-
-	output_length = 0;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
@@ -116,9 +114,9 @@ static int str_index(char *str, char d)
 }
 
 static struct psensor *
-create_sensor(char *id, char *name, int values_max_length)
+create_sensor(char *id, char *name, unsigned int values_max_length)
 {
-	int t;
+	unsigned int t;
 
 	t = SENSOR_TYPE_HDD | SENSOR_TYPE_HDDTEMP | SENSOR_TYPE_TEMP;
 
@@ -175,7 +173,7 @@ static char *next_hdd_info(char *string, struct hdd_info *info)
 }
 
 void
-hddtemp_psensor_list_append(struct psensor ***sensors, int values_max_length)
+hddtemp_psensor_list_append(struct psensor ***sensors, unsigned int values_max_length)
 {
 	char *hddtemp_output, *c, *id;
 	struct hdd_info info;
@@ -192,7 +190,6 @@ hddtemp_psensor_list_append(struct psensor ***sensors, int values_max_length)
 			hddtemp_output);
 
 		free(hddtemp_output);
-
 		return;
 	}
 

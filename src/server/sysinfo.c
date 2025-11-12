@@ -43,7 +43,7 @@ void sysinfo_update(struct psysinfo *info)
 
 	/* cpu */
 	if (!cpu)
-		cpu = malloc(sizeof(glibtop_cpu));
+		cpu = (glibtop_cpu *)malloc(sizeof(glibtop_cpu));
 
 	glibtop_get_cpu(cpu);
 

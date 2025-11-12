@@ -14,7 +14,7 @@ libpsensor_a_SOURCES = \
 	pmutex.h pmutex.c\
 	psensor.h psensor.c\
 	ptime.h ptime.c\
-	pio.h pio.c\
+	io.h io.c\
 	pudisks2.h\
 	slog.c slog.h\
 	temperature.c temperature.h\

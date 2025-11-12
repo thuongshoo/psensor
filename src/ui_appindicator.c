@@ -30,12 +30,13 @@
 #include <ui_sensorpref.h>
 #include <ui_status.h>
 #include <ui_pref.h>
+#include <paths.h>
 
 static const char *ICON = "psensor_normal";
 static const char *ATTENTION_ICON = "psensor_hot";
 
-static const char *GLADE_FILE
-= PACKAGE_DATA_DIR G_DIR_SEPARATOR_S "psensor-appindicator.glade";
+/* Build GLADE path at runtime using get_data_path() so the installed
+ * data directory is resolved the same way as the main UI. */
 
 static struct psensor **sensors;
 static GtkMenuItem **menu_items;
@@ -92,7 +93,7 @@ static void update_menu_items(int use_celsius)
 static void
 create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 {
-	int i, j, n, celsius;
+	int celsius;
 	const char *name;
 	struct psensor **sorted_sensors;
 
@@ -102,11 +103,13 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 		celsius = 0;
 
 	sorted_sensors = ui_get_sensors_ordered_by_position(ui->sensors);
-	n = psensor_list_size(sorted_sensors);
-	menu_items = malloc((n + 1) * sizeof(GtkWidget *));
+	size_t n = psensor_list_size(sorted_sensors);
+	menu_items = malloc((n + 1) * sizeof(GtkMenuItem *));
 
 	sensors = malloc((n + 1) * sizeof(struct psensor *));
-	for (i = 0, j = 0; i < n; i++) {
+
+	size_t i, j;
+	for ( i = 0, j = 0; i < n; i++) {
 		if (config_is_appindicator_enabled(sorted_sensors[i]->id)) {
 			sensors[j] = sorted_sensors[i];
 			name = sensors[j]->name;
@@ -137,21 +140,31 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	guint ok;
 	GtkBuilder *builder;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	builder = gtk_builder_new();
 	gtk_builder_set_translation_domain(builder, "psensor");
 
 	error = NULL;
-	ok = gtk_builder_add_from_file(builder, GLADE_FILE, &error);
+	/* Build the glade file path at runtime so it matches get_data_path()
+	 * used elsewhere (handles PSENSOR_DATA_DIR overrides, relative paths, etc.) */
+	char *data_path = get_data_path();
+	gchar *glade_file = g_strdup_printf("%s%spsensor-appindicator.glade",
+					    data_path, G_DIR_SEPARATOR_S);
+	ok = gtk_builder_add_from_file(builder, glade_file, &error);
 
 	if (!ok) {
 		log_err(_("Failed to load glade file %s: %s"),
-			GLADE_FILE,
+			glade_file,
 			error->message);
 		g_error_free(error);
+		g_free(glade_file);
+		free(data_path);
 		return NULL;
 	}
+
+	g_free(glade_file);
+	free(data_path);
 
 	menu = GTK_MENU(gtk_builder_get_object(builder, "appindicator_menu"));
 	create_sensor_menu_items(ui, menu);
@@ -160,7 +173,7 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	g_object_ref(G_OBJECT(menu));
 	g_object_unref(G_OBJECT(builder));
 
-	log_fct_exit();
+	log_functionname_exit();
 
 	return menu;
 }
@@ -168,10 +181,11 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 static void update_label(struct ui_psensor *ui)
 {
 	char *label, *str, *tmp, *guide;
-	struct psensor **p;
+	struct psensor **p, **original_sensors;
 	int use_celsius;
 
 	p =  ui_get_sensors_ordered_by_position(ui->sensors);
+	original_sensors = p;
 	label = NULL;
 	guide = NULL;
 
@@ -187,11 +201,13 @@ static void update_label(struct ui_psensor *ui)
 			if (label == NULL) {
 				label = str;
 			} else {
+				size_t len;
+				len = strlen(label) + strlen(str) + 2;
 				tmp = malloc(strlen(label)
 					     + 1
 					     + strlen(str)
 					     + 1);
-				sprintf(tmp, "%s %s", label, str);
+				snprintf(tmp, len, "%s %s", label, str);
 				free(label);
 				free(str);
 				label = tmp;
@@ -207,11 +223,7 @@ static void update_label(struct ui_psensor *ui)
 			if (guide == NULL) {
 				guide = strdup(str);
 			} else {
-				tmp = malloc(strlen(guide)
-					     + 1
-					     + strlen(str)
-					     + 1);
-				sprintf(tmp, "%sW%s", guide, str);
+				asprintf(&tmp, "%sW%s", guide, str);
 				free(guide);
 				guide = tmp;
 			}
@@ -221,6 +233,9 @@ static void update_label(struct ui_psensor *ui)
 	}
 
 	app_indicator_set_label(indicator, label, guide);
+	free(label);
+	free(guide);
+	free(original_sensors);
 }
 
 void ui_appindicator_update(struct ui_psensor *ui, bool attention)
@@ -246,31 +261,6 @@ void ui_appindicator_update(struct ui_psensor *ui, bool attention)
 		update_menu_items(1);
 	else
 		update_menu_items(0);
-}
-
-static GtkStatusIcon *unity_fallback(AppIndicator *indicator)
-{
-	GtkStatusIcon *ico;
-
-	log_debug("ui_appindicator.unity_fallback()");
-
-	appindicator_supported = false;
-
-	ico = ui_status_get_icon(ui_psensor);
-
-	ui_status_set_visible(1);
-
-	return ico;
-}
-
-static void
-unity_unfallback(AppIndicator *indicator, GtkStatusIcon *status_icon)
-{
-	log_debug("ui_appindicator.unity_unfallback()");
-
-	ui_status_set_visible(0);
-
-	appindicator_supported = true;
 }
 
 static void remove_sensor_menu_items(GtkMenu *menu)
@@ -316,14 +306,11 @@ void ui_appindicator_update_menu(struct ui_psensor *ui)
 void ui_appindicator_init(struct ui_psensor *ui)
 {
 	ui_psensor = ui;
-
+	log_debug("ui_appindicator_init()");
 	indicator = app_indicator_new
 		("psensor",
 		 ICON,
 		 APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
-
-	APP_INDICATOR_GET_CLASS(indicator)->fallback = unity_fallback;
-	APP_INDICATOR_GET_CLASS(indicator)->unfallback = unity_unfallback;
 
 	app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
 	app_indicator_set_attention_icon(indicator, ATTENTION_ICON);

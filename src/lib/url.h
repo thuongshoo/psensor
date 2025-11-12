@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PLIB_URL_H_
-#define _PLIB_URL_H_
+#ifndef PSENSOR_PLIB_URL_H
+#define PSENSOR_PLIB_URL_H
 
 char *url_encode(const char *str);
 char *url_normalize(const char *url);

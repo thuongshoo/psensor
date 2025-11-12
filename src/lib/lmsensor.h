@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_LMSENSOR_H_
-#define _PSENSOR_LMSENSOR_H_
+#ifndef PSENSOR_LMSENSOR_H
+#define PSENSOR_LMSENSOR_H
 
 #include <bool.h>
 #include <psensor.h>
@@ -27,7 +27,7 @@
 static inline bool lmsensor_is_supported(void) { return true; }
 
 void lmsensor_psensor_list_update(struct psensor **);
-void lmsensor_psensor_list_append(struct psensor ***, int);
+void lmsensor_psensor_list_append(struct psensor ***, unsigned int);
 void lmsensor_cleanup(void);
 
 #else
@@ -35,7 +35,7 @@ void lmsensor_cleanup(void);
 static inline bool lmsensor_is_supported(void) { return false; }
 
 static inline void lmsensor_psensor_list_update(struct psensor **s) {}
-static inline void lmsensor_psensor_list_append(struct psensor ***s, int n) {}
+static inline void lmsensor_psensor_list_append(struct psensor ***s, unsigned int n) {}
 static inline void lmsensor_cleanup(void) {}
 
 #endif

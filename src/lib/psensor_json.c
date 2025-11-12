@@ -115,24 +115,26 @@ char *sensor_to_json_string(struct psensor *s)
 
 char *sensors_to_json_string(struct psensor **sensors)
 {
-	struct psensor **sensors_cur;
+    // struct psensor **sensors_cur; // Remove this pointer
 	char *str;
 	json_object *obj = json_object_new_array();
 
 	if (sensors) {
-		sensors_cur = sensors;
+        // sensors_cur = sensors; // Not needed
+        size_t i = 0; // Use an index
 
-		while (*sensors_cur) {
-			struct psensor *s = *sensors_cur;
+        // Access via index
+        while (sensors[i] != NULL) {
+            struct psensor *s = sensors[i];
 
 			json_object_array_add(obj, sensor_to_json(s));
 
-			sensors_cur++;
+            // sensors_cur++; // Remove the unsafe pointer increment
+            i++; // Increment the index instead
 		}
 	}
 
 	str = strdup(json_object_to_json_string(obj));
-
 	json_object_put(obj);
 
 	return str;
@@ -140,7 +142,7 @@ char *sensors_to_json_string(struct psensor **sensors)
 
 struct psensor *psensor_new_from_json(json_object *o,
 				      const char *sensors_url,
-				      int values_max_length)
+				      unsigned int values_max_length)
 {
 	json_object *oid, *oname, *otype;
 	struct psensor *s;
@@ -151,8 +153,12 @@ struct psensor *psensor_new_from_json(json_object *o,
 	json_object_object_get_ex(o, "type", &otype);
 
 	eid = url_encode(json_object_get_string(oid));
-	url = malloc(strlen(sensors_url) + 1 + strlen(eid) + 1);
-	sprintf(url, "%s/%s", sensors_url, eid);
+	
+	int result = asprintf(&url, "%s/%s", sensors_url, eid);
+	if (result == -1) {
+		free(eid);
+		return NULL;
+	}
 
 	s = psensor_create(strdup(url),
 			   strdup(json_object_get_string(oname)),

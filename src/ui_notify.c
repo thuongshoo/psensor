@@ -69,8 +69,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 			 sensor->type,
 			 use_celsius);
 
-		body = malloc(strlen(sensor->name) + 3 + strlen(svalue) + 1);
-		sprintf(body, "%s : %s", sensor->name, svalue);
+		asprintf(&body, "%s : %s", sensor->name, svalue);
 		free(svalue);
 
 		if (is_temp_type(sensor->type))
@@ -96,6 +95,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 
 		notify_notification_show(notif, NULL);
 
+		free(body);
 		g_object_unref(notif);
 	} else {
 		log_err("notify not initialized");

@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_UDISKS2_H_
-#define _PSENSOR_UDISKS2_H_
+#ifndef PSENSOR_UDISKS2_H
+#define PSENSOR_UDISKS2_H
 
 #include <psensor.h>
 
@@ -25,7 +25,7 @@
 
 static inline bool udisks2_is_supported(void) { return true; }
 
-void udisks2_psensor_list_append(struct psensor ***, int);
+void udisks2_psensor_list_append(struct psensor ***, unsigned int);
 void udisks2_psensor_list_update(struct psensor **);
 
 #else
@@ -33,7 +33,7 @@ void udisks2_psensor_list_update(struct psensor **);
 static inline bool udisks2_is_supported(void) { return false; }
 
 static inline void
-udisks2_psensor_list_append(struct psensor ***s, int n) {}
+udisks2_psensor_list_append(struct psensor ***s, unsigned int n) {}
 
 static inline void
 udisks2_psensor_list_update(struct psensor **s) {}

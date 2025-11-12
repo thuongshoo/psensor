@@ -22,12 +22,14 @@
 static int
 on_graph_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
-	if (event->type != GDK_BUTTON_PRESS)
+	if (event->type != GDK_BUTTON_PRESS) {
 		return FALSE;
-
-	gtk_menu_popup(GTK_MENU(((struct ui_psensor *)data)->popup_menu),
-		       NULL, NULL, NULL, NULL,
-		       event->button, event->time);
+	}
+	// gtk_menu_popup(GTK_MENU(((struct ui_psensor *)data)->popup_menu),
+	// 	       NULL, NULL, NULL, NULL,
+	// 	       event->button, event->time);
+	gtk_menu_popup_at_pointer(GTK_MENU(((struct ui_psensor *)data)->popup_menu),
+	                         (const GdkEvent*)event);
 
 	return TRUE;
 }
@@ -50,7 +52,7 @@ static void smooth_curves_enabled_changed_cbk(void *data)
 	is_smooth_curves_enabled = config_is_smooth_curves_enabled();
 }
 
-void ui_graph_create(struct ui_psensor *ui)
+void ui_graph_create(struct ui_psensor *sensor_context)
 {
 	GtkWidget *w_graph;
 
@@ -67,13 +69,13 @@ void ui_graph_create(struct ui_psensor *ui)
 	g_signal_connect(GTK_WIDGET(w_graph),
 			 "draw",
 			 G_CALLBACK(on_expose_event),
-			 ui);
+			 sensor_context);
 
 	gtk_widget_add_events(w_graph, GDK_BUTTON_PRESS_MASK);
 
 	g_signal_connect(GTK_WIDGET(w_graph),
 			 "button_press_event",
-			 (GCallback) on_graph_clicked, ui);
+			 (GCallback) on_graph_clicked, sensor_context);
 
 	log_debug("ui_graph_create() ends");
 }

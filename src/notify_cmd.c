@@ -34,22 +34,19 @@ void notify_cmd(struct psensor *s)
 	if (script) {
 		v = psensor_current_value_to_str(s, 1);
 
-		cmd = malloc(strlen(script)
-			     + 1
-			     + 1
-			     + strlen(s->id)
-			     + 1
-			     + 1
-			     + strlen(v)
-			     + 1);
+		int result = asprintf(&cmd, "%s \"%s\" %s", script, s->id, v);
+		if (result == -1) {
+			log_functionname("cannot allote memory when trying to execute cmd: %s", cmd);
+			if (v) free(v);
+			free(script);
+			return;
+		}
 
-		sprintf(cmd, "%s \"%s\" %s", script, s->id, v);
-
-		log_fct("execute cmd: %s", cmd);
+		log_functionname("execute cmd: %s", cmd);
 
 		ret = system(cmd);
 
-		log_fct("cmd returns: %d", ret);
+		log_functionname("cmd returns: %d", ret);
 
 		free(cmd);
 		free(v);

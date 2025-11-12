@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: psensor\n"
-"Report-Msgid-Bugs-To: jeanfi@gmail.com\n"
-"POT-Creation-Date: 2016-08-24 23:30+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-07 16:40+0000\n"
 "PO-Revision-Date: 2014-09-11 21:23+0000\n"
 "Last-Translator: Jean-Philippe Orsini <Unknown>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -17,6 +17,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-09-21 08:56+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
+
+#: src/ui_sensorpref.c:290 src/ui_sensorpref.c:296 src/ui_sensorpref.c:304
+msgid "Unknown"
+msgstr ""
+
+#: src/ui_sensorlist.c:259
+msgid "Hide"
+msgstr ""
+
+#: src/ui_sensorlist.c:269
+msgid "Preferences"
+msgstr "Налаштування"
+
+#: src/ui_sensorlist.c:303
+#, fuzzy
+msgid "Select sensor color"
+msgstr "Оберіть колір переднього плану"
+
+#: src/ui_appindicator.c:148
+#, fuzzy, c-format
+msgid "Failed to load glade file %s: %s"
+msgstr "Не вдалося створити веб-сервер."
 
 #: src/cfg.c:501
 #, fuzzy, c-format
@@ -31,566 +53,6 @@ msgstr "Не вдалося створити веб-сервер."
 #: src/cfg.c:573
 #, c-format
 msgid "Failed to save configuration file %s."
-msgstr ""
-
-#: src/glade/psensor.glade:6 src/glade/psensor-appindicator.glade:6
-msgid "About"
-msgstr "Про програму"
-
-#: src/glade/psensor.glade:10 src/glade/psensor-appindicator.glade:10
-#: src/glade/psensor-appindicator.glade:11
-#: src/glade/psensor-appindicator.glade:20 src/ui_sensorlist.c:269
-msgid "Preferences"
-msgstr "Налаштування"
-
-#: src/glade/psensor.glade:14 src/glade/psensor-appindicator.glade:24
-msgid "Quit"
-msgstr "Вихід"
-
-#: src/glade/psensor.glade:18 src/glade/psensor-appindicator.glade:15
-#: src/glade/psensor-appindicator.glade:16
-#: src/glade/psensor-appindicator.glade:28
-msgid "Sensor Preferences"
-msgstr "Налаштування датчиків"
-
-#: src/glade/psensor.glade:99
-msgid "Psensor - Temperature Monitor"
-msgstr ""
-
-#: src/glade/psensor.glade:114
-msgid "_Psensor"
-msgstr ""
-
-#: src/glade/psensor.glade:161
-msgid "_Help"
-msgstr "_Довдіка"
-
-#: src/glade/psensor.glade:225
-msgid "Sensor"
-msgstr "Датчик"
-
-#: src/glade/psensor.glade:236
-msgid "Value"
-msgstr "Значення"
-
-#: src/glade/psensor.glade:247
-msgid "Min"
-msgstr "Мін."
-
-#: src/glade/psensor.glade:258
-msgid "Max"
-msgstr "Макс."
-
-#: src/glade/psensor.glade:269
-msgid "Color"
-msgstr "Колір"
-
-#: src/glade/psensor.glade:280 src/glade/psensor-pref.glade:753
-#: src/glade/sensor-edit.glade:480
-msgid "Graph"
-msgstr "Діаграма"
-
-#: src/glade/psensor-appindicator.glade:84
-msgid "Show"
-msgstr "Показати"
-
-#: src/glade/psensor-pref.glade:24
-msgctxt "psensor"
-msgid "Right"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:27
-msgid "Left"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:30
-msgid "Top"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:33
-msgid "Bottom"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:60
-msgid "Edit Preferences"
-msgstr "Редагувати налаштування"
-
-#: src/glade/psensor-pref.glade:126
-msgid "Hide window decoration"
-msgstr "Сховати каркас вікна"
-
-#: src/glade/psensor-pref.glade:146
-msgid "Keep window below"
-msgstr "Тримати вікно позаду"
-
-#: src/glade/psensor-pref.glade:166
-msgid "Enable menu"
-msgstr "Увімкнути меню"
-
-#: src/glade/psensor-pref.glade:186
-msgid "Enable Unity Launcher counter"
-msgstr "Увімкнути лічильник на панелі запуску Unity"
-
-#: src/glade/psensor-pref.glade:190
-#, fuzzy
-msgid "Psensor has not been build with Unity Launcher support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/psensor-pref.glade:215
-msgid "Celsius"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:216
-msgid "Fahrenheit"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:258
-msgid "Temperature unit:"
-msgstr "Одиниця температури:"
-
-#: src/glade/psensor-pref.glade:275
-msgid "Position of sensors table:"
-msgstr "Положення таблиці датчиків:"
-
-#: src/glade/psensor-pref.glade:292
-msgid "Interface"
-msgstr "Зовнішній вигляд"
-
-#: src/glade/psensor-pref.glade:308
-msgid "Launch on session startup"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:327
-msgid "Hide window on startup"
-msgstr "Сховати вікно після запуску"
-
-#: src/glade/psensor-pref.glade:345
-msgid "Restore window position and size"
-msgstr "Відновляти позицію і розмір вікна"
-
-#: src/glade/psensor-pref.glade:374
-msgid "Startup"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:416
-msgid "Foreground:"
-msgstr "Передній план:"
-
-#: src/glade/psensor-pref.glade:432
-msgid "Background:"
-msgstr "Тло:"
-
-#: src/glade/psensor-pref.glade:464
-msgid "Background opacity:"
-msgstr "Непрозорість тла:"
-
-#: src/glade/psensor-pref.glade:480
-msgid "Colors"
-msgstr "Кольори"
-
-#: src/glade/psensor-pref.glade:500
-msgid "Monitoring duration:"
-msgstr "Тривалість спостереження"
-
-#: src/glade/psensor-pref.glade:516
-msgid "Update interval:"
-msgstr "Інтервал оновлення:"
-
-#: src/glade/psensor-pref.glade:532
-msgid "Measures"
-msgstr "Заміри"
-
-#: src/glade/psensor-pref.glade:558
-msgid "<i>Min</i>"
-msgstr "<i>Мін.</i>"
-
-#: src/glade/psensor-pref.glade:585
-msgid "<i>Max</i>"
-msgstr "<i>Макс.</i>"
-
-#: src/glade/psensor-pref.glade:636 src/glade/psensor-pref.glade:813
-msgid "second(s)"
-msgstr "сек."
-
-#: src/glade/psensor-pref.glade:686
-msgid "minute(s)"
-msgstr "хв."
-
-#: src/glade/psensor-pref.glade:702
-msgid "Smooth curves"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:728
-msgid "Curves"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:780
-msgid "Measure update interval:"
-msgstr "Інтервал оновлення замірів:"
-
-#: src/glade/psensor-pref.glade:822
-msgid "Enable sensors logging"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:866
-msgid "Sensors logging interval:"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:881
-msgid "seconds(s)"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:896
-msgid "Script executed when an alarm is raised:"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:934
-msgid "Sensors"
-msgstr "Датчики"
-
-#: src/glade/psensor-pref.glade:952
-msgid "Enable support of lm-sensors"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:970
-msgid "Enable support of NVCtrl (NVidia)"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:974
-#, fuzzy
-msgid "Psensor has not been build with NVCtrl support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/psensor-pref.glade:989
-msgid "Enable support of ATI ADL"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:993
-#, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/psensor-pref.glade:1008
-msgid "Enable support of gtop2"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1012
-#, fuzzy
-msgid "Psensor has not been build with gtop2 support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/psensor-pref.glade:1027
-msgid "Enable support of hddtemp daemon"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1045
-msgid "Enable support of libatasmart"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1049
-#, fuzzy
-msgid "Psensor has not been build with libatasmart support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/psensor-pref.glade:1064
-msgid "Enable support of udisks2"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1068
-#, fuzzy
-msgid "Psensor has not been build with udisks2 support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/psensor-pref.glade:1090
-msgid "The changes are applied after the restart of psensor."
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1110
-msgid "Hard disk drive"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1131
-msgid "CPU and memory usage"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1152
-msgid "GPU with proprietary driver"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1173
-msgid "Motherboard, CPU and GPU"
-msgstr ""
-
-#: src/glade/psensor-pref.glade:1194
-msgid "Providers"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:29
-msgid "Edit Sensor Preferences"
-msgstr "Редагувати налаштування датчика"
-
-#: src/glade/sensor-edit.glade:97
-msgid "Name"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:164
-msgid "Type:"
-msgstr "Тип:"
-
-#: src/glade/sensor-edit.glade:183 src/glade/sensor-edit.glade:220
-#: src/glade/sensor-edit.glade:276 src/glade/sensor-edit.glade:575
-#: src/glade/sensor-edit.glade:630 src/lib/psensor.c:430 src/ui_notify.c:81
-msgid "N/A"
-msgstr "Н/Д"
-
-#: src/glade/sensor-edit.glade:202
-msgid "Chip:"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:239
-msgid "Name:"
-msgstr "Назва:"
-
-#: src/glade/sensor-edit.glade:258
-msgid "Id:"
-msgstr "Ідентифікатор:"
-
-#: src/glade/sensor-edit.glade:296
-msgid "Min:"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:315
-msgid "Max:"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:333 src/glade/sensor-edit.glade:351
-msgid "label"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:370
-msgid "Details"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:388
-msgid "Draw sensor curve"
-msgstr "Малювати криву датчика"
-
-#: src/glade/sensor-edit.glade:417
-msgid "Color:"
-msgstr "Колір:"
-
-#: src/glade/sensor-edit.glade:448
-msgid "Display sensor in the list of sensors"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:499
-msgid "Activate desktop notifications"
-msgstr "Увімкнути оповіщення"
-
-#: src/glade/sensor-edit.glade:528
-msgid "High threshold:"
-msgstr "Вищий поріг:"
-
-#: src/glade/sensor-edit.glade:550
-msgid "0"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:604
-msgid "-1"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:656
-msgid "Low threshold:"
-msgstr "Нижчий поріг:"
-
-#: src/glade/sensor-edit.glade:678
-msgid "Alarm"
-msgstr "Оповіщення"
-
-#: src/glade/sensor-edit.glade:697
-msgid "Display sensor in the menu"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
-#, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
-
-#: src/glade/sensor-edit.glade:719
-msgid "Display sensor in the label (experimental)"
-msgstr ""
-
-#: src/glade/sensor-edit.glade:752
-msgid "Application Indicator"
-msgstr ""
-
-#: src/graph.c:460
-msgid "No graphs enabled"
-msgstr ""
-
-#: src/lib/amd.c:171
-msgid "AMD: cannot found ADL library."
-msgstr "AMD: не вдалося знайти бібліотеку ADL."
-
-#: src/lib/amd.c:198
-msgid "AMD: missing ADL's API."
-msgstr "AMD: відсутнє API ADL."
-
-#: src/lib/amd.c:208
-msgid "AMD: failed to initialize ADL."
-msgstr "AMD: не вдалося ініціалізувати ADL."
-
-#: src/lib/amd.c:214
-msgid "AMD: cannot get the number of adapters."
-msgstr "AMD: не вдалося отримати кількість адаптерів."
-
-#: src/lib/amd.c:253
-#, c-format
-msgid "Number of AMD/ATI adapters: %d"
-msgstr ""
-
-#: src/lib/amd.c:254
-#, c-format
-msgid "Number of active AMD/ATI adapters: %d"
-msgstr ""
-
-#: src/lib/hdd_atasmart.c:70 src/lib/hdd_hddtemp.c:125
-msgid "Disk"
-msgstr ""
-
-#: src/lib/hdd_atasmart.c:153
-#, fuzzy, c-format
-msgid "%s: sk_disk_open() failure: %s."
-msgstr "atasmart: помилка sk_disk_open(): %s."
-
-#: src/lib/hdd_hddtemp.c:62
-#, c-format
-msgid "%s: failed to open socket."
-msgstr "%s: не вдалося відкрити сокет."
-
-#: src/lib/hdd_hddtemp.c:75
-#, c-format
-msgid "%s: failed to open connection."
-msgstr "%s: не вдалося встановити з'єднання."
-
-#: src/lib/hdd_hddtemp.c:190 src/lib/hdd_hddtemp.c:270
-#, c-format
-msgid "%s: wrong string: %s."
-msgstr "%s: неправильний рядок: %s."
-
-#: src/lib/lmsensor.c:73
-#, c-format
-msgid "%s: Cannot get value of subfeature %s: %s."
-msgstr ""
-
-#: src/lib/lmsensor.c:174
-#, c-format
-msgid "%s: Wrong feature type."
-msgstr ""
-
-#: src/lib/lmsensor.c:203
-msgid "Intel CPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:207
-msgid "AMD CPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:209
-msgid "NVIDIA GPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:211
-msgid "VIA CPU"
-msgstr ""
-
-#: src/lib/lmsensor.c:213
-msgid "ACPI"
-msgstr ""
-
-#: src/lib/lmsensor.c:245
-#, fuzzy, c-format
-msgid "%s: initialization failure: %s."
-msgstr "lmsensor: помилка ініціалізації: %s."
-
-#: src/lib/pgtop2.c:42
-msgid "CPU usage"
-msgstr ""
-
-#: src/lib/pgtop2.c:47
-msgid "CPU"
-msgstr ""
-
-#: src/lib/pgtop2.c:63
-msgid "free memory"
-msgstr ""
-
-#: src/lib/pgtop2.c:64
-msgid "memory"
-msgstr ""
-
-#: src/lib/plog.c:43
-#, c-format
-msgid "Cannot open log file: %s"
-msgstr "Не вдалося відкрити лог-файл: %s"
-
-#: src/lib/nvidia.c:69
-#, fuzzy, c-format
-msgid "%s: Unknown NVIDIA product name for GPU %d"
-msgstr "Не вдалося отримати інформацію NVIDIA."
-
-#: src/lib/nvidia.c:74
-#, fuzzy, c-format
-msgid "%s: Failed to retrieve NVIDIA product name for GPU %d"
-msgstr "Не вдалося отримати інформацію NVIDIA."
-
-#: src/lib/nvidia.c:240
-#, fuzzy, c-format
-msgid "%s: Failed to retrieve measure of type %x for NVIDIA GPU %d"
-msgstr "Не вдалося отримати інформацію NVIDIA."
-
-#: src/lib/nvidia.c:317
-#, c-format
-msgid "%s: Cannot open connection to X11 server."
-msgstr "%s: Не вдалося встановити з'єднання до сервера X11."
-
-#: src/lib/nvidia.c:325
-#, c-format
-msgid "%s: Failed to retrieve NVIDIA information."
-msgstr "%s: Не вдалося отримати інформацію NVIDIA."
-
-#: src/lib/nvidia.c:394
-#, fuzzy, c-format
-msgid "%s: Failed to retrieve number of fans."
-msgstr "Не вдалося отримати інформацію NVIDIA."
-
-#: src/lib/psensor.c:426 tests/test_psensor_type_to_unit_str.c:62
-msgid "RPM"
-msgstr "об/хв"
-
-#: src/lib/psensor.c:428
-msgid "%"
-msgstr "%"
-
-#: src/lib/slog.c:87
-msgid "HOME variable not set."
-msgstr "Змінна HOME не встановлена."
-
-#: src/lib/slog.c:96
-msgid "Sensor log file already open."
-msgstr ""
-
-#: src/lib/slog.c:105
-#, c-format
-msgid "Cannot open sensor log file: %s."
-msgstr ""
-
-#: src/lib/slog.c:136
-msgid "Sensor log file not open."
-msgstr ""
-
-#: src/lib/slog.c:192
-msgid "Sensor log not open, cannot close."
 msgstr ""
 
 #: src/main.c:61 src/server/server.c:88
@@ -673,20 +135,184 @@ msgstr ""
 msgid "Failed to create thread for monitoring sensors"
 msgstr "Не вдалося створити веб-сервер."
 
-#: src/rsensor.c:115
-#, fuzzy, c-format
-msgid "%s: Fail to connect to: %s"
-msgstr "Не вдалося підключитися до: %s"
+#: src/lib/lmsensor.c:73
+#, c-format
+msgid "%s: Cannot get value of subfeature %s: %s."
+msgstr ""
 
-#: src/rsensor.c:152
-#, fuzzy, c-format
-msgid "%s: Invalid content: %s"
-msgstr "Неправильний JSON: %s"
+#: src/lib/lmsensor.c:174
+#, c-format
+msgid "%s: Wrong feature type."
+msgstr ""
 
-#: src/rsensor.c:192
+#: src/lib/lmsensor.c:203
+msgid "Intel CPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:207
+msgid "AMD CPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:209
+msgid "NVIDIA GPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:211
+msgid "VIA CPU"
+msgstr ""
+
+#: src/lib/lmsensor.c:213
+msgid "ACPI"
+msgstr ""
+
+#: src/lib/lmsensor.c:245
 #, fuzzy, c-format
-msgid "%s: Invalid JSON: %s"
-msgstr "Неправильний JSON: %s"
+msgid "%s: initialization failure: %s."
+msgstr "lmsensor: помилка ініціалізації: %s."
+
+#: src/lib/psensor.c:426
+msgid "RPM"
+msgstr "об/хв"
+
+#: src/lib/psensor.c:428
+msgid "%"
+msgstr "%"
+
+#: src/lib/psensor.c:430 src/ui_notify.c:81
+msgid "N/A"
+msgstr "Н/Д"
+
+#: src/lib/nvidia.c:69
+#, fuzzy, c-format
+msgid "%s: Unknown NVIDIA product name for GPU %d"
+msgstr "Не вдалося отримати інформацію NVIDIA."
+
+#: src/lib/nvidia.c:74
+#, fuzzy, c-format
+msgid "%s: Failed to retrieve NVIDIA product name for GPU %d"
+msgstr "Не вдалося отримати інформацію NVIDIA."
+
+#: src/lib/nvidia.c:240
+#, fuzzy, c-format
+msgid "%s: Failed to retrieve measure of type %x for NVIDIA GPU %d"
+msgstr "Не вдалося отримати інформацію NVIDIA."
+
+#: src/lib/nvidia.c:317
+#, c-format
+msgid "%s: Cannot open connection to X11 server."
+msgstr "%s: Не вдалося встановити з'єднання до сервера X11."
+
+#: src/lib/nvidia.c:325
+#, c-format
+msgid "%s: Failed to retrieve NVIDIA information."
+msgstr "%s: Не вдалося отримати інформацію NVIDIA."
+
+#: src/lib/nvidia.c:394
+#, fuzzy, c-format
+msgid "%s: Failed to retrieve number of fans."
+msgstr "Не вдалося отримати інформацію NVIDIA."
+
+#: src/lib/slog.c:87
+msgid "HOME variable not set."
+msgstr "Змінна HOME не встановлена."
+
+#: src/lib/slog.c:96
+msgid "Sensor log file already open."
+msgstr ""
+
+#: src/lib/slog.c:105
+#, c-format
+msgid "Cannot open sensor log file: %s."
+msgstr ""
+
+#: src/lib/slog.c:136
+msgid "Sensor log file not open."
+msgstr ""
+
+#: src/lib/slog.c:192
+msgid "Sensor log not open, cannot close."
+msgstr ""
+
+#: src/lib/amd.c:171
+msgid "AMD: cannot found ADL library."
+msgstr "AMD: не вдалося знайти бібліотеку ADL."
+
+#: src/lib/amd.c:198
+msgid "AMD: missing ADL's API."
+msgstr "AMD: відсутнє API ADL."
+
+#: src/lib/amd.c:208
+msgid "AMD: failed to initialize ADL."
+msgstr "AMD: не вдалося ініціалізувати ADL."
+
+#: src/lib/amd.c:214
+msgid "AMD: cannot get the number of adapters."
+msgstr "AMD: не вдалося отримати кількість адаптерів."
+
+#: src/lib/amd.c:253
+#, c-format
+msgid "Number of AMD/ATI adapters: %d"
+msgstr ""
+
+#: src/lib/amd.c:254
+#, c-format
+msgid "Number of active AMD/ATI adapters: %d"
+msgstr ""
+
+#: src/lib/pgtop2.c:42
+msgid "CPU usage"
+msgstr ""
+
+#: src/lib/pgtop2.c:47
+msgid "CPU"
+msgstr ""
+
+#: src/lib/pgtop2.c:63
+msgid "free memory"
+msgstr ""
+
+#: src/lib/pgtop2.c:64
+msgid "memory"
+msgstr ""
+
+#: src/lib/plog.c:43
+#, c-format
+msgid "Cannot open log file: %s"
+msgstr "Не вдалося відкрити лог-файл: %s"
+
+#: src/lib/pudisks2.c:62 src/ui_notify.c:48
+msgid "gettimeofday failed."
+msgstr "помилка gettimeofday."
+
+#: src/lib/pudisks2.c:142
+#, c-format
+msgid "%s: cannot get the udisks2 client"
+msgstr ""
+
+#: src/lib/pudisks2.c:193 src/lib/pudisks2.c:194 src/lib/hdd_hddtemp.c:125
+#: src/lib/hdd_atasmart.c:70
+msgid "Disk"
+msgstr ""
+
+#: src/lib/hdd_hddtemp.c:62
+#, c-format
+msgid "%s: failed to open socket."
+msgstr "%s: не вдалося відкрити сокет."
+
+#: src/lib/hdd_hddtemp.c:75
+#, c-format
+msgid "%s: failed to open connection."
+msgstr "%s: не вдалося встановити з'єднання."
+
+#: src/lib/hdd_hddtemp.c:190 src/lib/hdd_hddtemp.c:270
+#, c-format
+msgid "%s: wrong string: %s."
+msgstr "%s: неправильний рядок: %s."
+
+#: src/lib/hdd_atasmart.c:153
+#, fuzzy, c-format
+msgid "%s: sk_disk_open() failure: %s."
+msgstr "atasmart: помилка sk_disk_open(): %s."
 
 #: src/server/server.c:58
 msgid "<html><body><p>Server stop requested</p></body></html>"
@@ -814,27 +440,13 @@ msgstr ""
 msgid "Psensor Homepage"
 msgstr "Домашня сторінка Psensor"
 
-#: src/ui.c:363
+#: src/ui.c:367
 msgid "Failed to load Psensor icon."
 msgstr "Не вдалося завантажити іконку Psensor."
 
-#: src/ui_sensorlist.c:259
-msgid "Hide"
+#: src/graph.c:460
+msgid "No graphs enabled"
 msgstr ""
-
-#: src/ui_sensorlist.c:303
-#, fuzzy
-msgid "Select sensor color"
-msgstr "Оберіть колір переднього плану"
-
-#: src/ui_appindicator.c:148
-#, fuzzy, c-format
-msgid "Failed to load glade file %s: %s"
-msgstr "Не вдалося створити веб-сервер."
-
-#: src/ui_notify.c:48
-msgid "gettimeofday failed."
-msgstr "помилка gettimeofday."
 
 #: src/ui_notify.c:77
 msgid "Temperature alert"
@@ -844,9 +456,180 @@ msgstr ""
 msgid "Fan speed alert"
 msgstr ""
 
-#: src/ui_sensorpref.c:290 src/ui_sensorpref.c:296 src/ui_sensorpref.c:304
-msgid "Unknown"
-msgstr ""
+#: src/rsensor.c:115
+#, fuzzy, c-format
+msgid "%s: Fail to connect to: %s"
+msgstr "Не вдалося підключитися до: %s"
+
+#: src/rsensor.c:152
+#, fuzzy, c-format
+msgid "%s: Invalid content: %s"
+msgstr "Неправильний JSON: %s"
+
+#: src/rsensor.c:192
+#, fuzzy, c-format
+msgid "%s: Invalid JSON: %s"
+msgstr "Неправильний JSON: %s"
+
+#~ msgid "About"
+#~ msgstr "Про програму"
+
+#~ msgid "Quit"
+#~ msgstr "Вихід"
+
+#~ msgid "Sensor Preferences"
+#~ msgstr "Налаштування датчиків"
+
+#~ msgid "_Help"
+#~ msgstr "_Довдіка"
+
+#~ msgid "Sensor"
+#~ msgstr "Датчик"
+
+#~ msgid "Value"
+#~ msgstr "Значення"
+
+#~ msgid "Min"
+#~ msgstr "Мін."
+
+#~ msgid "Max"
+#~ msgstr "Макс."
+
+#~ msgid "Color"
+#~ msgstr "Колір"
+
+#~ msgid "Graph"
+#~ msgstr "Діаграма"
+
+#~ msgid "Show"
+#~ msgstr "Показати"
+
+#~ msgid "Edit Preferences"
+#~ msgstr "Редагувати налаштування"
+
+#~ msgid "Hide window decoration"
+#~ msgstr "Сховати каркас вікна"
+
+#~ msgid "Keep window below"
+#~ msgstr "Тримати вікно позаду"
+
+#~ msgid "Enable menu"
+#~ msgstr "Увімкнути меню"
+
+#~ msgid "Enable Unity Launcher counter"
+#~ msgstr "Увімкнути лічильник на панелі запуску Unity"
+
+#, fuzzy
+#~ msgid "Psensor has not been build with Unity Launcher support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+
+#~ msgid "Temperature unit:"
+#~ msgstr "Одиниця температури:"
+
+#~ msgid "Position of sensors table:"
+#~ msgstr "Положення таблиці датчиків:"
+
+#~ msgid "Interface"
+#~ msgstr "Зовнішній вигляд"
+
+#~ msgid "Hide window on startup"
+#~ msgstr "Сховати вікно після запуску"
+
+#~ msgid "Restore window position and size"
+#~ msgstr "Відновляти позицію і розмір вікна"
+
+#~ msgid "Foreground:"
+#~ msgstr "Передній план:"
+
+#~ msgid "Background:"
+#~ msgstr "Тло:"
+
+#~ msgid "Background opacity:"
+#~ msgstr "Непрозорість тла:"
+
+#~ msgid "Colors"
+#~ msgstr "Кольори"
+
+#~ msgid "Monitoring duration:"
+#~ msgstr "Тривалість спостереження"
+
+#~ msgid "Update interval:"
+#~ msgstr "Інтервал оновлення:"
+
+#~ msgid "Measures"
+#~ msgstr "Заміри"
+
+#~ msgid "<i>Min</i>"
+#~ msgstr "<i>Мін.</i>"
+
+#~ msgid "<i>Max</i>"
+#~ msgstr "<i>Макс.</i>"
+
+#~ msgid "second(s)"
+#~ msgstr "сек."
+
+#~ msgid "minute(s)"
+#~ msgstr "хв."
+
+#~ msgid "Measure update interval:"
+#~ msgstr "Інтервал оновлення замірів:"
+
+#~ msgid "Sensors"
+#~ msgstr "Датчики"
+
+#, fuzzy
+#~ msgid "Psensor has not been build with NVCtrl support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with ATI ADL support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with gtop2 support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with libatasmart support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+
+#, fuzzy
+#~ msgid "Psensor has not been build with udisks2 support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+
+#~ msgid "Edit Sensor Preferences"
+#~ msgstr "Редагувати налаштування датчика"
+
+#~ msgid "Type:"
+#~ msgstr "Тип:"
+
+#~ msgid "Name:"
+#~ msgstr "Назва:"
+
+#~ msgid "Id:"
+#~ msgstr "Ідентифікатор:"
+
+#~ msgid "Draw sensor curve"
+#~ msgstr "Малювати криву датчика"
+
+#~ msgid "Color:"
+#~ msgstr "Колір:"
+
+#~ msgid "Activate desktop notifications"
+#~ msgstr "Увімкнути оповіщення"
+
+#~ msgid "High threshold:"
+#~ msgstr "Вищий поріг:"
+
+#~ msgid "Low threshold:"
+#~ msgstr "Нижчий поріг:"
+
+#~ msgid "Alarm"
+#~ msgstr "Оповіщення"
+
+#, fuzzy
+#~ msgid "Psensor has not been build with AppIndicator support"
+#~ msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
 
 #~ msgid "Sensor Information"
 #~ msgstr "Інформація датчика"

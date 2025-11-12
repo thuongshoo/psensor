@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_SERVER_H_
-#define _PSENSOR_SERVER_H_
+#ifndef PSENSOR_SERVER_H
+#define PSENSOR_SERVER_H
 
 #include "config.h"
 

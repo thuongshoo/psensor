@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_AMD_H_
-#define _PSENSOR_AMD_H_
+#ifndef PSENSOR_AMD_H
+#define PSENSOR_AMD_H
 
 #include <bool.h>
 #include <psensor.h>
@@ -36,7 +36,7 @@ void amd_cleanup(void);
 static inline bool amd_is_supported(void) { return false; }
 
 static inline void amd_psensor_list_update(struct psensor **s) {}
-static inline void amd_psensor_list_append(struct psensor ***s, int n) {}
+static inline void amd_psensor_list_append(struct psensor ***s, unsigned int n) {}
 static inline void amd_cleanup(void) {}
 
 #endif

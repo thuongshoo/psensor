@@ -130,7 +130,7 @@ libpsensor_a_LIBADD =
 am__libpsensor_a_SOURCES_DIST = amd.h bool.h color.h color.c hdd.h \
 	hdd_hddtemp.c lmsensor.h measure.h measure.c nvidia.h parray.h \
 	pgtop2.h plog.h plog.c pmutex.h pmutex.c psensor.h psensor.c \
-	ptime.h ptime.c pio.h pio.c pudisks2.h slog.c slog.h \
+	ptime.h ptime.c io.h io.c pudisks2.h slog.c slog.h \
 	temperature.c temperature.h url.c url.h lmsensor.c \
 	hdd_atasmart.c nvidia.c amd.c pgtop2.c psensor_json.h \
 	psensor_json.c pudisks2.c
@@ -143,7 +143,7 @@ am__libpsensor_a_SOURCES_DIST = amd.h bool.h color.h color.c hdd.h \
 @LIBUDISKS2_TRUE@am__objects_7 = pudisks2.$(OBJEXT)
 am_libpsensor_a_OBJECTS = color.$(OBJEXT) hdd_hddtemp.$(OBJEXT) \
 	measure.$(OBJEXT) plog.$(OBJEXT) pmutex.$(OBJEXT) \
-	psensor.$(OBJEXT) ptime.$(OBJEXT) pio.$(OBJEXT) slog.$(OBJEXT) \
+	psensor.$(OBJEXT) ptime.$(OBJEXT) io.$(OBJEXT) slog.$(OBJEXT) \
 	temperature.$(OBJEXT) url.$(OBJEXT) $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
 	$(am__objects_5) $(am__objects_6) $(am__objects_7)
@@ -165,13 +165,13 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/amd.Po ./$(DEPDIR)/color.Po \
 	./$(DEPDIR)/hdd_atasmart.Po ./$(DEPDIR)/hdd_hddtemp.Po \
-	./$(DEPDIR)/lmsensor.Po ./$(DEPDIR)/measure.Po \
-	./$(DEPDIR)/nvidia.Po ./$(DEPDIR)/pgtop2.Po ./$(DEPDIR)/pio.Po \
-	./$(DEPDIR)/plog.Po ./$(DEPDIR)/pmutex.Po \
-	./$(DEPDIR)/psensor.Po ./$(DEPDIR)/psensor_json.Po \
-	./$(DEPDIR)/ptime.Po ./$(DEPDIR)/pudisks2.Po \
-	./$(DEPDIR)/slog.Po ./$(DEPDIR)/temperature.Po \
-	./$(DEPDIR)/url.Po
+	./$(DEPDIR)/io.Po ./$(DEPDIR)/lmsensor.Po \
+	./$(DEPDIR)/measure.Po ./$(DEPDIR)/nvidia.Po \
+	./$(DEPDIR)/pgtop2.Po ./$(DEPDIR)/plog.Po \
+	./$(DEPDIR)/pmutex.Po ./$(DEPDIR)/psensor.Po \
+	./$(DEPDIR)/psensor_json.Po ./$(DEPDIR)/ptime.Po \
+	./$(DEPDIR)/pudisks2.Po ./$(DEPDIR)/slog.Po \
+	./$(DEPDIR)/temperature.Po ./$(DEPDIR)/url.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -372,7 +372,7 @@ noinst_LIBRARIES = libpsensor.a
 libpsensor_a_SOURCES = amd.h bool.h color.h color.c hdd.h \
 	hdd_hddtemp.c lmsensor.h measure.h measure.c nvidia.h parray.h \
 	pgtop2.h plog.h plog.c pmutex.h pmutex.c psensor.h psensor.c \
-	ptime.h ptime.c pio.h pio.c pudisks2.h slog.c slog.h \
+	ptime.h ptime.c io.h io.c pudisks2.h slog.c slog.h \
 	temperature.c temperature.h url.c url.h $(am__append_1) \
 	$(am__append_3) $(am__append_6) $(am__append_9) \
 	$(am__append_10) $(am__append_13) $(am__append_16)
@@ -438,11 +438,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/color.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hdd_atasmart.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hdd_hddtemp.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmsensor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/measure.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nvidia.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pgtop2.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/plog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pmutex.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor.Po@am__quote@ # am--include-marker
@@ -600,11 +600,11 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/color.Po
 	-rm -f ./$(DEPDIR)/hdd_atasmart.Po
 	-rm -f ./$(DEPDIR)/hdd_hddtemp.Po
+	-rm -f ./$(DEPDIR)/io.Po
 	-rm -f ./$(DEPDIR)/lmsensor.Po
 	-rm -f ./$(DEPDIR)/measure.Po
 	-rm -f ./$(DEPDIR)/nvidia.Po
 	-rm -f ./$(DEPDIR)/pgtop2.Po
-	-rm -f ./$(DEPDIR)/pio.Po
 	-rm -f ./$(DEPDIR)/plog.Po
 	-rm -f ./$(DEPDIR)/pmutex.Po
 	-rm -f ./$(DEPDIR)/psensor.Po
@@ -663,11 +663,11 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/color.Po
 	-rm -f ./$(DEPDIR)/hdd_atasmart.Po
 	-rm -f ./$(DEPDIR)/hdd_hddtemp.Po
+	-rm -f ./$(DEPDIR)/io.Po
 	-rm -f ./$(DEPDIR)/lmsensor.Po
 	-rm -f ./$(DEPDIR)/measure.Po
 	-rm -f ./$(DEPDIR)/nvidia.Po
 	-rm -f ./$(DEPDIR)/pgtop2.Po
-	-rm -f ./$(DEPDIR)/pio.Po
 	-rm -f ./$(DEPDIR)/plog.Po
 	-rm -f ./$(DEPDIR)/pmutex.Po
 	-rm -f ./$(DEPDIR)/psensor.Po

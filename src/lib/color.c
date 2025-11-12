@@ -88,12 +88,14 @@ struct color *str_to_color(const char *str)
 
 char *color_to_str(const struct color *color)
 {
-	char *str = malloc(1 + 12 + 1);
+	char *str = NULL;;
 
-	sprintf(str, "#%.4x%.4x%.4x",
+	int result = asprintf(&str, "#%.4x%.4x%.4x",
 		(int)(65535 * color->red),
 		(int)(65535 * color->green),
 		(int)(65535 * color->blue));
-
+	if (result == -1) {
+        return NULL;
+    }
 	return str;
 }

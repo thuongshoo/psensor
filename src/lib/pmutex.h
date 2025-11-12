@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _P_PMUTEX_H_
-#define _P_PMUTEX_H_
+#ifndef PSENSOR_PMUTEX_H
+#define PSENSOR_PMUTEX_H
 
 #include <pthread.h>
 

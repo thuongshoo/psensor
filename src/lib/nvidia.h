@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_NVIDIA_H_
-#define _PSENSOR_NVIDIA_H_
+#ifndef PSENSOR_NVIDIA_H
+#define PSENSOR_NVIDIA_H
 
 #include <bool.h>
 #include <psensor.h>
@@ -28,7 +28,7 @@
 static inline bool nvidia_is_supported(void) { return true; }
 
 void nvidia_psensor_list_update(struct psensor **);
-void nvidia_psensor_list_append(struct psensor ***, int);
+void nvidia_psensor_list_append(struct psensor ***, unsigned int);
 void nvidia_cleanup(void);
 
 #else
@@ -36,7 +36,7 @@ void nvidia_cleanup(void);
 static inline bool nvidia_is_supported(void) { return false; }
 
 static inline void nvidia_psensor_list_update(struct psensor **s) {}
-static inline void nvidia_psensor_list_append(struct psensor ***s, int n) {}
+static inline void nvidia_psensor_list_append(struct psensor ***s, unsigned int n) {}
 static inline void nvidia_cleanup(void) {}
 
 #endif

@@ -16,12 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_BOOL_H_
-#define _PSENSOR_BOOL_H_
+#ifndef PSENSOR_BOOL_H
+#define PSENSOR_BOOL_H
 
 #include "config.h"
 
-#if HAVE_STDBOOL_H
+#if HAVE_STDBOOL_H == 1
 #include <stdbool.h>
 #else
 #define bool char

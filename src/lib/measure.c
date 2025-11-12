@@ -22,15 +22,15 @@
 
 #include "measure.h"
 
-struct measure *measures_dbl_create(int size)
+struct measure *measures_double_create(size_t size)
 {
-	int i;
+	size_t i;
 	struct measure *result;
 
-	result = malloc(size * sizeof(struct measure));
+	result = (struct measure *)malloc(size * sizeof(struct measure));
 
 	for (i = 0; i < size; i++) {
-		result[i].value = UNKNOWN_DBL_VALUE;
+		result[i].value = UNKNOWN_DOUBLE_VALUE;
 		timerclear(&result[i].time);
 	}
 

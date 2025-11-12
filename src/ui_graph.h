@@ -16,13 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_UI_GRAPH_H_
-#define _PSENSOR_UI_GRAPH_H_
+#ifndef PSENSOR_UI_GRAPH_H
+#define PSENSOR_UI_GRAPH_H
 
 #include <gtk/gtk.h>
 
 #include "ui.h"
 
-void ui_graph_create(struct ui_psensor *ui);
+void ui_graph_create(struct ui_psensor *sensor_context);
 
 #endif

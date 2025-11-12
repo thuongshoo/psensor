@@ -83,7 +83,7 @@ static struct psensor **list_filter_graph_enabled(struct psensor **sensors)
 		return NULL;
 
 	n = psensor_list_size(sensors);
-	result = malloc((n+1) * sizeof(struct psensor *));
+	result = (struct psensor **)malloc((n+1) * sizeof(struct psensor *));
 
 	for (cur = sensors, i = 0; *cur; cur++) {
 		s = *cur;
@@ -110,7 +110,7 @@ static time_t get_graph_end_time_s(struct psensor **sensors)
 	int i, n;
 
 	ret = 0;
-	while (*sensors) {
+	while (sensors && *sensors) {
 		s = *sensors;
 		measures = s->measures;
 
@@ -120,7 +120,7 @@ static time_t get_graph_end_time_s(struct psensor **sensors)
 			n = 0;
 
 		for (i = s->values_max_length - 1; i >= 0; i--) {
-			if (measures[i].value != UNKNOWN_DBL_VALUE) {
+			if (measures[i].value != UNKNOWN_DOUBLE_VALUE) {
 				if (!n) {
 					t = measures[i].time.tv_sec;
 
@@ -146,7 +146,7 @@ static time_t get_graph_begin_time_s(struct config *cfg, time_t etime)
 	if (!etime)
 		return 0;
 
-	return etime - cfg->graph_monitoring_duration * 60;
+	return etime - ((time_t)cfg->graph_monitoring_duration * (time_t)60);
 }
 
 static double
@@ -299,8 +299,165 @@ static void draw_background_lines(cairo_t *cr,
  * measure which has been used as the start point of a Bezier curve.
  */
 static GHashTable *times;
+static GHashTable *measure_times;
+/* search the index of the first measure used as a start point
+ * of a Bezier curve. The start and end points of the Bezier
+ * curves must be preserved to ensure the same overall shape
+ * of the graph.
+ */
+static unsigned int find_first_measured_index(struct psensor *sensor,
+	unsigned int measure_index,
+	time_t *stimes)
+{
+	int found;
+	while (measure_index < sensor->values_max_length) {
+			time_t t = sensor->measures[measure_index].time.tv_sec;
+			double v = sensor->measures[measure_index].value;
 
-static void draw_sensor_smooth_curve(struct psensor *s,
+			found = 0;
+			if (v != UNKNOWN_DOUBLE_VALUE && t) {
+				int time_index = 0;
+				while (stimes[time_index]) {
+					if (t == stimes[time_index]) {
+						found = 1;
+						break;
+					}
+					time_index++;
+				}
+			}
+
+			if (found)
+				break;
+
+			measure_index++;
+	}
+	return measure_index;
+}
+
+static void draw_sensor_smooth_curve(struct psensor *sensor,
+				     cairo_t *cr,
+				     double min,
+				     double max,
+				     time_t begin_time,
+				     int end_time,
+				     struct graph_info *info)
+{
+	time_t dt, vdt;
+	int k;
+	double x[4], y[4];
+	time_t t0, *sensor_times;
+	GdkRGBA *color;
+
+	if (!measure_times)
+		measure_times = g_hash_table_new_full(g_str_hash,
+					      g_str_equal,
+					      free,
+					      free);
+
+	sensor_times = g_hash_table_lookup(measure_times, sensor->id);
+
+	color = config_get_sensor_color(sensor->id);
+
+	cairo_set_source_rgb(cr,
+			     color->red,
+			     color->green,
+			     color->blue);
+	gdk_rgba_free(color);
+
+	/* search the index of the first measure used as a start point
+	 * of a Bezier curve. The start and end points of the Bezier
+	 * curves must be preserved to ensure the same overall shape
+	 * of the graph.
+	 */
+	unsigned int i = 0;
+	if (sensor_times) {
+		i = find_first_measured_index(sensor, i, sensor_times);
+	}
+
+	sensor_times = calloc((sensor->values_max_length + 1),  sizeof(time_t));
+	g_hash_table_insert(measure_times, strdup(sensor->id), sensor_times);
+
+	if (i == sensor->values_max_length)
+		i = 0;
+
+	k = 0;
+	dt = end_time - begin_time;
+	
+	/* Main loop: process all sensor measurements */
+	while (i < sensor->values_max_length) {
+		int bezier_point_index = 0;
+		time_t t = 0;
+		
+		/* SECOND WHILE LOOP EXPLANATION:
+		 * This inner loop collects 4 consecutive valid data points to form a Bezier curve segment.
+		 * - i: current index in sensor measurements array
+		 * - bezier_point_index: counter for valid points collected (0-3 for 4 points needed per Bezier curve)
+		 * 
+		 * Conditions:
+		 * - i < sensor->values_max_length: prevent array overflow
+		 * - bezier_point_index < 4: collect exactly 4 points for one Bezier cubic curve
+		 * 
+		 * Each Bezier cubic curve requires:
+		 * - Point 0: start point
+		 * - Point 1: first control point  
+		 * - Point 2: second control point
+		 * - Point 3: end point
+		 */
+		while (i < sensor->values_max_length && bezier_point_index < 4) {
+			/* Get current measurement time and value */
+			t = sensor->measures[i].time.tv_sec;
+			double v = sensor->measures[i].value;
+
+			/* Skip invalid measurements (unknown value or zero timestamp) */
+			if (v == UNKNOWN_DOUBLE_VALUE || !t) {
+				i++;
+				continue;
+			}
+
+			/* Calculate relative time position within graph bounds */
+			vdt = t - begin_time;
+
+			/* Convert to graph coordinates:
+			 * x-coordinate: map time to horizontal position
+			 * y-coordinate: map sensor value to vertical position
+			 */
+			x[0 + bezier_point_index] = ((double)vdt * info->g_width) / dt + info->g_xoff;
+			y[0 + bezier_point_index] = compute_y(v, min, max, info->g_height, info->g_yoff);
+
+			/* Store the timestamp of the first point for curve continuity */
+			if (bezier_point_index == 0)
+				t0 = t;
+
+			/* Move to next measurement and increment point counter */
+			i++;
+			bezier_point_index++;
+		}
+
+		/* If we successfully collected 4 points, draw the Bezier curve */
+		if (bezier_point_index == 4) {
+			/* Move to start point */
+			cairo_move_to(cr, x[0], y[0]);
+			/* Draw cubic Bezier curve: 
+			 * (x0,y0) = start point
+			 * (x1,y1) = first control point
+			 * (x2,y2) = second control point  
+			 * (x3,y3) = end point
+			 */
+			cairo_curve_to(cr, x[1], y[1], x[2], y[3], x[3], y[3]);
+			
+			/* Store start time of this curve segment for future reference */
+			sensor_times[k++] = t0;
+			
+			/* Decrement i to make the end point of current curve 
+			 * potentially become the start point of next curve */
+			i--;
+		}
+	}
+
+	cairo_stroke(cr);
+}
+#if 0
+static void draw_sensor_smooth_curve1(struct psensor *s,
 				     cairo_t *cr,
 				     double min,
 				     double max,
@@ -341,7 +498,7 @@ static void draw_sensor_smooth_curve(struct psensor *s,
 			v = s->measures[i].value;
 
 			found = 0;
-			if (v != UNKNOWN_DBL_VALUE && t) {
+			if (v != UNKNOWN_DOUBLE_VALUE && t) {
 				k = 0;
 				while (stimes[k]) {
 					if (t == stimes[k]) {
@@ -375,7 +532,7 @@ static void draw_sensor_smooth_curve(struct psensor *s,
 			t = s->measures[i].time.tv_sec;
 			v = s->measures[i].value;
 
-			if (v == UNKNOWN_DBL_VALUE || !t) {
+			if (v == UNKNOWN_DOUBLE_VALUE || !t) {
 				i++;
 				continue;
 			}
@@ -407,7 +564,7 @@ static void draw_sensor_smooth_curve(struct psensor *s,
 
 	cairo_stroke(cr);
 }
-
+#endif
 static void draw_sensor_curve(struct psensor *s,
 			      cairo_t *cr,
 			      double min,
@@ -433,7 +590,7 @@ static void draw_sensor_curve(struct psensor *s,
 		t = s->measures[i].time.tv_sec;
 		v = s->measures[i].value;
 
-		if (v == UNKNOWN_DBL_VALUE || !t)
+		if (v == UNKNOWN_DOUBLE_VALUE || !t)
 			continue;
 
 		vdt = t - bt;
@@ -471,17 +628,50 @@ static void display_no_graphs_warning(cairo_t *cr, int x, int y)
 	free(msg);
 }
 
+// static cairo_surface_t *cst = NULL;
+// static cairo_t *cr = NULL;
+// static cairo_t *cr_pixmap = NULL;
+// static cairo_font_face_t *cached_font = NULL;
+// void graph_init(int width, int height, GtkWidget *w_graph)
+// {
+// 	if (cst == NULL) {
+// 		cst = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+// 		cr = cairo_create(cst);
+// 		cached_font = cairo_toy_font_face_create("sans-serif",
+//                         CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+// 		// cairo_select_font_face(cr,
+// 		// 			"sans-serif",
+// 		// 			CAIRO_FONT_SLANT_NORMAL,
+// 		// 			CAIRO_FONT_WEIGHT_NORMAL);
+// 		cairo_set_font_face(cr, cached_font);
+// 		cairo_set_font_size(cr, 10.0);
+// 		cr_pixmap = gdk_cairo_create(gtk_widget_get_window(w_graph));
+// 	}
+// }
+void graph_cleanup()
+{
+	// if (cst) {
+	// 	cairo_destroy(cr_pixmap);
+	// 	cairo_destroy(cr);
+	// 	cairo_surface_destroy(cst);
+	// 	cairo_font_face_destroy(cached_font);
+	// }
+	if (times) {
+        g_hash_table_destroy(times);
+        times = NULL;
+    }
+}
 void
 graph_update(struct psensor **sensors,
 	     GtkWidget *w_graph,
 	     struct config *config,
 	     GtkWidget *window)
 {
-	int et, bt, width, height, g_width, g_height;
+	int et, width, height, g_width, g_height;
 	double min_rpm, max_rpm, mint, maxt, min, max;
 	char *strmin, *strmax;
 	/* horizontal and vertical offset of the graph */
-	int g_xoff, g_yoff, no_graphs, use_celsius;
+	int g_xoff, g_yoff, no_graphs;
 	cairo_surface_t *cst;
 	cairo_t *cr, *cr_pixmap;
 	char *str_btime, *str_etime;
@@ -501,10 +691,11 @@ graph_update(struct psensor **sensors,
 	min_rpm = get_min_rpm(enabled_sensors);
 	max_rpm = get_max_rpm(enabled_sensors);
 
+	unsigned int use_celsius;
 	if (config_get_temperature_unit() == CELSIUS)
-		use_celsius = 1;
+		use_celsius = 1U;
 	else
-		use_celsius = 0;
+		use_celsius = 0U;
 
 	mint = get_min_temp(enabled_sensors);
 	strmin = psensor_value_to_str(SENSOR_TYPE_TEMP, mint, use_celsius);
@@ -513,9 +704,9 @@ graph_update(struct psensor **sensors,
 	strmax = psensor_value_to_str(SENSOR_TYPE_TEMP, maxt, use_celsius);
 
 	et = get_graph_end_time_s(enabled_sensors);
-	bt = get_graph_begin_time_s(config, et);
+	time_t begin_time = get_graph_begin_time_s(config, et);
 
-	str_btime = time_to_str(bt);
+	str_btime = time_to_str(begin_time);
 	str_etime = time_to_str(et);
 
 	gtk_widget_get_allocation(w_graph, &galloc);
@@ -524,10 +715,8 @@ graph_update(struct psensor **sensors,
 	height = galloc.height;
 	info.height = height;
 
-
 	cst = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
 	cr = cairo_create(cst);
-
 	cairo_select_font_face(cr,
 			       "sans-serif",
 			       CAIRO_FONT_SLANT_NORMAL,
@@ -583,7 +772,7 @@ graph_update(struct psensor **sensors,
 	draw_background_lines(cr, mint, maxt, config, &info);
 
 	/* .. and finaly draws the temperature graphs */
-	if (bt && et) {
+	if (begin_time && et) {
 		sensor_cur = enabled_sensors;
 
 		cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
@@ -608,12 +797,12 @@ graph_update(struct psensor **sensors,
 			if (is_smooth_curves_enabled)
 				draw_sensor_smooth_curve(s, cr,
 							 min, max,
-							 bt, et,
+							 begin_time, et,
 							 &info);
 			else
 				draw_sensor_curve(s, cr,
 						  min, max,
-						  bt, et,
+						  begin_time, et,
 						  &info);
 
 			sensor_cur++;
@@ -638,13 +827,18 @@ graph_update(struct psensor **sensors,
 	cairo_show_text(cr, strmax);
 	free(strmax);
 
-	cairo_move_to(cr,
-		      GRAPH_H_PADDING, height - (te_min.height / 2) - g_yoff);
+	cairo_move_to(cr, GRAPH_H_PADDING, height - (te_min.height / 2) - g_yoff);
 	cairo_show_text(cr, strmin);
 	free(strmin);
 
-	cr_pixmap = gdk_cairo_create(gtk_widget_get_window(w_graph));
-
+	// cr_pixmap = gdk_cairo_create(gtk_widget_get_window(w_graph));
+    GdkWindow *graph_window = gtk_widget_get_window(w_graph);
+    // Sử dụng phương pháp mới
+    GdkDrawingContext *drawing_context;
+    cairo_region_t *region = cairo_region_create();
+    
+    drawing_context = gdk_window_begin_draw_frame(graph_window, region);
+    cr_pixmap = gdk_drawing_context_get_cairo_context(drawing_context);
 	if (cr_pixmap) {
 		if (config->alpha_channel_enabled)
 			cairo_set_operator(cr_pixmap, CAIRO_OPERATOR_SOURCE);
@@ -652,22 +846,41 @@ graph_update(struct psensor **sensors,
 		cairo_set_source_surface(cr_pixmap, cst, 0, 0);
 		cairo_paint(cr_pixmap);
 	}
+	// Kết thúc
+    gdk_window_end_draw_frame(graph_window, drawing_context);
+    cairo_region_destroy(region);
+
+//	cairo_destroy(cr_pixmap);
+	cairo_destroy(cr);
+	cairo_surface_destroy(cst);
 
 	free(enabled_sensors);
-
-	cairo_destroy(cr_pixmap);
-	cairo_surface_destroy(cst);
-	cairo_destroy(cr);
 }
 
-int compute_values_max_length(struct config *c)
+// unsigned int compute_values_max_length(struct config *c)
+// {
+// 	int n, duration, interval;
+
+// 	duration = c->graph_monitoring_duration * 60;
+// 	interval = c->sensor_update_interval;
+
+// 	n = 3 + ceil((((double)duration) / interval) + 0.5) + 3;
+
+// 	return n;
+// }
+unsigned int compute_values_max_length(struct config *c)
 {
-	int n, duration, interval;
-
-	duration = c->graph_monitoring_duration * 60;
-	interval = c->sensor_update_interval;
-
-	n = 3 + ceil((((double)duration) / interval) + 0.5) + 3;
-
-	return n;
+    unsigned int duration, interval, n;
+    
+    if (!c || c->sensor_update_interval == 0) {
+        return 10;
+    }
+    
+    duration = c->graph_monitoring_duration * 60;
+    interval = c->sensor_update_interval;
+    
+    // Làm tròn lên: (duration + interval/2) / interval
+    n = 6 + (duration + interval / 2) / interval;
+    
+    return n;
 }
