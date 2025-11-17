@@ -94,8 +94,11 @@ static const char *KEY_INTERFACE_WINDOW_Y = "interface-window-y";
 static const char *KEY_INTERFACE_WINDOW_W = "interface-window-w";
 static const char *KEY_INTERFACE_WINDOW_H = "interface-window-h";
 
-static const char *KEY_INTERFACE_WINDOW_DIVIDER_POS
-= "interface-window-divider-pos";
+static const char *KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS
+= "interface-window-vertical-divider-pos";
+
+static const char *KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS
+= "interface-window-horizontal-divider-pos";
 
 static const char *KEY_INTERFACE_TEMPERATURE_UNIT
 = "interface-temperature-unit";
@@ -449,8 +452,12 @@ struct config *config_load(void)
 	c->window_w = get_int(KEY_INTERFACE_WINDOW_W);
 	c->window_h = get_int(KEY_INTERFACE_WINDOW_H);
 
-	c->window_divider_pos = get_int(KEY_INTERFACE_WINDOW_DIVIDER_POS);
-
+	c->window_vertical_divider_pos = get_int(KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS);
+	c->window_horizontal_divider_pos = get_int(KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS);
+	// printf("load pos=%s vert=%d hori=%d \n", 
+	// 	config_get_sensorlist_position_str(config_get_sensorlist_position()),
+	// 	c->window_vertical_divider_pos,
+	// 	c->window_horizontal_divider_pos);
 	if (!c->window_restore_enabled || !c->window_w || !c->window_h) {
 		c->window_w = 800;
 		c->window_h = 200;
@@ -461,7 +468,7 @@ struct config *config_load(void)
 	return c;
 }
 
-void config_save(const struct config *c)
+void config_save_to_g_file(const struct config *c)
 {
 	set_alpha_channeld_enabled(c->alpha_channel_enabled);
 	set_background_color(c->graph_bgcolor);
@@ -485,8 +492,13 @@ void config_save(const struct config *c)
 	set_int(KEY_INTERFACE_WINDOW_Y, c->window_y);
 	set_int(KEY_INTERFACE_WINDOW_W, c->window_w);
 	set_int(KEY_INTERFACE_WINDOW_H, c->window_h);
-
-	set_int(KEY_INTERFACE_WINDOW_DIVIDER_POS, c->window_divider_pos);
+	
+	// printf("save pos=%s vert=%d hori=%d \n", 
+	// 	config_get_sensorlist_position_str(config_get_sensorlist_position()),
+	// 	c->window_vertical_divider_pos,
+	// 	c->window_horizontal_divider_pos);
+	set_int(KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS, c->window_vertical_divider_pos);
+	set_int(KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS, c->window_horizontal_divider_pos);
 }
 
 const char *get_psensor_user_dir(void)
@@ -957,4 +969,22 @@ bool config_is_count_visible(void)
 void config_set_count_visible(bool visible)
 {
 	set_bool(KEY_INTERFACE_UNITY_LAUNCHER_COUNT_DISABLED, !visible);
+}
+
+const char *config_get_sensorlist_position_str(enum sensorlist_position pos)
+{
+	switch (pos)
+	{
+	case SENSORLIST_POSITION_RIGHT:
+		return "right";
+	case SENSORLIST_POSITION_LEFT:
+		return "left";
+	case SENSORLIST_POSITION_TOP:
+		return "top";
+	case SENSORLIST_POSITION_BOTTOM:
+		return "bottom";
+	default:
+		return "don't know";
+	}
+	
 }

@@ -311,7 +311,6 @@ static gboolean initial_window_show(gpointer data)
 	struct ui_psensor *ui;
 
 	log_debug("initial_window_show()");
-	printf("initial_window_show()\n");
 	ui = (struct ui_psensor *)data;
 
 	log_debug("is_status_supported: %d", is_status_supported());
@@ -435,27 +434,27 @@ int main(int argc, char **argv)
 	char *url = NULL;
 	GApplication *app;
 
-	cpu_set_t mask;
-	CPU_ZERO(&mask);
-	CPU_SET(0, &mask);  // Chỉ dùng CPU 0
-	sched_setaffinity(0, sizeof(mask), &mask);
+	// cpu_set_t mask;
+	// CPU_ZERO(&mask);
+	// CPU_SET(0, &mask);  // Chỉ dùng CPU 0
+	// sched_setaffinity(0, sizeof(mask), &mask);
 
 	program_name = argv[0];
 
 	printf("DATE TIME: %s %s \n", __TIME__, __DATE__);
-	char *current_locale = setlocale(LC_ALL, "");
-	printf("Current locale: %s\n", current_locale ? current_locale : "NULL");
-	printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "NULL");
-	printf("LANG=%s\n", getenv("LANG") ? getenv("LANG") : "NULL");
-	printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "NULL");
+	// char *current_locale = setlocale(LC_ALL, "");
+	// printf("Current locale: %s\n", current_locale ? current_locale : "NULL");
+	// printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "NULL");
+	// printf("LANG=%s\n", getenv("LANG") ? getenv("LANG") : "NULL");
+	// printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "NULL");
 
 #if ENABLE_NLS
-        printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
+        //printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
-        char *bound_dir = bindtextdomain(PACKAGE, NULL);
-        printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
-        printf("Current textdomain: %s\n", textdomain(NULL));
+        // char *bound_dir = bindtextdomain(PACKAGE, NULL);
+        // printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
+        // printf("Current textdomain: %s\n", textdomain(NULL));
 #else
         printf("NLS not enabled\n");
 #endif
@@ -574,12 +573,10 @@ int main(int argc, char **argv)
 	//  */
 	if  (ui.config->hide_on_startup)
 	{
-		printf("Adding timeout to show window after 30s\n");
 		g_timeout_add(1000, (GSourceFunc)initial_window_show, &ui);
 	}
 	else
 	{
-		printf("Showing window immediately\n");
 		initial_window_show(&ui);
 	}
 

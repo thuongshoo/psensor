@@ -35,6 +35,7 @@ enum sensorlist_position {
 	SENSORLIST_POSITION_TOP,
 	SENSORLIST_POSITION_BOTTOM
 };
+const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
 struct config {
 	struct color *graph_bgcolor;
@@ -46,7 +47,8 @@ struct config {
 	int window_w;
 	int window_h;
 	/* Last saved position of the window divider. */
-	int window_divider_pos;
+	int window_vertical_divider_pos;
+	int window_horizontal_divider_pos;
 	int hide_on_startup;
 	int graph_update_interval;
 	int graph_monitoring_duration;
@@ -62,7 +64,7 @@ struct config {
 /* Loads psensor configuration */
 struct config *config_load(void);
 
-void config_save(const struct config *);
+void config_save_to_g_file(const struct config *);
 
 void config_cleanup(void);
 

@@ -103,12 +103,22 @@
       <description>Whether the position and size of the graph window
       are restored</description>
     </key>
-    <key name="interface-window-divider-pos" type="i">
+    <key name="interface-window-horizontal-divider-pos" type="i">
       <default>0</default>
-      <summary>Position of the divider between the graph window and
-      the list of sensors</summary>
-      <description>Position of the divider between the graph window
-      and the list of sensors</description>
+      <summary>Position of the divider between the graph and sensor list 
+      when sensors are positioned to the right or left of the graph</summary>
+      <description>Position of the divider between the graph window 
+      and the sensor list when sensors are displayed to the right 
+      or left of the graph area</description>
+    </key>
+
+    <key name="interface-window-vertical-divider-pos" type="i">
+        <default>0</default>
+        <summary>Position of the divider between the graph and sensor list 
+        when sensors are positioned above or below the graph</summary>
+        <description>Position of the divider between the graph window 
+        and the sensor list when sensors are displayed above 
+        or below the graph area</description>
     </key>
     <key name="interface-window-w" type="i">
       <default>800</default>
