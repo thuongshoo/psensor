@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_GRAPH_H_
-#define _PSENSOR_GRAPH_H_
+#ifndef PSENSOR_GRAPH_H
+#define PSENSOR_GRAPH_H
 
 #include <gtk/gtk.h>
 
@@ -32,6 +32,6 @@ void graph_update(struct psensor **sensors,
 		  GtkWidget *window);
 
 /* Compute the number of measures which must be kept. */
-int compute_values_max_length(struct config *);
+unsigned int compute_values_max_length(struct config *);
 
 #endif

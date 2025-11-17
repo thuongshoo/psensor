@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _P_TIME_H
-#define _P_TIME_H
+#ifndef PSENSOR_TIME_H
+#define PSENSOR_TIME_H
 
 #include <time.h>
 

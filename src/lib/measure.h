@@ -16,14 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_MEASURE_H_
-#define _PSENSOR_MEASURE_H_
+#ifndef PSENSOR_MEASURE_H
+#define PSENSOR_MEASURE_H
 
 #include <sys/time.h>
 #include <float.h>
 #include <stdint.h>
+#include <math.h>
 
-#define UNKNOWN_DBL_VALUE DBL_MIN
+#define UNKNOWN_DOUBLE_VALUE DBL_MIN
 
 struct measure {
 	double value;
@@ -33,7 +34,7 @@ struct measure {
 
 void measure_copy(struct measure *src, struct measure *dst);
 
-struct measure *measures_dbl_create(int size);
+struct measure *measures_double_create(size_t size);
 
 void measures_free(struct measure *measures);
 

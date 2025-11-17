@@ -1,3 +1,8 @@
+psensor
+- adjustment to avoid too small sensorlist area
+- fix memory leak.
+- support CMakefile.
+
 psensor — CMake build
 
 This repository has been migrated from autotools to CMake. The CMake build
@@ -44,3 +49,9 @@ Notes
   macros (HAVE_LIBSENSORS, PACKAGE_DATA_DIR, DATADIR, etc.).
 - The original autotools files are still present in the repo. If you want
   me to move or remove them, tell me and I will back them up first.
+
+Build .deb for Ubuntu:
+```bash
+make-deb.sh
+``` 
+

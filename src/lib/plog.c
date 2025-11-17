@@ -1,4 +1,5 @@
 /*
+ * plog.c - psensor log, Simple logging functions
  * Copyright (C) 2010-2016 jeanfi@gmail.com
  *
  * This program is free software; you can redistribute it and/or
@@ -54,7 +55,7 @@ void log_close(void)
 }
 
 
-#define LOG_BUFFER 4096
+#define LOG_BUFFER 4096U
 static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 {
 	char buffer[1 + LOG_BUFFER];
@@ -88,6 +89,8 @@ static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 	if (!t)
 		return;
 
+	char * original_t = t; // Save original pointer to free later
+
 	if (file && lvl <= log_level) {
 		if (fct)
 			fprintf(file,
@@ -112,7 +115,7 @@ static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 			fprintf(stdf, "[%s] %s %s\n", t, lvl_str, buffer);
 	}
 
-	free(t);
+	free(original_t);
 }
 
 void log_printf(int lvl, const char *fmt, ...)
@@ -163,7 +166,7 @@ void log_info(const char *fmt, ...)
 	va_end(ap);
 }
 
-void _log(const char *fct, const char *fmt, ...)
+void psensor_log(const char *fct, const char *fmt, ...)
 {
 	va_list ap;
 

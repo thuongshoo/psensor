@@ -368,7 +368,7 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 
 		cfg->sensor_values_max_length = compute_values_max_length(cfg);
 
-		config_save(cfg);
+		config_save_to_g_file(cfg);
 
 		config_set_smooth_curves_enabled
 			(gtk_toggle_button_get_active(w_smooth_curves));

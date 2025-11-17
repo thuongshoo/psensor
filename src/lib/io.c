@@ -27,7 +27,7 @@
 #include <sys/types.h>
 
 #include <plog.h>
-#include <pio.h>
+#include <io.h>
 
 /* Directory separator is \ when cross-compiling for MS Windows
  * systems
@@ -38,7 +38,7 @@
 #define DIRSEP '/'
 #endif
 
-#define FCOPY_BUF_SZ 4096
+//#define FCOPY_BUF_SZ 4096
 
 int is_dir(const char *path)
 {
@@ -67,7 +67,7 @@ int is_file(const char *path)
 static char *dir_normalize(const char *dpath)
 {
 	char *npath;
-	int n;
+	size_t n;
 
 	if (!dpath || !strlen(dpath))
 		return NULL;
@@ -86,7 +86,7 @@ static char **paths_add(char **paths, int n, char *path)
 {
 	char **result;
 
-	result = malloc((n+1) * sizeof(void *));
+	result = (char **)malloc((n+1) * sizeof(void *));
 
 	memcpy(result + 1, paths, n * sizeof(void *));
 
@@ -108,7 +108,7 @@ char **dir_list(const char *dpath, int (*filter) (const char *))
 		return NULL;
 
 	n = 1;
-	paths = malloc(sizeof(void *));
+	paths = (char **)malloc(sizeof(void *));
 	*paths = NULL;
 
 	while ((ent = readdir(dir)) != NULL) {
@@ -241,7 +241,7 @@ file_copy(const char *src, const char *dst)
 	FILE *fsrc, *fdst;
 	int ret = 0;
 
-	log_fct("copy %s to %s", src, dst);
+	log_functionname("copy %s to %s", src, dst);
 
 	fsrc = fopen(src, "r");
 
@@ -295,7 +295,7 @@ void mkdirs(const char *dirs, mode_t mode)
 	char *c, *dir;
 	int i;
 
-	log_fct("mkdirs %s", dirs);
+	log_functionname("mkdirs %s", dirs);
 
 	c = (char *)dirs;
 	dir = malloc(strlen(dirs) + 1);

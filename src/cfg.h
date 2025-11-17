@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_CONFIG_H_
-#define _PSENSOR_CONFIG_H_
+#ifndef PSENSOR_CONFIG_H
+#define PSENSOR_CONFIG_H
 
 #include <gdk/gdk.h>
 
@@ -35,16 +35,11 @@ enum sensorlist_position {
 	SENSORLIST_POSITION_TOP,
 	SENSORLIST_POSITION_BOTTOM
 };
+const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
 struct config {
 	struct color *graph_bgcolor;
 	struct color *graph_fgcolor;
-
-	double graph_bg_alpha;
-
-	bool alpha_channel_enabled;
-
-	bool window_restore_enabled;
 	/* Last saved position of the window. */
 	int window_x;
 	int window_y;
@@ -52,24 +47,24 @@ struct config {
 	int window_w;
 	int window_h;
 	/* Last saved position of the window divider. */
-	int window_divider_pos;
-
+	int window_vertical_divider_pos;
+	int window_horizontal_divider_pos;
+	int hide_on_startup;
 	int graph_update_interval;
 	int graph_monitoring_duration;
-
-	int sensor_values_max_length;
+	unsigned int sensor_values_max_length;
 	int sensor_update_interval;
-
-	int hide_on_startup;
-
-	bool slog_enabled;
 	int slog_interval;
+	double graph_bg_alpha;
+	bool alpha_channel_enabled;
+	bool window_restore_enabled;
+	bool slog_enabled;
 };
 
 /* Loads psensor configuration */
 struct config *config_load(void);
 
-void config_save(const struct config *);
+void config_save_to_g_file(const struct config *);
 
 void config_cleanup(void);
 

@@ -21,11 +21,11 @@ srcdir = .
 top_srcdir = ..
 
 
-prefix = /usr/local
+prefix = /usr
 exec_prefix = ${prefix}
 datarootdir = ${prefix}/share
 datadir = ${datarootdir}
-localedir = ${datarootdir}/locale
+localedir = /usr/share/locale
 gettextsrcdir = $(datadir)/gettext/po
 
 INSTALL = /usr/bin/install -c

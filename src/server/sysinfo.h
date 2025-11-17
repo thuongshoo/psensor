@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_SYSINFO_H_
-#define _PSENSOR_SYSINFO_H_
+#ifndef PSENSOR_SYSINFO_H
+#define PSENSOR_SYSINFO_H
 
 #include <config.h>
 #include <glibtop/loadavg.h>

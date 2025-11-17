@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_PGTOP2_H_
-#define _PSENSOR_PGTOP2_H_
+#ifndef PSENSOR_PGTOP2_H
+#define PSENSOR_PGTOP2_H
 
 #include <bool.h>
 #include <psensor.h>
@@ -26,11 +26,11 @@
 
 static inline bool gtop2_is_supported(void) { return true; }
 
-struct psensor *create_cpu_usage_sensor(int);
+struct psensor *create_cpu_usage_sensor(unsigned int);
 void cpu_usage_sensor_update(struct psensor *);
 
 void gtop2_psensor_list_update(struct psensor **);
-void gtop2_psensor_list_append(struct psensor ***, int);
+void gtop2_psensor_list_append(struct psensor ***, unsigned int);
 
 #else
 
@@ -40,7 +40,7 @@ static inline struct psensor *create_cpu_usage_sensor(int n) { return NULL; }
 static inline void cpu_usage_sensor_update(struct psensor *s) {}
 
 static inline void gtop2_psensor_list_update(struct psensor **s) {}
-static inline void gtop2_psensor_list_append(struct psensor ***s, int n) {}
+static inline void gtop2_psensor_list_append(struct psensor ***s, unsigned int n) {}
 
 #endif
 

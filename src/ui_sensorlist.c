@@ -99,7 +99,7 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	gboolean valid;
-	int use_celsius;
+	
 	GtkListStore *store;
 
 	if (complete)
@@ -110,6 +110,7 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
 
 	store = ui->sensors_store;
 
+	unsigned int use_celsius;
 	if (config_get_temperature_unit() == CELSIUS)
 		use_celsius = 1;
 	else
@@ -162,6 +163,7 @@ get_sensor_at_pos(GtkTreeView *view, int x, int y, struct ui_psensor *ui)
 	if (path) {
 		if (gtk_tree_model_get_iter(model, &iter, path)) {
 			gtk_tree_model_get(model, &iter, COL_SENSOR, &s, -1);
+			gtk_tree_path_free(path);
 			return s;
 		}
 	}
@@ -187,14 +189,16 @@ static int get_col_index_at_pos(GtkTreeView *view, int x)
 		checkcol = (GtkTreeViewColumn *)node->data;
 
 		if (x >= colx
-		    && x < (colx + gtk_tree_view_column_get_width(checkcol)))
+		    && x < (colx + gtk_tree_view_column_get_width(checkcol))) {
+			g_list_free(cols);
 			return coli;
+		}
 
 		colx += gtk_tree_view_column_get_width(checkcol);
 
 		coli++;
 	}
-
+	g_list_free(cols);
 	return -1;
 }
 
@@ -215,7 +219,7 @@ static void hide_activated_cbk(GtkWidget *menu_item, gpointer data)
 	struct cb_data *cb_data;
 	gboolean valid;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	cb_data = data;
 	s = cb_data->sensor;
@@ -239,7 +243,7 @@ static void hide_activated_cbk(GtkWidget *menu_item, gpointer data)
 
 	free(cb_data);
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 static GtkWidget *
@@ -293,7 +297,7 @@ static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
 	ui = (struct ui_psensor *)data;
 	view = ui->sensors_tree;
 
-	s = get_sensor_at_pos(view, event->x, event->y, ui);
+	s = get_sensor_at_pos(view, (int)event->x, (int)event->y, ui);
 
 	if (s) {
 		coli = col_index_to_col(get_col_index_at_pos(view, event->x));
@@ -312,8 +316,9 @@ static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
 		} else if (coli >= 0 && coli != COL_GRAPH_ENABLED) {
 			menu = create_sensor_popup(ui, s);
 
-			gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
-				       event->button, event->time);
+			// gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
+			// 	       event->button, event->time);
+			 gtk_menu_popup_at_pointer(GTK_MENU(menu), (const GdkEvent*)event);
 			return TRUE;
 		}
 
@@ -368,7 +373,7 @@ void ui_sensorlist_create(struct ui_psensor *ui)
 {
 	GtkTreeModel *fmodel, *model;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	model = gtk_tree_view_get_model(ui->sensors_tree);
 	fmodel = gtk_tree_model_filter_new(model, NULL);
@@ -382,5 +387,5 @@ void ui_sensorlist_create(struct ui_psensor *ui)
 
 	ui_sensorlist_update(ui, 1);
 
-	log_fct_exit();
+	log_functionname_exit();
 }

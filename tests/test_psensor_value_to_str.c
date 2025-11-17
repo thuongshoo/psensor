@@ -30,7 +30,7 @@
 static int
 test_psensor_value_to_str(unsigned int type,
 			  double value,
-			  int celsius,
+			  unsigned int celsius,
 			  const char *ref)
 {
 	char *str;
@@ -43,18 +43,19 @@ test_psensor_value_to_str(unsigned int type,
 		return 0;
 	}
 }
-
+#define USE_CELSIUS 1U
+#define USE_FAHRENHEIT 0U
 int main(int argc, char **argv)
 {
 	int errs;
 
-	errs = test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13, 1,
+	errs = test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13, USE_CELSIUS,
 					 "13"CELSIUS);
-	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13, 0,
+	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13, USE_FAHRENHEIT,
 					  "55"FAHRENHEIT);
-	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13.4, 1,
+	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13.4, USE_CELSIUS,
 					  "13"CELSIUS);
-	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13.5, 1,
+	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13.5, USE_FAHRENHEIT,
 					  "14"CELSIUS);
 
 	if (errs) 

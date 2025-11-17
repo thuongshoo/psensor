@@ -16,8 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#define _GNU_SOURCE  // Thêm này ở đầu file, trước mọi #include
 #include <locale.h>
 
+#include <sched.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -145,7 +147,7 @@ static void *update_measures(void *data)
 		atasmart_psensor_list_update(sensors);
 		hddtemp_psensor_list_update(sensors);
 
-		psensor_log_measures(sensors);
+		//psensor_log_measures(sensors);
 
 		period = cfg->sensor_update_interval;
 
@@ -241,7 +243,7 @@ associate_cb_alarm_raised(struct psensor **sensors, struct ui_psensor *ui)
 			(s->id, &s->alarm_high_threshold);
 
 		if (!ret) {
-			if (s->max == UNKNOWN_DBL_VALUE) {
+			if (s->max == UNKNOWN_DOUBLE_VALUE) {
 				if (s->type & SENSOR_TYPE_TEMP)
 					s->alarm_high_threshold = high_temp;
 			} else {
@@ -252,7 +254,7 @@ associate_cb_alarm_raised(struct psensor **sensors, struct ui_psensor *ui)
 		ret = config_get_sensor_alarm_low_threshold
 			(s->id, &s->alarm_low_threshold);
 
-		if (!ret && s->min != UNKNOWN_DBL_VALUE)
+		if (!ret && s->min != UNKNOWN_DOUBLE_VALUE)
 			s->alarm_low_threshold = s->min;
 
 		sensors++;
@@ -288,8 +290,7 @@ static void log_init(void)
 	if (!dir)
 		return;
 
-	path = malloc(strlen(dir)+1+strlen("log")+1);
-	sprintf(path, "%s/%s", dir, "log");
+	asprintf(&path, "%s/%s", dir, "log");
 
 	log_open(path);
 
@@ -310,12 +311,10 @@ static gboolean initial_window_show(gpointer data)
 	struct ui_psensor *ui;
 
 	log_debug("initial_window_show()");
-
 	ui = (struct ui_psensor *)data;
 
 	log_debug("is_status_supported: %d", is_status_supported());
-	log_debug("is_appindicator_supported: %d",
-		   is_appindicator_supported());
+	log_debug("is_appindicator_supported: %d", is_appindicator_supported());
 	log_debug("hide_on_startup: %d", ui->config->hide_on_startup);
 
 	if (!ui->config->hide_on_startup
@@ -370,6 +369,10 @@ static void cleanup(struct ui_psensor *ui)
 
 	config_cleanup();
 
+	free(ui->config->graph_fgcolor);
+	free(ui->config->graph_bgcolor);
+	free(ui->config);
+
 	log_debug("Cleanup done, closing log");
 }
 
@@ -380,12 +383,13 @@ static void cleanup(struct ui_psensor *ui)
  */
 static struct psensor **create_sensors_list(const char *url)
 {
+	const unsigned int measures_len = 600;
 	struct psensor **sensors;
 
 	if (url) {
 		if (rsensor_is_supported()) {
 			rsensor_init();
-			sensors = get_remote_sensors(url, 600);
+			sensors = get_remote_sensors(url, measures_len);
 		} else {
 			log_err(_("Psensor has not been compiled with remote "
 				  "sensor support."));
@@ -396,25 +400,25 @@ static struct psensor **create_sensors_list(const char *url)
 		*sensors = NULL;
 
 		if (config_is_lmsensor_enabled())
-			lmsensor_psensor_list_append(&sensors, 600);
+			lmsensor_psensor_list_append(&sensors, measures_len);
 
 		if (config_is_hddtemp_enabled())
-			hddtemp_psensor_list_append(&sensors, 600);
+			hddtemp_psensor_list_append(&sensors, measures_len);
 
 		if (config_is_libatasmart_enabled())
-			atasmart_psensor_list_append(&sensors, 600);
+			atasmart_psensor_list_append(&sensors, measures_len);
 
 		if (config_is_nvctrl_enabled())
-			nvidia_psensor_list_append(&sensors, 600);
+			nvidia_psensor_list_append(&sensors, measures_len);
 
 		if (config_is_atiadlsdk_enabled())
-			amd_psensor_list_append(&sensors, 600);
+			amd_psensor_list_append(&sensors, measures_len);
 
 		if (config_is_gtop2_enabled())
-			gtop2_psensor_list_append(&sensors, 600);
+			gtop2_psensor_list_append(&sensors, measures_len);
 
 		if (config_is_udisks2_enabled())
-			udisks2_psensor_list_append(&sensors, 600);
+			udisks2_psensor_list_append(&sensors, measures_len);
 	}
 
 	associate_preferences(sensors);
@@ -430,21 +434,27 @@ int main(int argc, char **argv)
 	char *url = NULL;
 	GApplication *app;
 
+	// cpu_set_t mask;
+	// CPU_ZERO(&mask);
+	// CPU_SET(0, &mask);  // Chỉ dùng CPU 0
+	// sched_setaffinity(0, sizeof(mask), &mask);
+
 	program_name = argv[0];
 
-	char *current_locale = setlocale(LC_ALL, "");
-        printf("Current locale: %s\n", current_locale ? current_locale : "NULL");
-        printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "NULL");
-        printf("LANG=%s\n", getenv("LANG") ? getenv("LANG") : "NULL");
-        printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "NULL");
+	printf("DATE TIME: %s %s \n", __TIME__, __DATE__);
+	// char *current_locale = setlocale(LC_ALL, "");
+	// printf("Current locale: %s\n", current_locale ? current_locale : "NULL");
+	// printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "NULL");
+	// printf("LANG=%s\n", getenv("LANG") ? getenv("LANG") : "NULL");
+	// printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "NULL");
 
 #if ENABLE_NLS
-        printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
+        //printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
-        char *bound_dir = bindtextdomain(PACKAGE, NULL);
-        printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
-        printf("Current textdomain: %s\n", textdomain(NULL));
+        // char *bound_dir = bindtextdomain(PACKAGE, NULL);
+        // printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
+        // printf("Current textdomain: %s\n", textdomain(NULL));
 #else
         printf("NLS not enabled\n");
 #endif
@@ -456,14 +466,21 @@ int main(int argc, char **argv)
 				   &opti)) != -1) {
 		switch (optc) {
 		case 'u':
-			if (optarg)
+			if (optarg) {
+				if (url)
+					free(url);
 				url = strdup(optarg);
+			}
 			break;
 		case 'h':
 			print_help();
+			if (url)
+				free(url);
 			exit(EXIT_SUCCESS);
 		case 'v':
 			print_version();
+			if (url)
+				free(url);
 			exit(EXIT_SUCCESS);
 		case 'd':
 			log_level = atoi(optarg);
@@ -481,6 +498,8 @@ int main(int argc, char **argv)
 	if (!cmdok || optind != argc) {
 		fprintf(stderr, _("Try `%s --help' for more information.\n"),
 			program_name);
+		if (url)
+			free(url);
 		exit(EXIT_FAILURE);
 	}
 
@@ -493,6 +512,8 @@ int main(int argc, char **argv)
 	if (!new_instance && g_application_get_is_remote(app)) {
 		g_application_activate(app);
 		log_warn(_("A Psensor instance already exists."));
+		if (url)
+			free(url);
 		exit(EXIT_SUCCESS);
 	}
 
@@ -523,8 +544,8 @@ int main(int argc, char **argv)
 			      &ui.sensors_mutex,
 			      config_get_slog_interval());
 
-	ui_status_init(&ui);
-	ui_status_set_visible(1);
+	// ui_status_init(&ui);
+	// ui_status_set_visible(1);
 
 	/* main window */
 	ui_window_create(&ui);
@@ -532,7 +553,6 @@ int main(int argc, char **argv)
 	ui_enable_alpha_channel(&ui);
 
 	ret = pthread_create(&thread, NULL, update_measures, &ui);
-
 	if (ret)
 		log_err(_("Failed to create thread for monitoring sensors"));
 
@@ -545,25 +565,33 @@ int main(int argc, char **argv)
 
 	gdk_notify_startup_complete();
 
-	/*
-	 * hack, did not find a cleaner solution.
-	 * wait 30s to ensure that the status icon is attempted to be
-	 * drawn before determining whether the main window must be
-	 * show.
-	 */
+	// /*
+	//  * hack, did not find a cleaner solution.
+	//  * wait 30s to ensure that the status icon is attempted to be
+	//  * drawn before determining whether the main window must be
+	//  * show.
+	//  */
 	if  (ui.config->hide_on_startup)
-		g_timeout_add(30000, (GSourceFunc)initial_window_show, &ui);
+	{
+		g_timeout_add(1000, (GSourceFunc)initial_window_show, &ui);
+	}
 	else
+	{
 		initial_window_show(&ui);
+	}
 
 	/* main loop */
 	gtk_main();
 
-	g_object_unref(app);
 	cleanup(&ui);
+	pthread_join(thread, NULL);
+
+	//graph_cleanup();
 
 	log_debug("Quitting...");
 	log_close();
+
+	g_object_unref(app);
 
 	if (url)
 		free(url);

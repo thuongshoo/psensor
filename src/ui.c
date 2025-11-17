@@ -34,53 +34,159 @@ static GtkWidget *w_graph;
 static GtkContainer *w_sensor_box;
 static GtkContainer *w_main_box;
 
-static void update_layout(void)
+static enum sensorlist_position last_sensorlist_position;
+
+enum psensor_layout {
+	PSENSOR_LAYOUT_HORIZONTAL,
+	PSENSOR_LAYOUT_VERTICAL
+};
+
+static bool is_horizontal_layout(enum sensorlist_position sensorlist_pos)
 {
-	enum sensorlist_position sensorlist_pos;
+	if (   sensorlist_pos == SENSORLIST_POSITION_TOP
+	    || sensorlist_pos == SENSORLIST_POSITION_BOTTOM)
+	{
+		return false;
+	}
 
-	g_object_ref(w_sensors_scrolled_tree);
-	g_object_ref(w_graph);
+	return true;
+}
 
-	gtk_container_remove(w_sensor_box,
-			     w_sensors_scrolled_tree);
+bool is_sensorlist_first(enum sensorlist_position sensorlist_pos)
+{
+	// Returns true if the sensorlist is on the left or on the top
+	// of the main window.
+	if (   sensorlist_pos == SENSORLIST_POSITION_LEFT
+	    || sensorlist_pos == SENSORLIST_POSITION_TOP)
+	{
+		return true;
+	}
 
-	gtk_container_remove(w_sensor_box, w_graph);
+	return false;
+}
 
-	gtk_container_remove(w_main_box, GTK_WIDGET(w_sensor_box));
+static const int MINIMUM_SIZE = 40 + 1;
+static const int PERCENT_FOR_VISIBLE_SLIDER_SIZE = 8;
+static int calculate_slider_position_level_2(int old_width_or_height,
+									         int slider_position,
+									         enum sensorlist_position sensorlist_pos)
+{
+	int new_width_or_height = old_width_or_height - slider_position;
+    // adjustment to avoid too small sensorlist area
+	if (new_width_or_height < MINIMUM_SIZE && is_sensorlist_first(sensorlist_pos))
+	{
+		new_width_or_height = old_width_or_height / PERCENT_FOR_VISIBLE_SLIDER_SIZE;
+	}
+	else if ( (old_width_or_height - new_width_or_height) < MINIMUM_SIZE)
+	{
+		new_width_or_height =  old_width_or_height- (old_width_or_height / PERCENT_FOR_VISIBLE_SLIDER_SIZE);
+	}
+	return new_width_or_height;
+}
 
-	sensorlist_pos = config_get_sensorlist_position();
-	if (sensorlist_pos == SENSORLIST_POSITION_RIGHT
-	    || sensorlist_pos == SENSORLIST_POSITION_LEFT)
+static void calculate_slider_position(struct ui_psensor *ui, enum sensorlist_position sensorlist_pos)
+{
+	GtkAllocation paned_alloc;
+	gtk_widget_get_allocation(GTK_WIDGET(w_sensor_box), &paned_alloc);
+
+	int slider_position  = gtk_paned_get_position(GTK_PANED(w_sensor_box));
+	if (is_horizontal_layout(sensorlist_pos))
+	{
+		ui->config->window_horizontal_divider_pos = calculate_slider_position_level_2(paned_alloc.width,
+													slider_position,
+													sensorlist_pos);
+	}
+	else
+	{
+		ui->config->window_vertical_divider_pos = calculate_slider_position_level_2(paned_alloc.height,
+													slider_position,
+													sensorlist_pos);
+	}
+	// printf("pos2=%s slider=%d lastV=%d lastH=%d \n", 
+	// 	config_get_sensorlist_position_str(sensorlist_pos), 
+	// 	slider_position, 
+	// 	ui->config->window_vertical_divider_pos, 
+	// 	ui->config->window_horizontal_divider_pos);
+}
+
+static void pack_widgets_with_new_layout()
+{
+	if (is_horizontal_layout(last_sensorlist_position))
+	{
 		w_sensor_box
 			= GTK_CONTAINER(gtk_paned_new
 					(GTK_ORIENTATION_HORIZONTAL));
-	else
+	}
+    else
+	{
 		w_sensor_box
 			= GTK_CONTAINER(gtk_paned_new
 					(GTK_ORIENTATION_VERTICAL));
-
+	}
 	gtk_box_pack_end(GTK_BOX(w_main_box),
 			 GTK_WIDGET(w_sensor_box), TRUE, TRUE, 2);
 
-	if (sensorlist_pos == SENSORLIST_POSITION_RIGHT
-	    || sensorlist_pos == SENSORLIST_POSITION_BOTTOM) {
-		gtk_paned_pack1(GTK_PANED(w_sensor_box), w_graph, TRUE, TRUE);
-		gtk_paned_pack2(GTK_PANED(w_sensor_box),
-				w_sensors_scrolled_tree,
-				FALSE,
-				TRUE);
-	} else {
-		gtk_paned_pack1(GTK_PANED(w_sensor_box),
-				w_sensors_scrolled_tree,
-				FALSE,
-				TRUE);
-		gtk_paned_pack2(GTK_PANED(w_sensor_box), w_graph, TRUE, TRUE);
+	if (is_sensorlist_first(last_sensorlist_position))
+	{
+		gtk_paned_pack1(GTK_PANED(w_sensor_box),w_sensors_scrolled_tree,FALSE,TRUE);
+		gtk_paned_pack2(GTK_PANED(w_sensor_box), w_graph, FALSE, TRUE);	
+	} else
+	{
+		gtk_paned_pack1(GTK_PANED(w_sensor_box), w_graph, FALSE, TRUE);
+		gtk_paned_pack2(GTK_PANED(w_sensor_box),w_sensors_scrolled_tree,TRUE,TRUE);
 	}
+}
 
+static void update_layout(struct ui_psensor *ui)
+{
+	// printf("pos1=%s slider=%d lastV=%d lastH=%d \n", 
+	// 	config_get_sensorlist_position_str(last_sensorlist_position), 
+	// 	gtk_paned_get_position(GTK_PANED(w_sensor_box)), 
+	// 	ui->config->window_vertical_divider_pos, 
+	// 	ui->config->window_horizontal_divider_pos);
+	last_sensorlist_position = config_get_sensorlist_position();	
+	
+    //
+    if (GTK_IS_WIDGET(w_sensors_scrolled_tree))
+	{
+        GtkAllocation allocated_size_and_position;
+        gtk_widget_get_allocation(w_sensors_scrolled_tree, &allocated_size_and_position);
+        if (   allocated_size_and_position.width > MINIMUM_SIZE 
+			&& allocated_size_and_position.height > MINIMUM_SIZE)
+		{
+			calculate_slider_position(ui, last_sensorlist_position);
+        }
+    }
+	
+	g_object_ref(w_sensors_scrolled_tree);
+	g_object_ref(w_graph);
+
+	gtk_container_remove(w_sensor_box, w_sensors_scrolled_tree);
+	gtk_container_remove(w_sensor_box, w_graph);
+	gtk_container_remove(w_main_box, GTK_WIDGET(w_sensor_box));
+
+	pack_widgets_with_new_layout();
+    
 	g_object_unref(w_sensors_scrolled_tree);
 	g_object_unref(w_graph);
 
 	gtk_widget_show_all(GTK_WIDGET(w_sensor_box));
+    //
+	if (is_horizontal_layout(last_sensorlist_position))
+	{
+		gtk_paned_set_position(GTK_PANED(w_sensor_box),
+										ui->config->window_horizontal_divider_pos);
+	}
+	else
+	{
+        gtk_paned_set_position(GTK_PANED(w_sensor_box),
+										ui->config->window_vertical_divider_pos);
+    }
+	// printf("pos3=%s slider=%d lastV=%d lastH=%d \n", 
+	// 	config_get_sensorlist_position_str(last_sensorlist_position), 
+	// 	gtk_paned_get_position(GTK_PANED(w_sensor_box)), 
+	// 	ui->config->window_vertical_divider_pos, 
+	// 	ui->config->window_horizontal_divider_pos);
 }
 
 static void set_decoration(GtkWindow *win)
@@ -122,12 +228,12 @@ menu_bar_changed_cbk(GSettings *settings, gchar *key, gpointer data)
 static void
 sensorlist_position_changed_cbk(GSettings *settings, gchar *key, gpointer data)
 {
-	update_layout();
+	update_layout((struct ui_psensor *)data);
 }
 
-static void connect_cbks(GtkWindow *win, GtkWidget *menu_bar)
+static void connect_cbks(GtkWindow *win, GtkWidget *menu_bar, struct ui_psensor *ui)
 {
-	log_fct_enter();
+	log_functionname_enter();
 
 	g_signal_connect_after(config_get_GSettings(),
 			       "changed::interface-window-decoration-disabled",
@@ -147,25 +253,21 @@ static void connect_cbks(GtkWindow *win, GtkWidget *menu_bar)
 	g_signal_connect_after(config_get_GSettings(),
 			       "changed::interface-sensorlist-position",
 			       G_CALLBACK(sensorlist_position_changed_cbk),
-			       menu_bar);
+			       ui);
 
-
-	log_fct_exit();
+	log_functionname_exit();
 }
 
-static void save_window_pos(struct ui_psensor *ui)
+static void save_window_position_to_config(struct ui_psensor *ui)
 {
-	gboolean visible;
-	GtkWindow *win;
-	struct config *cfg;
-
-	visible = gtk_widget_get_visible(ui->main_window);
+	gboolean visible = gtk_widget_get_visible(ui->main_window);
 	log_debug("Window visible: %d", visible);
 
-	if (visible == TRUE) {
-		cfg = ui->config;
+	if (visible == TRUE)
+	{
+		struct config *cfg = ui->config;
 
-		win = GTK_WINDOW(ui->main_window);
+		GtkWindow *win = GTK_WINDOW(ui->main_window);
 
 		gtk_window_get_position(win, &cfg->window_x, &cfg->window_y);
 		log_debug("Window position: %d %d",
@@ -177,10 +279,14 @@ static void save_window_pos(struct ui_psensor *ui)
 				    &cfg->window_h);
 		log_debug("Window size: %d %d", cfg->window_w, cfg->window_h);
 
-		cfg->window_divider_pos
-			= gtk_paned_get_position(GTK_PANED(w_sensor_box));
+		int slider_position = gtk_paned_get_position(GTK_PANED(w_sensor_box));
+		enum sensorlist_position sensorlist_position = config_get_sensorlist_position();
+		if (is_horizontal_layout(sensorlist_position))
+			cfg->window_horizontal_divider_pos = slider_position;
+		else	
+			cfg->window_vertical_divider_pos = slider_position;
 
-		config_save(cfg);
+		config_save_to_g_file(cfg);
 	}
 }
 
@@ -189,7 +295,7 @@ on_delete_event_cb(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
 	struct ui_psensor *ui = data;
 
-	save_window_pos(ui);
+	save_window_position_to_config(ui);
 
 	log_debug("is_status_supported: %d\n", is_status_supported());
 
@@ -203,12 +309,11 @@ on_delete_event_cb(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 void ui_show_about_dialog(GtkWindow *parent)
 {
-	static const char *const authors[] = { "jeanfi@gmail.com", "Le Hoai Thanh yuyoonshoo@gmail.com", NULL };
+	static const char *const authors[] = {"jeanfi@gmail.com", "Le Hoai Thanh yuyoonshoo@gmail.com", NULL};
 
-	log_fct("parent=%p", parent);
+	log_functionname("parent=%p", parent);
 
-	gtk_show_about_dialog
-		(parent,
+	gtk_show_about_dialog(parent,
 		 "authors", authors,
 		 "comments",
 		 _("Psensor is a GTK+ application for monitoring hardware "
@@ -235,7 +340,7 @@ void ui_cb_about(GtkAction *a, gpointer data)
 
 	ui = (struct ui_psensor *)data;
 
-	log_fct("ui=%p", ui);
+	log_functionname("ui=%p", ui);
 
 	if (ui)
 		parent = ui->main_window;
@@ -265,7 +370,7 @@ void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
 
 void ui_psensor_quit(struct ui_psensor *ui)
 {
-	save_window_pos(ui);
+	save_window_position_to_config(ui);
 
 	log_debug("Destroy main window");
 	gtk_widget_destroy(ui->main_window);
@@ -284,16 +389,22 @@ void ui_enable_alpha_channel(struct ui_psensor *ui)
 
 	log_debug("Config alpha channel enabled: %d",
 		  cfg->alpha_channel_enabled);
-	if (cfg->alpha_channel_enabled && gdk_screen_is_composited(screen)) {
+	if (cfg->alpha_channel_enabled && gdk_screen_is_composited(screen))
+	{
 		log_debug("Screen is composited");
 		visual = gdk_screen_get_rgba_visual(screen);
-		if (visual) {
+		if (visual)
+		{
 			gtk_widget_set_visual(ui->main_window, visual);
-		} else {
+		}
+		else
+		{
 			cfg->alpha_channel_enabled = 0;
 			log_err("Enable alpha channel has failed");
 		}
-	} else {
+	}
+	else
+	{
 		cfg->alpha_channel_enabled = 0;
 	}
 }
@@ -326,28 +437,27 @@ void ui_window_create(struct ui_psensor *ui)
 	GtkBuilder *builder;
 	GError *error;
 
-	log_fct("ui=%p", ui);
+	log_functionname("ui=%p", ui);
 
 	builder = gtk_builder_new();
-	gtk_builder_set_translation_domain(builder, "psensor");
-	gtk_builder_set_translation_domain(builder, "psensor");
-
 	error = NULL;
 	char *data_path = get_data_path();
-	log_printf(LOG_INFO, "Data path: %s", data_path);
-	char *glade_path = malloc(strlen(data_path) + 32);
-	sprintf(glade_path, "%s/psensor.glade", data_path);
-	log_printf(LOG_INFO, "Loading glade file: %s", glade_path);
+	//log_printf(LOG_INFO, "Data path: %s", data_path);
+	const char *str_format = "%s/psensor.glade";
+	char *glade_path;
+	asprintf(&glade_path, str_format, data_path);
+	//log_printf(LOG_INFO, "Loading glade file: %s", glade_path);
 	
 	// Test translation
-	log_printf(LOG_INFO, "Testing translation of 'About Psensor': %s", _("About Psensor"));
-	log_printf(LOG_INFO, "Testing translation of 'Failed to load Psensor icon.': %s", _("Failed to load Psensor icon."));
+	// log_printf(LOG_INFO, "Testing translation of 'About Psensor': %s", _("About Psensor"));
+	// log_printf(LOG_INFO, "Testing translation of 'Failed to load Psensor icon.': %s", _("Failed to load Psensor icon."));
 	
 	ok = gtk_builder_add_from_file(builder, glade_path, &error);
-	free(data_path);
 	free(glade_path);
+	free(data_path);
 
-	if (!ok) {
+	if (!ok)
+	{
 		log_printf(LOG_ERR, error->message);
 		g_error_free(error);
 		return;
@@ -360,6 +470,8 @@ void ui_window_create(struct ui_psensor *ui)
 		gtk_window_move(GTK_WINDOW(window),
 				cfg->window_x,
 				cfg->window_y);
+
+    last_sensorlist_position = config_get_sensorlist_position();
 
 	config_set_slog_enabled_changed_cbk(slog_enabled_cbk, ui);
 
@@ -391,20 +503,16 @@ void ui_window_create(struct ui_psensor *ui)
 
 	w_sensor_box = GTK_CONTAINER(gtk_builder_get_object(builder,
 							    "sensor_box"));
-	ui->sensors_store = GTK_LIST_STORE(gtk_builder_get_object
-					   (builder, "sensors_store"));
-	ui->sensors_tree = GTK_TREE_VIEW(gtk_builder_get_object
-					 (builder, "sensors_tree"));
-	w_sensors_scrolled_tree
-		= GTK_WIDGET(gtk_builder_get_object
-			     (builder, "sensors_scrolled_tree"));
+	ui->sensors_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "sensors_store"));
+	ui->sensors_tree = GTK_TREE_VIEW(gtk_builder_get_object(builder, "sensors_tree"));
+	w_sensors_scrolled_tree = GTK_WIDGET(gtk_builder_get_object(builder, "sensors_scrolled_tree"));
 
 	ui_sensorlist_create(ui);
 
-	connect_cbks(GTK_WINDOW(window), menu_bar);
+	connect_cbks(GTK_WINDOW(window), menu_bar, ui);
 
 	log_debug("ui_window_create(): show_all");
-	update_layout();
+	update_layout(ui);
 	gtk_widget_show_all(GTK_WIDGET(w_main_box));
 	set_menu_bar_enabled(menu_bar);
 
@@ -415,15 +523,6 @@ void ui_window_create(struct ui_psensor *ui)
 
 void ui_window_update(struct ui_psensor *ui)
 {
-	struct config *cfg;
-
-	log_debug("ui_window_update()");
-
-	cfg = ui->config;
-
-	if (cfg->window_restore_enabled)
-		gtk_paned_set_position(GTK_PANED(w_sensor_box),
-				       cfg->window_divider_pos);
 
 }
 

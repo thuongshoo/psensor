@@ -31,7 +31,7 @@
 
 #include <cfg.h>
 #include <graph.h>
-#include <pio.h>
+#include <io.h>
 #include <plog.h>
 
 /* Properties of each sensor */
@@ -94,8 +94,11 @@ static const char *KEY_INTERFACE_WINDOW_Y = "interface-window-y";
 static const char *KEY_INTERFACE_WINDOW_W = "interface-window-w";
 static const char *KEY_INTERFACE_WINDOW_H = "interface-window-h";
 
-static const char *KEY_INTERFACE_WINDOW_DIVIDER_POS
-= "interface-window-divider-pos";
+static const char *KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS
+= "interface-window-vertical-divider-pos";
+
+static const char *KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS
+= "interface-window-horizontal-divider-pos";
 
 static const char *KEY_INTERFACE_TEMPERATURE_UNIT
 = "interface-temperature-unit";
@@ -172,6 +175,11 @@ static void set_double(const char *k, double d)
 static int get_int(const char *k)
 {
 	return g_settings_get_int(settings, k);
+}
+
+static unsigned int get_uint(const char *k)
+{
+	return g_settings_get_uint(settings, k);
 }
 
 char *config_get_notif_script(void)
@@ -303,7 +311,7 @@ static void slog_enabled_changed_cbk(GSettings *settings,
 
 void config_set_slog_enabled_changed_cbk(void (*cbk)(void *), void *data)
 {
-	log_fct_enter();
+	log_functionname_enter();
 
 	slog_enabled_cbk = cbk;
 
@@ -312,7 +320,7 @@ void config_set_slog_enabled_changed_cbk(void (*cbk)(void *), void *data)
 			       G_CALLBACK(slog_enabled_changed_cbk),
 			       data);
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 int config_get_slog_interval(void)
@@ -370,12 +378,12 @@ static bool config_get_default_sensor_alarm_enabled(void)
 
 static void init(void)
 {
-	log_fct_enter();
+	log_functionname_enter();
 
 	if (!settings)
 		settings = g_settings_new("psensor");
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 void config_cleanup(void)
@@ -435,6 +443,7 @@ struct config *config_load(void)
 	if (c->graph_monitoring_duration < 1)
 		c->graph_monitoring_duration = 10;
 
+	c->hide_on_startup = get_bool(KEY_INTERFACE_HIDE_ON_STARTUP);
 	c->window_restore_enabled
 		= get_bool(KEY_INTERFACE_WINDOW_RESTORE_ENABLED);
 
@@ -443,8 +452,12 @@ struct config *config_load(void)
 	c->window_w = get_int(KEY_INTERFACE_WINDOW_W);
 	c->window_h = get_int(KEY_INTERFACE_WINDOW_H);
 
-	c->window_divider_pos = get_int(KEY_INTERFACE_WINDOW_DIVIDER_POS);
-
+	c->window_vertical_divider_pos = get_int(KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS);
+	c->window_horizontal_divider_pos = get_int(KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS);
+	// printf("load pos=%s vert=%d hori=%d \n", 
+	// 	config_get_sensorlist_position_str(config_get_sensorlist_position()),
+	// 	c->window_vertical_divider_pos,
+	// 	c->window_horizontal_divider_pos);
 	if (!c->window_restore_enabled || !c->window_w || !c->window_h) {
 		c->window_w = 800;
 		c->window_h = 200;
@@ -455,7 +468,7 @@ struct config *config_load(void)
 	return c;
 }
 
-void config_save(const struct config *c)
+void config_save_to_g_file(const struct config *c)
 {
 	set_alpha_channeld_enabled(c->alpha_channel_enabled);
 	set_background_color(c->graph_bgcolor);
@@ -479,15 +492,20 @@ void config_save(const struct config *c)
 	set_int(KEY_INTERFACE_WINDOW_Y, c->window_y);
 	set_int(KEY_INTERFACE_WINDOW_W, c->window_w);
 	set_int(KEY_INTERFACE_WINDOW_H, c->window_h);
-
-	set_int(KEY_INTERFACE_WINDOW_DIVIDER_POS, c->window_divider_pos);
+	
+	// printf("save pos=%s vert=%d hori=%d \n", 
+	// 	config_get_sensorlist_position_str(config_get_sensorlist_position()),
+	// 	c->window_vertical_divider_pos,
+	// 	c->window_horizontal_divider_pos);
+	set_int(KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS, c->window_vertical_divider_pos);
+	set_int(KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS, c->window_horizontal_divider_pos);
 }
 
 const char *get_psensor_user_dir(void)
 {
 	const char *home;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	if (!user_dir) {
 		home = getenv("HOME");
@@ -507,7 +525,7 @@ const char *get_psensor_user_dir(void)
 		}
 	}
 
-	log_fct_exit();
+	log_functionname_exit();
 
 	return user_dir;
 }
@@ -528,7 +546,7 @@ static const char *get_sensor_config_path(void)
 
 static GKeyFile *get_sensor_key_file(void)
 {
-	int ret;
+	
 	GError *err;
 	const char *path;
 
@@ -538,7 +556,7 @@ static GKeyFile *get_sensor_key_file(void)
 		key_file = g_key_file_new();
 
 		err = NULL;
-		ret = g_key_file_load_from_file(key_file,
+		int ret = g_key_file_load_from_file(key_file,
 						path,
 						G_KEY_FILE_KEEP_COMMENTS
 						| G_KEY_FILE_KEEP_TRANSLATIONS,
@@ -561,7 +579,7 @@ static void save_sensor_key_file(void)
 	const char *path;
 	char *data;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	kfile = get_sensor_key_file();
 
@@ -574,16 +592,16 @@ static void save_sensor_key_file(void)
 
 	free(data);
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 void config_sync(void)
 {
-	log_fct_enter();
+	log_functionname_enter();
 	if (settings)
 		g_settings_sync();
 	save_sensor_key_file();
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 static void sensor_set_str(const char *sid, const char *att, const char *str)
@@ -743,7 +761,7 @@ GdkRGBA *config_get_sensor_color(const char *sid)
 {
 	GdkRGBA rgba;
 	char *str;
-	gboolean ret;
+	gboolean ret = FALSE;
 
 	str = sensor_get_str(sid, ATT_SENSOR_COLOR);
 
@@ -951,4 +969,22 @@ bool config_is_count_visible(void)
 void config_set_count_visible(bool visible)
 {
 	set_bool(KEY_INTERFACE_UNITY_LAUNCHER_COUNT_DISABLED, !visible);
+}
+
+const char *config_get_sensorlist_position_str(enum sensorlist_position pos)
+{
+	switch (pos)
+	{
+	case SENSORLIST_POSITION_RIGHT:
+		return "right";
+	case SENSORLIST_POSITION_LEFT:
+		return "left";
+	case SENSORLIST_POSITION_TOP:
+		return "top";
+	case SENSORLIST_POSITION_BOTTOM:
+		return "bottom";
+	default:
+		return "don't know";
+	}
+	
 }

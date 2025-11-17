@@ -80,7 +80,7 @@ static double get_temp(struct psensor *sensor)
 	if (adl_od5_temperature_get(sensor->amd_id, 0, &v) == ADL_OK)
 		return v.iTemperature/1000;
 
-	return UNKNOWN_DBL_VALUE;
+	return UNKNOWN_DOUBLE_VALUE;
 }
 
 static double get_fanspeed(struct psensor *sensor)
@@ -94,7 +94,7 @@ static double get_fanspeed(struct psensor *sensor)
 	if (adl_od5_fanspeed_get(sensor->amd_id, 0, &v) == ADL_OK)
 		return v.iFanSpeed;
 
-	return UNKNOWN_DBL_VALUE;
+	return UNKNOWN_DOUBLE_VALUE;
 }
 
 static double get_usage(struct psensor *sensor)
@@ -106,10 +106,10 @@ static double get_usage(struct psensor *sensor)
 	if (adl_od5_currentactivity_get(sensor->amd_id, &v) == ADL_OK)
 		return v.iActivityPercent;
 
-	return UNKNOWN_DBL_VALUE;
+	return UNKNOWN_DOUBLE_VALUE;
 }
 
-static struct psensor *create_sensor(int id, int type, int values_len)
+static struct psensor *create_sensor(int id, int type, unsigned int values_len)
 {
 	char name[200];
 	char *sid;

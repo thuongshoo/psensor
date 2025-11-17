@@ -74,7 +74,7 @@ static double get_value(const sensors_chip_name *name,
 			PROVIDER_NAME,
 			sub->name,
 			sensors_strerror(err));
-		val = UNKNOWN_DBL_VALUE;
+		val = UNKNOWN_DOUBLE_VALUE;
 	}
 	return val;
 }
@@ -96,7 +96,7 @@ static double get_temp_input(struct psensor *sensor)
 	if (sf)
 		return get_value(chip, sf);
 
-	return UNKNOWN_DBL_VALUE;
+	return UNKNOWN_DOUBLE_VALUE;
 }
 
 static double get_fan_input(struct psensor *sensor)
@@ -116,7 +116,7 @@ static double get_fan_input(struct psensor *sensor)
 	if (sf)
 		return get_value(chip, sf);
 
-	return UNKNOWN_DBL_VALUE;
+	return UNKNOWN_DOUBLE_VALUE;
 }
 
 void lmsensor_psensor_list_update(struct psensor **sensors)
@@ -138,7 +138,7 @@ void lmsensor_psensor_list_update(struct psensor **sensors)
 			else /* s->type & SENSOR_TYPE_RPM */
 				v = get_fan_input(s);
 
-			if (v != UNKNOWN_DBL_VALUE)
+			if (v != UNKNOWN_DOUBLE_VALUE)
 				psensor_set_current_value(s, v);
 		}
 
@@ -149,7 +149,7 @@ void lmsensor_psensor_list_update(struct psensor **sensors)
 static struct psensor *
 lmsensor_psensor_create(const sensors_chip_name *chip,
 			const sensors_feature *feature,
-			int values_max_length)
+			unsigned int values_max_length)
 {
 	char name[200];
 	const sensors_subfeature *sf;
@@ -227,7 +227,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 	lmsensor_data_set(psensor, chip, feature);
 
 	if (feature->type == SENSORS_FEATURE_TEMP
-	    && (get_temp_input(psensor) == UNKNOWN_DBL_VALUE)) {
+	    && (get_temp_input(psensor) == UNKNOWN_DOUBLE_VALUE)) {
 		free(psensor);
 		return NULL;
 	}
@@ -251,7 +251,7 @@ static void lmsensor_init(void)
 	}
 }
 
-void lmsensor_psensor_list_append(struct psensor ***sensors, int vn)
+void lmsensor_psensor_list_append(struct psensor ***sensors, unsigned int values_max_length)
 {
 	const sensors_chip_name *chip;
 	int chip_nr, i;
@@ -272,7 +272,7 @@ void lmsensor_psensor_list_append(struct psensor ***sensors, int vn)
 			if (feature->type == SENSORS_FEATURE_TEMP
 			    || feature->type == SENSORS_FEATURE_FAN) {
 
-				s = lmsensor_psensor_create(chip, feature, vn);
+				s = lmsensor_psensor_create(chip, feature, values_max_length);
 
 				if (s)
 					psensor_list_append(sensors, s);

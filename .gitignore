@@ -4,3 +4,13 @@ build/**
 **/.deps/**
 config.status
 config.log
+obj-x86_64-linux-gnu/**
+autom4te.cache/**
+debian/**
+m4/**
+Makefile
+*.gmo
+stamp-*
+Makevars.template
+config.h
+*~

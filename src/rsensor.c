@@ -53,7 +53,12 @@ static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp)
 	realsize = size * nmemb;
 	mem = (struct ucontent *)userp;
 
-	mem->data = realloc(mem->data, mem->len + realsize + 1);
+	char *tmp_char = realloc(mem->data, mem->len + realsize + 1);
+    if (!tmp_char) {
+		log_err(_("%s: Not enough memory for CURL data"), PROVIDER_NAME);
+		return 0;
+	}
+	mem->data = tmp_char;
 
 	memcpy(&(mem->data[mem->len]), buffer, realsize);
 	mem->len += realsize;
@@ -65,7 +70,7 @@ static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp)
 static char *create_api_1_1_sensors_url(const char *base_url)
 {
 	char *nurl, *ret;
-	int n;
+	size_t n;
 
 	nurl = url_normalize(base_url);
 	n = strlen(nurl) + strlen(URL_BASE_API_1_1_SENSORS) + 1;
@@ -107,7 +112,7 @@ static json_object *get_json_object(const char *url)
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
-	log_fct("%s: HTTP request %s", PROVIDER_NAME, url);
+	log_functionname("%s: HTTP request %s", PROVIDER_NAME, url);
 
 	if (curl_easy_perform(curl) == CURLE_OK)
 		obj = json_tokener_parse(chunk.data);
@@ -125,7 +130,7 @@ struct psensor **get_remote_sensors(const char *server_url,
 	struct psensor **sensors, *s;
 	char *url;
 	json_object *obj;
-	int i, n;
+	size_t i, n;
 
 	sensors = NULL;
 

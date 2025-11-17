@@ -38,14 +38,14 @@ static Display *display;
 
 static const char *PROVIDER_NAME = "nvctrl";
 
-static void set_nvidia_id(struct psensor *s, int id)
+static void set_nvidia_id(struct psensor *s, unsigned int id)
 {
-	*(int *)s->provider_data = id;
+	*(unsigned int *)s->provider_data = id;
 }
 
 static int get_nvidia_id(struct psensor *s)
 {
-	return *(int *)s->provider_data;
+	return *(unsigned int *)s->provider_data;
 }
 
 static char *get_product_name(int id, int type)
@@ -80,7 +80,7 @@ static char *get_product_name(int id, int type)
 	return strdup("NVIDIA");
 }
 
-static double get_att(int target, int id, int att)
+static double get_att(int target, int id, unsigned int att)
 {
 	Bool res;
 	int temp;
@@ -90,7 +90,7 @@ static double get_att(int target, int id, int att)
 	if (res == True)
 		return temp;
 
-	return UNKNOWN_DBL_VALUE;
+	return UNKNOWN_DOUBLE_VALUE;
 }
 
 static double get_usage_att(char *atts, const char *att)
@@ -101,7 +101,7 @@ static double get_usage_att(char *atts, const char *att)
 
 	c = atts;
 
-	v = UNKNOWN_DBL_VALUE;
+	v = UNKNOWN_DOUBLE_VALUE;
 	while (*c) {
 		s = c;
 		n = 0;
@@ -133,7 +133,7 @@ static double get_usage_att(char *atts, const char *att)
 		free(key);
 		free(strv);
 
-		if (v != UNKNOWN_DBL_VALUE)
+		if (v != UNKNOWN_DOUBLE_VALUE)
 			break;
 
 		while (*c && (*c == ' ' || *c == ','))
@@ -143,7 +143,7 @@ static double get_usage_att(char *atts, const char *att)
 	return v;
 }
 
-static const char *get_nvidia_type_str(int type)
+static const char *get_nvidia_type_str(unsigned int type)
 {
 	if (type & SENSOR_TYPE_GRAPHICS)
 		return "graphics";
@@ -173,7 +173,7 @@ static const char *get_nvidia_type_str(int type)
 	return "unknown";
 }
 
-static double get_usage(int id, int type)
+static double get_usage(int id, unsigned int type)
 {
 	const char *stype;
 	char *atts;
@@ -183,7 +183,7 @@ static double get_usage(int id, int type)
 	stype = get_nvidia_type_str(type);
 
 	if (!stype)
-		return UNKNOWN_DBL_VALUE;
+		return UNKNOWN_DOUBLE_VALUE;
 
 	res = XNVCTRLQueryTargetStringAttribute(display,
 						NV_CTRL_TARGET_TYPE_GPU,
@@ -193,7 +193,7 @@ static double get_usage(int id, int type)
 						&atts);
 
 	if (res != True)
-		return UNKNOWN_DBL_VALUE;
+		return UNKNOWN_DOUBLE_VALUE;
 
 	v = get_usage_att(atts, stype);
 
@@ -202,15 +202,15 @@ static double get_usage(int id, int type)
 	return v;
 }
 
-static double get_value(int id, int type)
+static double get_value(int id, unsigned int type)
 {
-	int att;
+	unsigned int att;
 
 	if (type & SENSOR_TYPE_TEMP) {
 		if (type & SENSOR_TYPE_AMBIENT)
-			att = NV_CTRL_AMBIENT_TEMPERATURE;
+			att = (unsigned int)NV_CTRL_AMBIENT_TEMPERATURE;
 		else
-			att = NV_CTRL_GPU_CORE_TEMPERATURE;
+			att = (unsigned int)NV_CTRL_GPU_CORE_TEMPERATURE;
 
 		return get_att(NV_CTRL_TARGET_TYPE_GPU, id, att);
 	} else if (type & SENSOR_TYPE_FAN) {
@@ -236,7 +236,7 @@ static void update(struct psensor *sensor)
 
 	v = get_value(id, sensor->type);
 
-	if (v == UNKNOWN_DBL_VALUE)
+	if (v == UNKNOWN_DOUBLE_VALUE)
 		log_err(_("%s: Failed to retrieve measure of type %x "
 			  "for NVIDIA GPU %d"),
 			PROVIDER_NAME,
@@ -245,34 +245,31 @@ static void update(struct psensor *sensor)
 	psensor_set_current_value(sensor, v);
 }
 
-static int check_sensor(int id, int type)
+static int check_sensor(unsigned int id, unsigned int type)
 {
-	return get_value(id, type) != UNKNOWN_DBL_VALUE;
+	return get_value(id, type) != UNKNOWN_DOUBLE_VALUE;
 }
 
-static char *i2str(int i)
+static char *unsigned2str(unsigned int i)
 {
-	char *str;
-	size_t n;
-
 	/* second +1 to avoid issue about the conversion of a double
 	 * to a lower int
 	 */
-	n = 1 + (ceil(log10(INT_MAX)) + 1) + 1;
+	const size_t n = (i == 0) ? 2 : (ceil(log10(UINT_MAX)) + 1) + 1;
 
-	str = malloc(n);
-	snprintf(str, n, "%d", i);
-
-	return str;
+	char *str = malloc(n);
+    if (str) {
+        snprintf(str, n, "%u", i);
+    }
+    return str;
 }
 
-static struct psensor *create_nvidia_sensor(int id, int subtype, int value_len)
+static struct psensor *create_nvidia_sensor(unsigned int id, unsigned int subtype, unsigned int value_len)
 {
 	char *pname, *name, *strnid, *sid;
 	const char *stype;
-	int type;
-	size_t n;
-	struct psensor *s;
+	unsigned int type;
+	struct psensor *new_sensor;
 	double v;
 
 	type = SENSOR_TYPE_NVCTRL | subtype;
@@ -281,30 +278,39 @@ static struct psensor *create_nvidia_sensor(int id, int subtype, int value_len)
 		return NULL;
 
 	pname = get_product_name(id, type);
-	strnid = i2str(id);
+	strnid = unsigned2str(id);
 	stype = get_nvidia_type_str(type);
 
-	n = strlen(pname) + 1 + strlen(strnid) + 1 + strlen(stype) + 1;
-	name = malloc(n);
-	sprintf(name, "%s %s %s", pname, strnid, stype);
+	int result = asprintf(&name, "%s %s %s", pname, strnid, stype);
+	if (result == -1)
+	{
+		free(strnid);
+		free(pname);
+		return NULL;
+	}
 
-	sid = malloc(strlen(PROVIDER_NAME) + 1 + strlen(name) + 1);
-	sprintf(sid, "%s %s", PROVIDER_NAME, name);
+	result = asprintf(&sid, "%s %s", PROVIDER_NAME, name);
+	if (result == -1) {
+		free(strnid);
+		free(pname);
+		free(name);
+		return NULL;
+	}
 
-	s = psensor_create(sid, name, pname, type, value_len);
-	s->provider_data = malloc(sizeof(int));
-	set_nvidia_id(s, id);
+	new_sensor = psensor_create(sid, name, pname, type, value_len);
+	new_sensor->provider_data = malloc(sizeof(unsigned int));
+	set_nvidia_id(new_sensor, id);
 
 	if ((type & SENSOR_TYPE_GPU) && (type & SENSOR_TYPE_TEMP)) {
 		v = get_att(NV_CTRL_TARGET_TYPE_GPU,
 			    id,
 			    NV_CTRL_GPU_CORE_THRESHOLD);
-		s->max = v;
+		new_sensor->max = v;
 	}
 
 	free(strnid);
 
-	return s;
+	return new_sensor;
 }
 
 static int init(void)
@@ -343,7 +349,7 @@ void nvidia_psensor_list_update(struct psensor **sensors)
 	}
 }
 
-static void add(struct psensor ***sensors, int id, int type, int values_len)
+static void add(struct psensor ***sensors, unsigned int id, unsigned int type, unsigned int values_len)
 {
 	struct psensor *s;
 
@@ -353,16 +359,18 @@ static void add(struct psensor ***sensors, int id, int type, int values_len)
 		psensor_list_append(sensors, s);
 }
 
-void nvidia_psensor_list_append(struct psensor ***ss, int values_len)
+void nvidia_psensor_list_append(struct psensor ***ss, unsigned int values_len)
 {
-	int i, n, utype;
+	size_t i, n, utype;
 	Bool ret;
 
 	if (!init())
 		return;
 
-	ret = XNVCTRLQueryTargetCount(display, NV_CTRL_TARGET_TYPE_GPU, &n);
+	int value;
+	ret = XNVCTRLQueryTargetCount(display, NV_CTRL_TARGET_TYPE_GPU, &value);
 	if (ret == True) {
+		n = (size_t)value;
 		for (i = 0; i < n; i++) {
 			add(ss,
 			    i,
@@ -378,9 +386,10 @@ void nvidia_psensor_list_append(struct psensor ***ss, int values_len)
 		}
 	}
 
-	ret = XNVCTRLQueryTargetCount(display, NV_CTRL_TARGET_TYPE_COOLER, &n);
+	ret = XNVCTRLQueryTargetCount(display, NV_CTRL_TARGET_TYPE_COOLER, &value);
 	if (ret == True) {
-		log_fct("%s: Number of fans: %d", PROVIDER_NAME, n);
+		n = (size_t)value;
+		log_functionname("%s: Number of fans: %d", PROVIDER_NAME, n);
 		for (i = 0; i < n; i++) {
 			utype = SENSOR_TYPE_FAN | SENSOR_TYPE_RPM;
 			if (check_sensor(i, utype))

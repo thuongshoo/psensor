@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../src/lib/pio.h"
+#include "../src/lib/io.h"
 
 static int test_empty_dir(void)
 {

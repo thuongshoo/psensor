@@ -270,8 +270,6 @@ ui_sensorpref_alarm_low_threshold_changed_cb(GtkSpinButton *btn, gpointer data)
 
 static void update_pref(struct psensor *s)
 {
-	int use_celsius, threshold;
-	GdkRGBA *color;
 	const char *chip;
 	char *smin, *smax;
 
@@ -290,9 +288,9 @@ static void update_pref(struct psensor *s)
 		chip = _("Unknown");
 	gtk_label_set_text(w_sensor_chipname, chip);
 
-	use_celsius = config_get_temperature_unit() == CELSIUS ? 1 : 0;
+	unsigned int use_celsius = config_get_temperature_unit() == CELSIUS ? 1U : 0U;
 
-	if (s->min == UNKNOWN_DBL_VALUE)
+	if (s->min == UNKNOWN_DOUBLE_VALUE)
 		smin = strdup(_("Unknown"));
 	else
 		smin = psensor_value_to_str(s->type, s->min, use_celsius);
@@ -300,7 +298,7 @@ static void update_pref(struct psensor *s)
 	gtk_label_set_text(w_sensor_min, smin);
 	free(smin);
 
-	if (s->max == UNKNOWN_DBL_VALUE)
+	if (s->max == UNKNOWN_DOUBLE_VALUE)
 		smax = strdup(_("Unknown"));
 	else
 		smax = psensor_value_to_str(s->type, s->max, use_celsius);
@@ -313,7 +311,7 @@ static void update_pref(struct psensor *s)
 	gtk_toggle_button_set_active(w_sensor_display,
 				     config_is_sensor_enabled(s->id));
 
-	color = config_get_sensor_color(s->id);
+	GdkRGBA *color = config_get_sensor_color(s->id);
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(w_sensor_color), color);
 	gdk_rgba_free(color);
 
@@ -341,7 +339,7 @@ static void update_pref(struct psensor *s)
 	gtk_toggle_button_set_active(w_sensor_alarm,
 				     config_get_sensor_alarm_enabled(s->id));
 
-	threshold = s->alarm_high_threshold;
+	int threshold = s->alarm_high_threshold;
 	if (!use_celsius)
 		threshold = celsius_to_fahrenheit(threshold);
 	gtk_spin_button_set_value(w_sensor_high_threshold, threshold);

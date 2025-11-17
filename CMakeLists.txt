@@ -23,6 +23,12 @@ find_program(ASCIIDOC asciidoc)
 find_program(CPPCHECK cppcheck)
 find_program(GLIB_COMPILE_SCHEMAS glib-compile-schemas)
 
+# Standard install directories (provides CMAKE_INSTALL_DATADIR and
+# CMAKE_INSTALL_FULL_LOCALEDIR). Ensure GNUInstallDirs is available before
+# any install() calls or before we evaluate install destinations used for
+# translations so CMAKE_INSTALL_FULL_LOCALEDIR is stable during configure.
+include(GNUInstallDirs)
+
 # Enable large file support
 add_compile_definitions(_FILE_OFFSET_BITS=64)
 
@@ -45,7 +51,14 @@ find_package(Threads REQUIRED)
 if(ENABLE_NLS)
     find_package(Gettext REQUIRED)
     find_package(Intl REQUIRED)
-    
+    # Ensure a valid CMAKE_INSTALL_FULL_LOCALEDIR; some CMake invocations
+    # (or cached configs) may leave CMAKE_INSTALL_LOCALEDIR empty which would
+    # define LOCALEDIR as an empty string in the binary. Provide a fallback
+    # to <prefix>/share/locale so bindtextdomain() can find installed catalogs.
+    if(NOT DEFINED CMAKE_INSTALL_FULL_LOCALEDIR OR CMAKE_INSTALL_FULL_LOCALEDIR STREQUAL "")
+        set(CMAKE_INSTALL_FULL_LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/locale")
+    endif()
+
     # Find all PO files
     file(GLOB PO_FILES ${CMAKE_SOURCE_DIR}/po/*.po)
     
@@ -61,8 +74,12 @@ if(ENABLE_NLS)
             COMMENT "Generating MO file for ${LANG}"
         )
         list(APPEND MO_FILES ${MO_FILE})
+        # Install MO files into the full install locale directory. Use
+        # CMAKE_INSTALL_FULL_LOCALEDIR which is validated/fallbacked above
+        # to avoid generating installs like "/zh_CN/..." when the
+        # short variable is empty during packaging.
         install(FILES ${MO_FILE}
-            DESTINATION ${CMAKE_INSTALL_LOCALEDIR}/${LANG}/LC_MESSAGES/
+            DESTINATION share/locale/${LANG}/LC_MESSAGES/
             RENAME ${PROJECT_NAME}.mo
         )
     endforeach()
@@ -70,12 +87,15 @@ if(ENABLE_NLS)
     add_custom_target(translations ALL DEPENDS ${MO_FILES})
     add_definitions(-DENABLE_NLS=1)
     add_definitions(-DGETTEXT_PACKAGE="${PROJECT_NAME}")
-    add_definitions(-DLOCALEDIR="/usr/local/share/locale")
     add_definitions(-DPACKAGE="${PROJECT_NAME}")
+    # Compile LOCALEDIR into the binary so bindtextdomain(PACKAGE, LOCALEDIR)
+    # will resolve to an absolute directory under the install prefix. This
+    # relies on CMAKE_INSTALL_FULL_LOCALEDIR being defined (above via
+    # GNUInstallDirs or our fallback).
+    add_compile_definitions(LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
 endif()
 
-# Standard install directories (provides CMAKE_INSTALL_DATADIR)
-include(GNUInstallDirs)
+# (GNUInstallDirs already included earlier)
 
 # Required dependencies
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0>=3.4)
@@ -224,23 +244,51 @@ install(FILES psensor.desktop
 # Install icons for all themes and sizes
 install(DIRECTORY icons/hicolor/
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor
+    PATTERN "Makefile*" EXCLUDE    
 )
 install(DIRECTORY icons/ubuntu-mono-dark/
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mono-dark
+    PATTERN "Makefile*" EXCLUDE    
 )
 install(DIRECTORY icons/ubuntu-mono-light/
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mono-light
+    PATTERN "Makefile*" EXCLUDE
 )
 
+# Ensure icons are also installed into the per-size "apps/" subdirectories
+# so GTK/desktop environments can find the application icon via the
+# hicolor theme (e.g. icons/hicolor/48x48/apps/psensor.png).
+set(HICOLOR_SIZES 14x14 16x16 22x22 24x24 32x32 48x48 64x64)
+foreach(size IN LISTS HICOLOR_SIZES)
+    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensor.png)
+        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensor.png
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/${size}/apps
+            RENAME psensor.png)
+    endif()
+endforeach()
+
+# Install scalable SVG icons into scalable/apps
+if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor.svg)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor.svg
+        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor_normal.svg
+        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor_hot.svg
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
+    )
+endif()
+
 # Install glade UI files
-# Glade UI files and main interface
-install(FILES src/glade/psensor.glade 
+# Main interface first
+install(FILES src/glade/psensor.glade
     DESTINATION ${CMAKE_INSTALL_DATADIR}/psensor)
-install(DIRECTORY src/glade/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/psensor/glade
-    FILES_MATCHING PATTERN "*.glade"
-    PATTERN "*.ui"
-)
+
+# Then install all glade files to the glade subdirectory
+install(FILES
+    src/glade/psensor-appindicator.glade
+    src/glade/psensor-pref.glade
+    src/glade/psensor.glade
+    src/glade/sensor-edit.glade
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/psensor)
 
 # Install web interface files
 install(DIRECTORY www/
@@ -250,6 +298,7 @@ install(DIRECTORY www/
     PATTERN "*.css"
     PATTERN "*.js"
     PATTERN "*.png"
+    PATTERN "Makefile*" EXCLUDE
 )
 
 # Install GSettings schema
@@ -275,11 +324,16 @@ install(FILES
 )
 
 # Install translations
-install(DIRECTORY po/
-    DESTINATION ${CMAKE_INSTALL_LOCALEDIR}
-    FILES_MATCHING PATTERN "*.mo"
-)
-
+# install(DIRECTORY po/
+#     # Install the po/ (compiled .mo) files into the canonical locale
+#     # location under the installation prefix. Use
+#     # CMAKE_INSTALL_FULL_LOCALEDIR to ensure the directory is absolute
+#     # and not empty during package creation.
+#     DESTINATION ${CMAKE_INSTALL_FULL_LOCALEDIR}/locale
+#     FILES_MATCHING PATTERN "*.mo"
+# )
+message(STATUS "CMAKE_INSTALL_FULL_LOCALEDIR = ${CMAKE_INSTALL_FULL_LOCALEDIR}")
+message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 # Generate man page if help2man is available
 if(HELP2MAN)
     add_custom_command(

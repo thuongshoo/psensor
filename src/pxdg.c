@@ -25,7 +25,7 @@
 
 #include <glib.h>
 
-#include <pio.h>
+#include <io.h>
 #include <plog.h>
 #include <pxdg.h>
 
@@ -37,7 +37,7 @@ static char *get_user_autostart_dir(void)
 
 	xdg_cfg_dir = g_get_user_config_dir();
 
-	log_fct("g_user_config_dir(): %s", xdg_cfg_dir);
+	log_functionname("g_user_config_dir(): %s", xdg_cfg_dir);
 
 	return path_append(xdg_cfg_dir, "autostart");
 }
@@ -102,21 +102,21 @@ static int is_user_desktop_autostarted(GKeyFile *f)
 int pxdg_is_autostarted(void)
 {
 	char *user_desktop;
-	unsigned int ret;
+	int ret;
 	GKeyFile *kfile;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	user_desktop = get_user_desktop_file();
 
-	log_fct("user desktop file: %s", user_desktop);
+	log_functionname("user desktop file: %s", user_desktop);
 
 	ret = is_file_exists(user_desktop);
 
 	if (!ret) {
-		log_fct("user desktop file does not exist.");
+		log_functionname("user desktop file does not exist.");
 	} else {
-		log_fct("user desktop file exist.");
+		log_functionname("user desktop file exist.");
 		if (ret) {
 			kfile = get_key_file(user_desktop);
 			if (kfile)
@@ -129,7 +129,7 @@ int pxdg_is_autostarted(void)
 
 	free(user_desktop);
 
-	log_fct_exit();
+	log_functionname_exit();
 
 	return ret;
 }
@@ -151,7 +151,7 @@ static void enable_gnome_autostart(const char *path)
 					       TRUE);
 		data = g_key_file_to_data(f, NULL, NULL);
 		g_file_set_contents(path, data, -1, NULL);
-
+		g_free(data);					
 		g_key_file_free(f);
 	} else {
 		log_err("Fail to enable %s", KEY_GNOME_AUTOSTART);
@@ -162,13 +162,13 @@ void pxdg_set_autostart(unsigned int enable)
 {
 	char *user_desktop, *dir;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	user_desktop = get_user_desktop_file();
 
-	log_fct("user desktop file: %s", user_desktop);
+	log_functionname("user desktop file: %s", user_desktop);
 
-	log_fct("desktop file: %s", get_desktop_file());
+	log_functionname("desktop file: %s", get_desktop_file());
 
 	if (enable) {
 		if (!is_file_exists(user_desktop)) {
@@ -185,7 +185,7 @@ void pxdg_set_autostart(unsigned int enable)
 		remove(user_desktop);
 	}
 
-	log_fct_exit();
+	log_functionname_exit();
 
 	free(user_desktop);
 }

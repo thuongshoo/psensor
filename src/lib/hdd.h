@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_HDD_H_
-#define _PSENSOR_HDD_H_
+#ifndef PSENSOR_HDD_H
+#define PSENSOR_HDD_H
 
 #include <bool.h>
 #include <config.h>
@@ -27,19 +27,19 @@
 
 static inline bool atasmart_is_supported(void) { return true; }
 
-void atasmart_psensor_list_append(struct psensor ***, int);
+void atasmart_psensor_list_append(struct psensor ***, unsigned int);
 void atasmart_psensor_list_update(struct psensor **);
 
 #else
 
 static inline bool atasmart_is_supported(void) { return false; }
 
-static inline void atasmart_psensor_list_append(struct psensor ***s, int n) {}
+static inline void atasmart_psensor_list_append(struct psensor ***s, unsigned int n) {}
 static inline void atasmart_psensor_list_update(struct psensor **s) {}
 
 #endif
 
-void hddtemp_psensor_list_append(struct psensor ***sensors, int values_length);
+void hddtemp_psensor_list_append(struct psensor ***sensors, unsigned int values_length);
 void hddtemp_psensor_list_update(struct psensor **sensors);
 
 #endif

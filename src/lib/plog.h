@@ -16,8 +16,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  *   02110-1301 USA
  */
-#ifndef _P_LOG_H_
-#define _P_LOG_H_
+#ifndef PSENSOR_LOG_H
+#define PSENSOR_LOG_H
 
 #define P_LOG_VER 3
 
@@ -37,11 +37,11 @@ void log_err(const char *fmt, ...);
 void log_info(const char *fmt, ...);
 void log_warn(const char *fmt, ...);
 
-void _log(const char *fct, const char *fmt, ...);
+void psensor_log(const char *fct, const char *fmt, ...);
 
-#define log_fct(...) _log(__func__, __VA_ARGS__)
-#define log_fct_enter() log_fct("ENTER")
-#define log_fct_exit() log_fct("EXIT")
+#define log_functionname(...) psensor_log(__func__, __VA_ARGS__)
+#define log_functionname_enter() log_functionname("ENTER")
+#define log_functionname_exit() log_functionname("EXIT")
 
 /* level of the log file. */
 extern int log_level;

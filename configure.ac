@@ -246,6 +246,9 @@ eval pkgdatadir="$datarootdir/psensor"
 AC_SUBST([pkgdatadir])
 AC_SUBST([datarootdir])
 
+eval localedir="$datarootdir/locale"
+AC_DEFINE_UNQUOTED([LOCALEDIR], ["$localedir"], [Location of gettext message catalogs])
+
 AC_CONFIG_FILES([
  Makefile
  doc/Makefile

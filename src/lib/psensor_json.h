@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _PSENSOR_PSENSOR_JSON_H_
-#define _PSENSOR_PSENSOR_JSON_H_
+#ifndef PSENSOR_PSENSOR_JSON_H
+#define PSENSOR_PSENSOR_JSON_H
 
 #include "config.h"
 
@@ -38,5 +38,5 @@ char *sensors_to_json_string(struct psensor **sensors);
  */
 struct psensor *psensor_new_from_json(json_object *o,
 				      const char *sensors_url,
-				      int values_max_length);
+				      unsigned int values_max_length);
 #endif

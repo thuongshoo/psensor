@@ -36,7 +36,7 @@
 #include <atasmart.h>
 #include <linux/fs.h>
 
-#include <pio.h>
+#include "io.h"
 #include <hdd.h>
 #include <plog.h>
 
@@ -58,7 +58,7 @@ static SkDisk *get_disk(struct psensor *s)
 }
 
 static struct psensor *
-create_sensor(char *id, char *name, SkDisk *disk, int values_max_length)
+create_sensor(char *id, char *name, SkDisk *disk, unsigned int values_max_length)
 {
 	struct psensor *s;
 	int t;
@@ -86,34 +86,34 @@ static void analyze_disk(const char *dname)
 	struct stat st;
 	uint64_t size;
 
-	log_fct("Analyze %s", dname);
+	log_functionname("Analyze %s", dname);
 
 	f = open(dname, O_RDONLY|O_NOCTTY|O_NONBLOCK|O_CLOEXEC);
 
 	if (f < 0) {
-		log_fct("Could not open file %s: %s", dname, strerror(errno));
+		log_functionname("Could not open file %s: %s", dname, strerror(errno));
 		goto fail;
 	}
 
 	if (fstat(f, &st) < 0) {
-		log_fct("fstat fails %s: %s", dname, strerror(errno));
+		log_functionname("fstat fails %s: %s", dname, strerror(errno));
 		goto fail;
 	}
 
 	if (!S_ISBLK(st.st_mode)) {
-		log_fct("!S_ISBLK fails %s", dname);
+		log_functionname("!S_ISBLK fails %s", dname);
 		goto fail;
 	}
 
 	size = (uint64_t)-1;
 	/* So, it's a block device. Let's make sure the ioctls work */
 	if (ioctl(f, BLKGETSIZE64, &size) < 0) {
-		log_fct("ioctl fails %s: %s", dname, strerror(errno));
+		log_functionname("ioctl fails %s: %s", dname, strerror(errno));
 		goto fail;
 	}
 
 	if (size <= 0 || size == (uint64_t) -1) {
-		log_fct("ioctl wrong size %s: %ld", dname, size);
+		log_functionname("ioctl wrong size %s: %ld", dname, size);
 		goto fail;
 	}
 
@@ -122,19 +122,19 @@ static void analyze_disk(const char *dname)
 }
 
 void
-atasmart_psensor_list_append(struct psensor ***sensors, int values_max_length)
+atasmart_psensor_list_append(struct psensor ***sensors, unsigned int values_max_length)
 {
 	char **paths, **tmp, *id;
 	SkDisk *disk;
 	struct psensor *sensor;
 
-	log_fct_enter();
+	log_functionname_enter();
 
 	paths = dir_list("/dev", filter_sd);
 
 	tmp = paths;
 	while (*tmp) {
-		log_fct("Open %s", *tmp);
+		log_functionname("Open %s", *tmp);
 
 		if (!sk_disk_open(*tmp, &disk)) {
 			id = malloc(strlen(PROVIDER_NAME)
@@ -161,7 +161,7 @@ atasmart_psensor_list_append(struct psensor ***sensors, int values_max_length)
 
 	paths_free(paths);
 
-	log_fct_exit();
+	log_functionname_exit();
 }
 
 void atasmart_psensor_list_update(struct psensor **sensors)
@@ -191,7 +191,7 @@ void atasmart_psensor_list_update(struct psensor **sensors)
 				if (!ret) {
 					c = (kelvin - 273150) / 1000;
 					psensor_set_current_value(s, c);
-					log_fct("%s %.2f", s->id, c);
+					log_functionname("%s %.2f", s->id, c);
 				}
 			}
 		}

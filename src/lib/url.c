@@ -29,7 +29,7 @@
 
 char *url_normalize(const char *url)
 {
-	int n = strlen(url);
+	size_t n = strlen(url);
 	char *ret = strdup(url);
 
 	if (url[n - 1] == '/')
@@ -51,7 +51,7 @@ char *url_encode(const char *str)
 {
 	char *c, *buf, *pbuf;
 
-	buf = malloc(strlen(str) * 3 + 1);
+	buf = (char *)malloc(strlen(str) * 3 + 1);
 	pbuf = buf;
 
 	c = (char *)str;
