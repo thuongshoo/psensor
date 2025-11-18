@@ -24,6 +24,8 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "bool.h"
+
 #define UNKNOWN_DOUBLE_VALUE DBL_MIN
 
 struct measure {

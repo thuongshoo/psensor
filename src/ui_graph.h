@@ -24,5 +24,5 @@
 #include "ui.h"
 
 void ui_graph_create(struct ui_psensor *sensor_context);
-
+gboolean should_update_ui(struct ui_psensor *ui);
 #endif

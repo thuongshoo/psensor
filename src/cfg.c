@@ -162,6 +162,11 @@ static void set_int(const char *k, int i)
 	g_settings_set_int(settings, k, i);
 }
 
+static void set_uint(const char *k, int i)
+{
+	g_settings_set_uint(settings, k, i);
+}
+
 static double get_double(const char *k)
 {
 	return g_settings_get_double(settings, k);
@@ -420,7 +425,7 @@ struct config *config_load(void)
 
 	init();
 
-	c = malloc(sizeof(struct config));
+	c = calloc(1, sizeof(struct config));
 
 	c->graph_bgcolor = get_background_color();
 	c->graph_fgcolor = get_foreground_color();
@@ -464,7 +469,7 @@ struct config *config_load(void)
 	}
 
 	c->sensor_values_max_length = compute_values_max_length(c);
-
+	c->is_new_data =  false;
 	return c;
 }
 
@@ -944,6 +949,14 @@ void config_set_udisks2_enable(bool b)
 enum temperature_unit config_get_temperature_unit(void)
 {
 	return get_int(KEY_INTERFACE_TEMPERATURE_UNIT);
+}
+
+unsigned int config_get_temperature_unit_2(void)
+{
+	if (config_get_temperature_unit() == CELSIUS)
+		return 1U;
+	
+	return 0U;
 }
 
 void config_set_temperature_unit(enum temperature_unit u)

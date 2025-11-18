@@ -17,8 +17,8 @@
  * 02110-1301 USA
  */
 
-#ifndef _PSENSOR_UI_STATUS_H_
-#define _PSENSOR_UI_STATUS_H_
+#ifndef PSENSOR_UI_STATUS_H
+#define PSENSOR_UI_STATUS_H
 
 #include <gtk/gtk.h>
 #include <ui.h>

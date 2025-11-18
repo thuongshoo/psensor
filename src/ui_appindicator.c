@@ -103,10 +103,18 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 		celsius = 0;
 
 	sorted_sensors = ui_get_sensors_ordered_by_position(ui->sensors);
-	size_t n = psensor_list_size(sorted_sensors);
+	size_t n = psensor_list_size((const struct psensor **)sorted_sensors);
+	
 	menu_items = malloc((n + 1) * sizeof(GtkMenuItem *));
+	if (menu_items == NULL)
+		return;
 
-	sensors = malloc((n + 1) * sizeof(struct psensor *));
+	sensors = calloc((n + 1), sizeof(struct psensor *));
+	if (sensors == NULL)
+	{
+		free(menu_items);
+		return;
+	}
 
 	size_t i, j;
 	for ( i = 0, j = 0; i < n; i++) {

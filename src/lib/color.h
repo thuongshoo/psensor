@@ -30,7 +30,7 @@ struct color {
 /** rgb 0..1 */
 struct color *color_new(double r, double g, double b);
 
-struct color *color_dup(struct color *);
+struct color *color_dup(const struct color *);
 
 /** rgb 0..1 */
 void color_set(struct color *, double r, double g, double b);

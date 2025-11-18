@@ -52,6 +52,8 @@ char *url_encode(const char *str)
 	char *c, *buf, *pbuf;
 
 	buf = (char *)malloc(strlen(str) * 3 + 1);
+	if (buf == NULL)
+		return NULL;
 	pbuf = buf;
 
 	c = (char *)str;

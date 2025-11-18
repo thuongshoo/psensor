@@ -26,7 +26,7 @@
 
 static inline bool lmsensor_is_supported(void) { return true; }
 
-void lmsensor_psensor_list_update(struct psensor **);
+size_t lmsensor_psensor_list_update(struct psensor **);
 void lmsensor_psensor_list_append(struct psensor ***, unsigned int);
 void lmsensor_cleanup(void);
 

@@ -43,7 +43,6 @@ struct ui_psensor {
 	struct config *config;
 
 	GtkWidget *main_window;
-
 	GtkWidget *popup_menu;
 
 	GtkListStore *sensors_store;
@@ -79,7 +78,7 @@ void ui_cb_preferences(GtkMenuItem *mi, gpointer data);
 void ui_cb_menu_quit(GtkMenuItem *mi, gpointer data);
 void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data);
 
-GtkWidget *ui_get_graph(void);
+GtkWidget *ui_get_graph_widget(void);
 
 struct psensor **ui_get_sensors_ordered_by_position(struct psensor **);
 #endif

@@ -138,8 +138,8 @@ static char *get_path(const char *url, const char *www_dir)
 
 	res = malloc(strlen(www_dir)+strlen(p)+1);
 
-	strcpy(res, www_dir);
-	strcat(res, p);
+	strncpy(res, www_dir, strlen(www_dir));
+	strncat(res, p, strlen(p));
 
 	return res;
 }
@@ -212,13 +212,11 @@ static struct MHD_Response *create_response_file(const char *nurl,
 						 const char *fpath)
 {
 	struct stat st;
-	int ret;
-	FILE *file;
 
-	ret = stat(fpath, &st);
+	int ret = stat(fpath, &st);
 
 	if (!ret && (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode))) {
-		file = fopen(fpath, "rb");
+		FILE *file = fopen(fpath, "rb");
 
 		if (file) {
 			*rp_code = MHD_HTTP_OK;
@@ -231,14 +229,14 @@ static struct MHD_Response *create_response_file(const char *nurl,
 
 			return MHD_create_response_from_callback
 				(st.st_size,
-				 32 * 1024,
+				 32U * 1024U,
 				 &file_reader,
 				 file,
 				 (MHD_ContentReaderFreeCallback)&fclose);
 
-		} else {
-			log_err("Failed to open: %s.", fpath);
 		}
+
+		log_err("Failed to open: %s.", fpath);
 	}
 
 	return NULL;

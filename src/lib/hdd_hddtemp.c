@@ -120,9 +120,17 @@ create_sensor(char *id, char *name, unsigned int values_max_length)
 
 	t = SENSOR_TYPE_HDD | SENSOR_TYPE_HDDTEMP | SENSOR_TYPE_TEMP;
 
-	return psensor_create(id, name, strdup(_("Disk")),
+	char* chip = strdup(_("Disk"));
+
+	struct psensor *tmp_psensor = psensor_create(id, name, chip,
 			      t,
 			      values_max_length);
+	if (tmp_psensor == NULL)
+	{
+		free(chip);
+		return NULL;
+	}
+	return tmp_psensor;
 }
 
 static char *next_hdd_info(char *string, struct hdd_info *info)
@@ -175,12 +183,7 @@ static char *next_hdd_info(char *string, struct hdd_info *info)
 void
 hddtemp_psensor_list_append(struct psensor ***sensors, unsigned int values_max_length)
 {
-	char *hddtemp_output, *c, *id;
-	struct hdd_info info;
-	struct psensor *sensor;
-
-	hddtemp_output = fetch();
-
+	char *hddtemp_output = fetch();
 	if (!hddtemp_output)
 		return;
 
@@ -193,15 +196,22 @@ hddtemp_psensor_list_append(struct psensor ***sensors, unsigned int values_max_l
 		return;
 	}
 
-	c = hddtemp_output;
+	char* c = hddtemp_output;
 
+	struct hdd_info info;
 	while (c && (c = next_hdd_info(c, &info))) {
-		id = malloc(strlen(PROVIDER_NAME) + 1 + strlen(info.name) + 1);
+		char* id = malloc(strlen(PROVIDER_NAME) + 1 + strlen(info.name) + 1);
 		sprintf(id, "%s %s", PROVIDER_NAME, info.name);
 
-		sensor = create_sensor(id, info.name, values_max_length);
-
-		psensor_list_append(sensors, sensor);
+		struct psensor *sensor = create_sensor(id, info.name, values_max_length);
+		if (sensor != NULL)
+		{
+			psensor_list_append(sensors, sensor);
+		}
+		{
+			free(id);
+			free(info.name);
+		}
 	}
 
 	free(hddtemp_output);

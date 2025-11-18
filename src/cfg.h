@@ -37,6 +37,13 @@ enum sensorlist_position {
 };
 const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
+typedef struct {
+    cairo_surface_t *cache_surface;
+    gboolean cache_valid;
+    int last_width;
+    int last_height;
+} MyWidgetData ;
+
 struct config {
 	struct color *graph_bgcolor;
 	struct color *graph_fgcolor;
@@ -56,9 +63,12 @@ struct config {
 	int sensor_update_interval;
 	int slog_interval;
 	double graph_bg_alpha;
+
+	MyWidgetData widget_data;
 	bool alpha_channel_enabled;
 	bool window_restore_enabled;
 	bool slog_enabled;
+	bool is_new_data;
 };
 
 /* Loads psensor configuration */
@@ -131,6 +141,7 @@ bool config_is_atiadlsdk_enabled(void);
 void config_set_atiadlsdk_enable(bool);
 
 enum temperature_unit config_get_temperature_unit(void);
+unsigned int config_get_temperature_unit_2(void);
 void config_set_temperature_unit(enum temperature_unit);
 
 double config_get_default_high_threshold_temperature(void);
