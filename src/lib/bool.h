@@ -22,11 +22,15 @@
 #include "config.h"
 
 #if HAVE_STDBOOL_H == 1
+
 #include <stdbool.h>
+
 #else
+
 #define bool char
 #define true 1
 #define false 0
+
 #endif
 
 #endif

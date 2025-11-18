@@ -53,23 +53,6 @@ static volatile int slog_thread_running = 1;
 
 static const char *DEFAULT_FILENAME = "sensors.log";
 
-static char *time_to_str(time_t *t)
-{
-	struct tm lt;
-	char *str;
-
-	if (!localtime_r(t, &lt))
-		return NULL;
-
-	str = malloc(64);
-
-	if (strftime(str, 64, "%s", &lt))
-		return str;
-
-	free(str);
-	return NULL;
-}
-
 static char *get_default_path(void)
 {
 	char *home, *path, *dir;
@@ -117,7 +100,7 @@ static bool slog_open(const char *path, struct psensor **sensors)
 		return 0;
 
 	st = time(NULL);
-	t = time_to_str(&st);
+	t = time_to_str3(&st);
 	fprintf(file, "I,%s,%s\n", t, VERSION);
 	free(t);
 
@@ -145,7 +128,7 @@ static void slog_write_sensors(struct psensor **sensors)
 
 	gettimeofday(&tv, NULL);
 
-	count = psensor_list_size(sensors);
+	count = psensor_list_size((const struct psensor **)sensors);
 
 	if (s_last_values) {
 		first_call = 0;
@@ -173,6 +156,7 @@ static void slog_write_sensors(struct psensor **sensors)
 
 static void *slog_routine(void *data)
 {
+	pthread_setname_np(pthread_self(), "slog_routine");
 	while (slog_thread_running) {
 		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 		pmutex_lock(sensors_mutex);
@@ -198,7 +182,12 @@ void slog_close(void)
 		log_debug(_("Sensor log not open, cannot close."));
 	}
 }
-
+static int slog_activate_lock(pthread_mutex_t *m) {
+	return pmutex_lock(m);
+}
+static int slog_activate_unlock(pthread_mutex_t *m) {
+	return pmutex_unlock(m);
+}
 bool slog_activate(const char *path,
 		   struct psensor **ss,
 		   pthread_mutex_t *mutex,
@@ -210,9 +199,9 @@ bool slog_activate(const char *path,
 	sensors_mutex = mutex;
 	period = p;
 
-	pthread_mutex_lock(mutex);
+	slog_activate_lock(sensors_mutex);
 	ret = slog_open(path, s_sensors);
-	pthread_mutex_unlock(mutex);
+	slog_activate_unlock(sensors_mutex);
 
 	if (ret)
 		pthread_create(&thread, NULL, slog_routine, NULL);

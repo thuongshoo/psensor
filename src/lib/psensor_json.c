@@ -67,7 +67,6 @@ measures_to_json_object(struct psensor *s)
 static json_object *sensor_to_json(struct psensor *s)
 {
 	json_object *mo, *obj;
-	struct measure *m;
 
 	obj = json_object_new_object();
 
@@ -89,7 +88,7 @@ static json_object *sensor_to_json(struct psensor *s)
 			       ATT_SENSOR_MEASURES,
 			       measures_to_json_object(s));
 
-	m = psensor_get_current_measure(s);
+	struct measure *m = psensor_get_current_measure(s);
 	mo = json_object_new_object();
 	json_object_object_add(mo,
 			       ATT_MEASURE_VALUE,
@@ -145,26 +144,34 @@ struct psensor *psensor_new_from_json(json_object *o,
 				      unsigned int values_max_length)
 {
 	json_object *oid, *oname, *otype;
-	struct psensor *s;
-	char *eid, *url;
 
 	json_object_object_get_ex(o, "id", &oid);
 	json_object_object_get_ex(o, "name", &oname);
 	json_object_object_get_ex(o, "type", &otype);
 
-	eid = url_encode(json_object_get_string(oid));
+	char *eid = url_encode(json_object_get_string(oid));
 	
+	char *url;
 	int result = asprintf(&url, "%s/%s", sensors_url, eid);
 	if (result == -1) {
 		free(eid);
 		return NULL;
 	}
 
-	s = psensor_create(strdup(url),
-			   strdup(json_object_get_string(oname)),
+	char* id = strdup(url);
+	char* name = strdup(json_object_get_string(oname));
+	struct psensor *s = psensor_create(id,
+			   name,
 			   NULL,
 			   json_object_get_int(otype) | SENSOR_TYPE_REMOTE,
 			   values_max_length);
+	if(s == NULL)
+	{
+		free(name);
+		free(id);
+		free(eid);
+		return NULL;
+	}
 	s->provider_data = url;
 
 	free(eid);

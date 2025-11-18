@@ -35,13 +35,15 @@ struct color *color_new(double r, double g, double b)
 	struct color *color;
 
 	color = malloc(sizeof(struct color));
+	if (color == NULL)
+		return NULL;
 
 	color_set(color, r, g, b);
 
 	return color;
 }
 
-struct color *color_dup(struct color *color)
+struct color *color_dup(const struct color *color)
 {
 	return color_new(color->red, color->green, color->blue);
 }
@@ -88,7 +90,7 @@ struct color *str_to_color(const char *str)
 
 char *color_to_str(const struct color *color)
 {
-	char *str = NULL;;
+	char *str = NULL;
 
 	int result = asprintf(&str, "#%.4x%.4x%.4x",
 		(int)(65535 * color->red),

@@ -16,6 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#define _GNU_SOURCE
+#include <pthread.h>
+#include <unistd.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
@@ -64,8 +68,11 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 		else
 			use_celsius = 0;
 
+		printf("ui_notify name=%s count=%lu theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
+		struct measure *measure = psensor_get_current_measure(sensor);
+		
 		svalue = psensor_measure_to_str
-			(psensor_get_current_measure(sensor),
+			(measure,
 			 sensor->type,
 			 use_celsius);
 

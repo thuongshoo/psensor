@@ -213,18 +213,21 @@ static double get_value(int id, unsigned int type)
 			att = (unsigned int)NV_CTRL_GPU_CORE_TEMPERATURE;
 
 		return get_att(NV_CTRL_TARGET_TYPE_GPU, id, att);
-	} else if (type & SENSOR_TYPE_FAN) {
+	}
+	
+	if (type & SENSOR_TYPE_FAN) {
 		if (type & SENSOR_TYPE_RPM)
 			return get_att(NV_CTRL_TARGET_TYPE_COOLER,
 				       id,
 				       NV_CTRL_THERMAL_COOLER_SPEED);
-		else /* SENSOR_TYPE_PERCENT */
-			return get_att(NV_CTRL_TARGET_TYPE_COOLER,
-				       id,
-				       NV_CTRL_THERMAL_COOLER_LEVEL);
-	} else { /* SENSOR_TYPE_PERCENT */
-		return get_usage(id, type);
+		/* SENSOR_TYPE_PERCENT */
+		return get_att(NV_CTRL_TARGET_TYPE_COOLER,
+			       id,
+			       NV_CTRL_THERMAL_COOLER_LEVEL);
 	}
+	/* SENSOR_TYPE_PERCENT */
+	return get_usage(id, type);
+
 }
 
 static void update(struct psensor *sensor)
@@ -298,7 +301,22 @@ static struct psensor *create_nvidia_sensor(unsigned int id, unsigned int subtyp
 	}
 
 	new_sensor = psensor_create(sid, name, pname, type, value_len);
+	if (new_sensor == NULL)
+	{
+		free(sid);
+		free(strnid);
+		free(pname);
+		free(name);
+		return NULL;
+	}
 	new_sensor->provider_data = malloc(sizeof(unsigned int));
+	if (new_sensor->provider_data == NULL)
+	{
+		psensor_free(new_sensor);
+		free(strnid);
+		
+		return NULL;
+	}
 	set_nvidia_id(new_sensor, id);
 
 	if ((type & SENSOR_TYPE_GPU) && (type & SENSOR_TYPE_TEMP)) {
@@ -354,14 +372,13 @@ static void add(struct psensor ***sensors, unsigned int id, unsigned int type, u
 	struct psensor *s;
 
 	s = create_nvidia_sensor(id, type, values_len);
-
 	if (s)
 		psensor_list_append(sensors, s);
 }
 
 void nvidia_psensor_list_append(struct psensor ***ss, unsigned int values_len)
 {
-	size_t i, n, utype;
+	unsigned int i, n, utype;
 	Bool ret;
 
 	if (!init())

@@ -551,16 +551,16 @@ struct psensor **ui_get_sensors_ordered_by_position(struct psensor **sensors)
 {
 	struct psensor **result;
 
-	result = psensor_list_copy(sensors);
+	result = psensor_list_copy((const struct psensor **)sensors);
 	qsort(result,
-	      psensor_list_size(result),
+	      psensor_list_size((const struct psensor **)result),
 	      sizeof(struct psensor *),
 	      cmp_sensors);
 
 	return result;
 }
 
-GtkWidget *ui_get_graph(void)
+GtkWidget *ui_get_graph_widget(void)
 {
 	return w_graph;
 }

@@ -60,17 +60,22 @@ static SkDisk *get_disk(struct psensor *s)
 static struct psensor *
 create_sensor(char *id, char *name, SkDisk *disk, unsigned int values_max_length)
 {
-	struct psensor *s;
-	int t;
+	
+	unsigned int t = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP;
 
-	t = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP;
-
-	s = psensor_create(id,
-			   strdup(name),
-			   strdup(_("Disk")),
+	char* chip = strdup(name);
+	char* new_name = strdup(_("Disk"));
+	struct psensor *s = psensor_create(id,
+			   chip,
+			   new_name,
 			   t,
 			   values_max_length);
-
+	if (s == NULL)
+	{
+		free(new_name);
+		free(chip);
+		return NULL;
+	}
 	s->provider_data = disk;
 	s->provider_data_free_fct = &provider_data_free;
 
@@ -136,7 +141,8 @@ atasmart_psensor_list_append(struct psensor ***sensors, unsigned int values_max_
 	while (*tmp) {
 		log_functionname("Open %s", *tmp);
 
-		if (!sk_disk_open(*tmp, &disk)) {
+		if (!sk_disk_open(*tmp, &disk))
+		{
 			id = malloc(strlen(PROVIDER_NAME)
 				    + 1
 				    + strlen(*tmp)
@@ -147,9 +153,17 @@ atasmart_psensor_list_append(struct psensor ***sensors, unsigned int values_max_
 					       *tmp,
 					       disk,
 					       values_max_length);
-
-			psensor_list_append(sensors, sensor);
-		} else {
+            if (sensor != NULL)
+			{
+				psensor_list_append(sensors, sensor);
+			}
+			else
+			{
+				free(id);
+			}
+		}
+		else
+		{
 			log_err(_("%s: sk_disk_open() failure: %s."),
 				PROVIDER_NAME,
 				*tmp);
@@ -169,7 +183,6 @@ void atasmart_psensor_list_update(struct psensor **sensors)
 	struct psensor **cur, *s;
 	uint64_t kelvin;
 	int ret;
-	double c;
 	SkDisk *disk;
 
 	if (!sensors)
@@ -189,7 +202,7 @@ void atasmart_psensor_list_update(struct psensor **sensors)
 								    &kelvin);
 
 				if (!ret) {
-					c = (kelvin - 273150) / 1000;
+					double c = (kelvin - 273150) / 1000.0;
 					psensor_set_current_value(s, c);
 					log_functionname("%s %.2f", s->id, c);
 				}

@@ -1,4 +1,5 @@
 /*
+ * rsensor.c - Remote sensors provider
  * Copyright (C) 2010-2016 jeanfi@gmail.com
  *
  * This program is free software; you can redistribute it and/or
@@ -69,12 +70,8 @@ static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp)
 
 static char *create_api_1_1_sensors_url(const char *base_url)
 {
-	char *nurl, *ret;
-	size_t n;
-
-	nurl = url_normalize(base_url);
-	n = strlen(nurl) + strlen(URL_BASE_API_1_1_SENSORS) + 1;
-	ret = malloc(n);
+	char *nurl = url_normalize(base_url);
+	char *ret = malloc(strlen(nurl) + strlen(URL_BASE_API_1_1_SENSORS) + 1);
 
 	strcpy(ret, nurl);
 	strcat(ret, URL_BASE_API_1_1_SENSORS);
@@ -127,31 +124,23 @@ static json_object *get_json_object(const char *url)
 struct psensor **get_remote_sensors(const char *server_url,
 				    int values_max_length)
 {
-	struct psensor **sensors, *s;
-	char *url;
-	json_object *obj;
-	size_t i, n;
-
-	sensors = NULL;
-
-	url = create_api_1_1_sensors_url(server_url);
-
-	obj = get_json_object(url);
+	struct psensor **sensors = NULL;
+	char *url = create_api_1_1_sensors_url(server_url);
+	json_object *obj = get_json_object(url);
 
 	if (obj) {
-		n = json_object_array_length(obj);
-		sensors = malloc((n + 1) * sizeof(struct psensor *));
+		size_t n = json_object_array_length(obj);
+		sensors = calloc((n + 1), sizeof(struct psensor *));
 
-		for (i = 0; i < n; i++) {
-			s = psensor_new_from_json
-				(json_object_array_get_idx(obj, i),
-				 url,
-				 values_max_length);
+		for (size_t i = 0; i < n; i++) {
+			struct psensor *s = psensor_new_from_json
+					(json_object_array_get_idx(obj, i),
+					url,
+					values_max_length);
 			sensors[i] = s;
 		}
 
 		sensors[n] = NULL;
-
 		json_object_put(obj);
 	} else {
 		log_err(_("%s: Invalid content: %s"), PROVIDER_NAME, url);
@@ -160,7 +149,8 @@ struct psensor **get_remote_sensors(const char *server_url,
 	free(url);
 
 	if (!sensors) {
-		sensors = malloc(sizeof(struct psensor *));
+		/* Allocate a single NULL pointer to signify an empty list */
+		sensors = (struct psensor **)calloc(1, sizeof(struct psensor *));
 		*sensors = NULL;
 	}
 

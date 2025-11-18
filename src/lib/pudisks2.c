@@ -124,20 +124,9 @@ void udisks2_psensor_list_update(struct psensor **sensors)
 
 void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_length)
 {
-	UDisksClient *client;
-	GList *objects, *cur;
-	UDisksDrive *drive;
-	UDisksDriveAta *drive_ata;
-	int i, type;
-	char *id, *name, *chip;
-	const char *path, *drive_id, *drive_model;
-	struct psensor *s;
-	struct udisks_data *data;
-
 	log_functionname_enter();
 
-	client = udisks_client_new_sync(NULL, NULL);
-
+	UDisksClient *client = udisks_client_new_sync(NULL, NULL);
 	if (!client) {
 		log_err(_("%s: cannot get the udisks2 client"), PROVIDER_NAME);
 		log_functionname_exit();
@@ -146,12 +135,14 @@ void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_
 
 	manager = udisks_client_get_object_manager(client);
 
-	objects = g_dbus_object_manager_get_objects(manager);
+	GList *objects = g_dbus_object_manager_get_objects(manager);
 
-	i = 0;
+	int i = 0;
+	GList *cur;
 	for (cur = objects; cur; cur = cur->next) {
-		path = g_dbus_object_get_object_path(cur->data);
-
+		const char *path = g_dbus_object_get_object_path(cur->data);
+		UDisksDrive *drive;
+		UDisksDriveAta *drive_ata;
 		g_object_get(cur->data,
 			     "drive", &drive,
 			     "drive-ata", &drive_ata,
@@ -177,7 +168,8 @@ void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_
 			continue;
 		}
 
-		drive_id = udisks_drive_get_id(drive);
+		const char *drive_id = udisks_drive_get_id(drive);
+		char *id;
 		if (drive_id) {
 			id = g_strdup_printf("%s %s", PROVIDER_NAME, drive_id);
 		} else {
@@ -185,7 +177,8 @@ void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_
 			i++;
 		}
 
-		drive_model = udisks_drive_get_model(drive);
+		const char *drive_model = udisks_drive_get_model(drive);
+		char *name, *chip;
 		if (drive_model) {
 			name = strdup(drive_model);
 			chip = strdup(drive_model);
@@ -194,11 +187,22 @@ void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_
 			chip = strdup(_("Disk"));
 		}
 
-		type = SENSOR_TYPE_TEMP | SENSOR_TYPE_UDISKS2 | SENSOR_TYPE_HDD;
+		unsigned int type = SENSOR_TYPE_TEMP | SENSOR_TYPE_UDISKS2 | SENSOR_TYPE_HDD;
 
-		s = psensor_create(id, name, chip, type, values_length);
-
-		data = malloc(sizeof(struct udisks_data));
+		struct psensor *s = psensor_create(id, name, chip, type, values_length);
+		if (s == NULL)
+		{
+			free(chip);
+			free(name);
+			free(id);
+			continue;
+		}
+		struct udisks_data *data = malloc(sizeof(struct udisks_data));
+		if (data == NULL)
+		{
+			psensor_free(s);
+			continue;
+		}
 		data->path = strdup(path);
 		memset(&data->last_smart_update, 0, sizeof(struct timeval));
 

@@ -18,6 +18,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <pmutex.h>
 
 #include <amd.h>
 #include <cfg.h>
@@ -76,7 +77,12 @@ GdkRGBA color_to_GdkRGBA(struct color *color)
 
 	return c;
 }
-
+static int ui_pref_dialog_run_lock(pthread_mutex_t *m) {
+	return pmutex_lock(m);
+}
+static int ui_pref_dialog_run_unlock(pthread_mutex_t *m) {
+	return pmutex_unlock(m);
+}
 void ui_pref_dialog_run(struct ui_psensor *ui)
 {
 	GtkDialog *diag;
@@ -319,7 +325,7 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 		double value;
 		GdkRGBA color;
 
-		pthread_mutex_lock(&ui->sensors_mutex);
+		ui_pref_dialog_run_lock(&ui->sensors_mutex);
 
 		config_set_notif_script
 			(gtk_entry_get_text(GTK_ENTRY(w_notif_script)));
@@ -396,7 +402,7 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 
 		pxdg_set_autostart(gtk_toggle_button_get_active(w_autostart));
 
-		pthread_mutex_unlock(&ui->sensors_mutex);
+		ui_pref_dialog_run_unlock(&ui->sensors_mutex);
 
 		ui_window_update(ui);
 	}

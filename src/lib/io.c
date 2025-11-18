@@ -109,6 +109,9 @@ char **dir_list(const char *dpath, int (*filter) (const char *))
 
 	n = 1;
 	paths = (char **)malloc(sizeof(void *));
+	if (paths == NULL)
+		return NULL;
+
 	*paths = NULL;
 
 	while ((ent = readdir(dir)) != NULL) {

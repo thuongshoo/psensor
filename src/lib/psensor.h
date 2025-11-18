@@ -101,8 +101,30 @@ struct psensor {
 	double alarm_high_threshold;
 	double alarm_low_threshold;
 
+	size_t measures_size;            // Total size of array (values_max_length)
+    size_t measures_count; // current number of items 
+	int measures_head;            // Index of newest measurement    
+    int measures_tail;      // oldest measurement  
+    
+    bool measures_full;
 };
-//UNPACK_STRUCT()
+
+// Iterator để vẽ từ OLDEST đến NEWEST
+struct measure_iterator {
+    struct psensor *sensor;
+    int current_pos;
+    int remaining;
+	int direction; // Thêm trường direction để xác định hướng iteration
+};
+
+// Định nghĩa hướng iteration
+#define ITER_FORWARD 0
+#define ITER_REVERSE 1
+
+void measure_iterator_init(struct measure_iterator *it, const struct psensor *s);
+void measure_iterator_init_reverse(struct measure_iterator *it, const struct psensor *s);
+bool measure_iterator_next(struct measure_iterator *it, struct measure **result);
+bool measure_iterator_prev(struct measure_iterator *it, struct measure **result);
 
 struct psensor *psensor_create(char *id,
 			       char *name,
@@ -115,18 +137,18 @@ void psensor_values_resize(struct psensor *s, unsigned int new_size);
 void psensor_free(struct psensor *sensor);
 
 void psensor_list_free(struct psensor **sensors);
-size_t psensor_list_size(struct psensor **sensors);
+size_t psensor_list_size(const struct psensor **sensors);
 
 struct psensor *psensor_list_get_by_id(struct psensor **sensors,
 				       const char *id);
 
-unsigned int is_temp_type(unsigned int type);
+bool is_temp_type(unsigned int type);
 
-double get_min_temp(struct psensor **sensors);
-double get_max_temp(struct psensor **sensors);
+double get_min_temp(const struct psensor **sensors);
+double get_max_temp(const struct psensor **sensors);
 
-double get_min_rpm(struct psensor **sensors);
-double get_max_rpm(struct psensor **sensors);
+double get_min_rpm(const struct psensor **sensors);
+double get_max_rpm(const struct psensor **sensors);
 
 /*
  * Converts the value of a sensor to a string.
@@ -138,6 +160,9 @@ char *psensor_value_to_str(unsigned int type,
 			   double value,
 			   unsigned int use_celsius);
 
+char *psensor_unit_to_str(unsigned int type,
+			   unsigned int use_celsius);
+
 char *psensor_measure_to_str(const struct measure *m,
 			     unsigned int type,
 			     unsigned int use_celsius);
@@ -147,7 +172,7 @@ char *psensor_measure_to_str(const struct measure *m,
 
 void psensor_list_append(struct psensor ***sensors, struct psensor *sensor);
 
-struct psensor **psensor_list_copy(struct psensor **);
+struct psensor **psensor_list_copy(const struct psensor **);
 
 void psensor_set_current_value(struct psensor *sensor, double value);
 void psensor_set_current_measure(struct psensor *sensor, double value,
@@ -160,9 +185,25 @@ struct measure *psensor_get_current_measure(struct psensor *sensor);
 /* Returns a string representation of a psensor type. */
 const char *psensor_type_to_str(unsigned int type);
 
-const char *psensor_type_to_unit_str(unsigned int type, int use_celsius);
+const char *psensor_type_to_unit_str(unsigned int type, unsigned int use_celsius);
 
-double get_max_value(struct psensor **sensors, unsigned int type);
+typedef struct minmax_st {
+	double min;
+	double max;
+} MINMAX;
+
+typedef struct all_minmax_st {
+	MINMAX temp;
+	MINMAX rpm;
+	MINMAX percent;
+	time_t end_time;
+} ALL_MINMAX;
+
+
+ALL_MINMAX get_all_minmax_value(const struct psensor **all_sensors);
+
+double get_max_value(const struct psensor **sensors, unsigned int type);
+double get_min_value(const struct psensor **all_sensors, unsigned int sensor_type_mask);
 
 char *psensor_current_value_to_str(const struct psensor *, unsigned int);
 

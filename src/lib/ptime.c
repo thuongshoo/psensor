@@ -48,11 +48,11 @@ char *time_to_ISO8601_date(time_t *t)
 	return tm_to_ISO8601_date(&lt);
 }
 
-char *tm_to_ISO8601_date(struct tm *tm)
+char *tm_to_ISO8601_date(const struct tm *tm)
 {
-	char *str;
-
-	str = malloc(ISO8601_DATE_LENGTH + 1);
+	char *str = malloc(ISO8601_DATE_LENGTH + 1);
+	if (str == NULL)
+		return NULL;
 
 	if (strftime(str, ISO8601_DATE_LENGTH + 1, "%F", tm))
 		return str;
@@ -61,11 +61,11 @@ char *tm_to_ISO8601_date(struct tm *tm)
 	return NULL;
 }
 
-char *tm_to_ISO8601_time(struct tm *tm)
+char *tm_to_ISO8601_time(const struct tm *tm)
 {
-	char *str;
-
-	str = malloc(ISO8601_TIME_LENGTH + 1);
+	char *str = malloc(ISO8601_TIME_LENGTH + 1);
+	if (str == NULL)
+		return NULL;
 
 	if (strftime(str, ISO8601_TIME_LENGTH + 1, "%FT%T", tm))
 		return str;
@@ -76,8 +76,62 @@ char *tm_to_ISO8601_time(struct tm *tm)
 
 char *get_current_ISO8601_time(void)
 {
-	time_t t;
-
-	t = time(NULL);
+	time_t t = time(NULL);
 	return time_to_ISO8601_time(&t);
+}
+
+char *time_to_str(const time_t s)
+{
+    /* note: localtime returns a static field, no free required */
+    const struct tm *tm = localtime(&s);
+
+    if (!tm)
+        return NULL;
+
+    char *str = calloc(8, sizeof(char));
+
+    if (str ==NULL)
+    {
+       return NULL;
+    }        
+
+    strftime(str, 6, "%H:%M", tm);
+
+    return str;
+}
+
+char *time_to_str2(const time_t s)
+{
+    
+    /* note: localtime returns a static field, no free required */
+    const struct tm *tm = localtime(&s);
+
+    if (!tm)
+        return NULL;
+
+    char *str = calloc(24, sizeof(char));
+
+    if (str == NULL)
+        return NULL;
+
+    strftime(str, 16, "%H:%M:%S", tm);
+
+    return str;
+}
+
+char *time_to_str3(const time_t *t)
+{
+	struct tm lt;
+	char *str;
+
+	if (!localtime_r(t, &lt))
+		return NULL;
+
+	str = malloc(64);
+
+	if (strftime(str, 64, "%s", &lt))
+		return str;
+
+	free(str);
+	return NULL;
 }

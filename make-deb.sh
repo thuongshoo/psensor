@@ -27,6 +27,7 @@ Build-Depends: debhelper (>= 13),
                libsensors-dev,
                libnotify-dev,
                libglib2.0-dev,
+               libglib2.0-bin,
                libjson-c-dev,
                libcurl4-openssl-dev,
                libmicrohttpd-dev,
@@ -60,9 +61,6 @@ cat > debian/rules << 'EOF'
 override_dh_auto_configure:
 	dh_auto_configure -- -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
 
-# NGĂN KHÔNG CHO NORMALIZE FILE .mo
-override_dh_strip_nondeterminism:
-	dh_strip_nondeterminism -X.mo
 EOF
 
 # Create debian/copyright

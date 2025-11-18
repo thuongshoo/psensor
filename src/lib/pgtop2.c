@@ -34,36 +34,45 @@ static const char *PROVIDER_NAME = "gtop2";
 
 struct psensor *create_cpu_usage_sensor(unsigned int measures_len)
 {
-	char *label, *id;
-	unsigned int type;
-	struct psensor *psensor;
+	char* id = g_strdup_printf("%s cpu usage", PROVIDER_NAME);
+	char* label = strdup(_("CPU usage"));
+	unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_CPU_USAGE;
 
-	id = g_strdup_printf("%s cpu usage", PROVIDER_NAME);
-	label = strdup(_("CPU usage"));
-	type = SENSOR_TYPE_GTOP | SENSOR_TYPE_CPU_USAGE;
-
-	psensor = psensor_create(id,
+	char* chip = strdup(_("CPU"));
+	struct psensor *psensor = psensor_create(id,
 				 label,
-				 strdup(_("CPU")),
+				 chip,
 				 type,
 				 measures_len);
-
+	if (psensor == NULL)
+	{
+		free(chip);
+		free(label);
+		free(id);
+		return NULL;
+	}
 	return psensor;
 }
 
 static struct psensor *create_mem_free_sensor(unsigned int measures_len)
 {
-	char *id;
-	unsigned int type;
-
-	id = g_strdup_printf("%s mem free", PROVIDER_NAME);
-	type = SENSOR_TYPE_GTOP | SENSOR_TYPE_MEMORY | SENSOR_TYPE_PERCENT;
-
-	return psensor_create(id,
-			      strdup(_("free memory")),
-			      strdup(_("memory")),
+	char* id = g_strdup_printf("%s mem free", PROVIDER_NAME);
+	char* name = strdup(_("free memory"));
+	char* chip = strdup(_("memory"));
+	unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_MEMORY | SENSOR_TYPE_PERCENT;
+	struct psensor* tmp = psensor_create(id,
+			      name,
+			      chip,
 			      type,
 			      measures_len);
+	if (tmp == NULL)
+	{
+		free(chip);
+		free(name);
+		free(id);
+		return NULL;
+	}
+	return tmp;
 }
 
 static double get_usage(void)

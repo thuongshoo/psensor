@@ -29,7 +29,7 @@
 #include "../src/lib/psensor.h"
 
 static int
-test_fct(unsigned int type, int use_celsius, const char *ref)
+test_fct(unsigned int type, unsigned int use_celsius, const char *ref)
 {
 	const char *u;
 

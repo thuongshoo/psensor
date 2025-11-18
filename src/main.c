@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#define _GNU_SOURCE  // Thêm này ở đầu file, trước mọi #include
+#define _GNU_SOURCE
 #include <locale.h>
 
 #include <sched.h>
@@ -27,6 +27,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
+#include <pmutex.h>
 
 #include <gtk/gtk.h>
 
@@ -40,7 +42,6 @@
 #include <notify_cmd.h>
 #include <nvidia.h>
 #include <pgtop2.h>
-#include <pmutex.h>
 #include <psensor.h>
 #include <pudisks2.h>
 #include <rsensor.h>
@@ -61,12 +62,12 @@ static void print_version(void)
 {
 	printf("psensor %s\n", VERSION);
 	printf(_("Copyright (C) %s jeanfi@gmail.com\n"
-		 "License GPLv2: GNU GPL version 2 or later "
-		 "<http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
-		 "This is free software: you are free to change and"
-		 " redistribute it.\n"
-		 "There is NO WARRANTY, to the extent permitted by law.\n"),
-	       "2010-2014");
+			 "License GPLv2: GNU GPL version 2 or later "
+			 "<http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
+			 "This is free software: you are free to change and"
+			 " redistribute it.\n"
+			 "There is NO WARRANTY, to the extent permitted by law.\n"),
+		   "2010-2014");
 }
 
 static void print_help(void)
@@ -74,30 +75,39 @@ static void print_help(void)
 	printf(_("Usage: %s [OPTION]...\n"), program_name);
 
 	puts(_("Psensor is a GTK+ application for monitoring hardware sensors, "
-	       "including temperatures and fan speeds."));
+		   "including temperatures and fan speeds."));
 
 	puts("");
 	puts(_("Options:"));
 	puts(_("  -h, --help          display this help and exit\n"
-	       "  -v, --version       display version information and exit"));
+		   "  -v, --version       display version information and exit"));
 
 	puts("");
 
 	puts(_(
-"  -u, --url=URL       the URL of the psensor-server,\n"
-"                      example: http://hostname:3131"));
+		"  -u, --url=URL       the URL of the psensor-server,\n"
+		"                      example: http://hostname:3131"));
 	puts(_(
-"  -n, --new-instance  force the creation of a new Psensor application"));
+		"  -n, --new-instance  force the creation of a new Psensor application"));
 	puts("");
 
 	puts(_("  -d, --debug=LEVEL   "
-	       "set the debug level, integer between 0 and 3"));
+		   "set the debug level, integer between 0 and 3"));
 
 	puts("");
 
 	printf(_("Report bugs to: %s\n"), PACKAGE_BUGREPORT);
 	puts("");
 	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
+}
+
+static int update_measures_lock(pthread_mutex_t *m)
+{
+	return pmutex_lock(m);
+}
+static int update_measures_unlock(pthread_mutex_t *m)
+{
+	return pmutex_unlock(m);
 }
 
 /*
@@ -109,35 +119,37 @@ update_psensor_values_size(struct psensor **sensors, struct config *cfg)
 {
 	struct psensor **cur, *s;
 
-	for (cur = sensors; *cur; cur++) {
+	for (cur = sensors; *cur; cur++)
+	{
 		s = *cur;
-
+		// User can modify graph_monitoring_duration and sensor_update_interval in UI
+		// This triggers recalculation of sensor_values_max_length in configuration
 		if (s->values_max_length != cfg->sensor_values_max_length)
 			psensor_values_resize(s,
-					      cfg->sensor_values_max_length);
+								  cfg->sensor_values_max_length);
+		else
+			return;
 	}
 }
 
 static void *update_measures(void *data)
 {
-	struct psensor **sensors;
-	struct config *cfg;
-	int period;
-	struct ui_psensor *ui;
+	struct ui_psensor *ui = (struct ui_psensor *)data;
+	struct config *cfg = ui->config;
 
-	ui = (struct ui_psensor *)data;
-	cfg = ui->config;
+	pthread_setname_np(pthread_self(), "update_measures");
+	while (1)
+	{
+		update_measures_lock(&ui->sensors_mutex);
 
-	while (1) {
-		pmutex_lock(&ui->sensors_mutex);
-
-		sensors = ui->sensors;
+		struct psensor **sensors = ui->sensors;
 		if (!sensors)
 			pthread_exit(NULL);
 
 		update_psensor_values_size(sensors, cfg);
 
-		lmsensor_psensor_list_update(sensors);
+		size_t count = 0;
+		count += lmsensor_psensor_list_update(sensors);
 
 		remote_psensor_list_update(sensors);
 		nvidia_psensor_list_update(sensors);
@@ -147,11 +159,15 @@ static void *update_measures(void *data)
 		atasmart_psensor_list_update(sensors);
 		hddtemp_psensor_list_update(sensors);
 
-		//psensor_log_measures(sensors);
+		psensor_log_measures(sensors);
 
-		period = cfg->sensor_update_interval;
+		if (count > 0)
+		{
+			cfg->is_new_data = true;
+		}
+		int period = cfg->sensor_update_interval;
 
-		pmutex_unlock(&ui->sensors_mutex);
+		update_measures_unlock(&ui->sensors_mutex);
 
 		sleep(period);
 	}
@@ -159,15 +175,14 @@ static void *update_measures(void *data)
 
 static void indicators_update(struct ui_psensor *ui)
 {
-	struct psensor **ss, *s;
-	bool attention;
+	bool attention = false;
+	struct psensor **ss = ui->sensors;
+	while (*ss)
+	{
+		struct psensor *s = *ss;
 
-	attention = false;
-	ss = ui->sensors;
-	while (*ss) {
-		s = *ss;
-
-		if (s->alarm_raised && config_get_sensor_alarm_enabled(s->id)) {
+		if (s->alarm_raised && config_get_sensor_alarm_enabled(s->id))
+		{
 			attention = true;
 			break;
 		}
@@ -182,43 +197,77 @@ static void indicators_update(struct ui_psensor *ui)
 		ui_status_update(ui, attention);
 }
 
+static gboolean ui_refresh_thread(gpointer data);
+static void queue_another_execution(struct ui_psensor *ui)
+{
+	g_timeout_add(1000 * ui->graph_update_interval,
+				  ui_refresh_thread, ui);
+}
+
+// This idle function ensures the call is made from the main thread
+static gboolean queue_redraw_idle(GtkWidget *widget)
+{
+	gtk_widget_queue_draw(widget);
+	return G_SOURCE_REMOVE; // Run only once
+}
+static int ui_refresh_thread_lock(pthread_mutex_t *m)
+{
+	return pmutex_lock(m);
+}
+static int ui_refresh_thread_unlock(pthread_mutex_t *m)
+{
+	return pmutex_unlock(m);
+}
 static gboolean ui_refresh_thread(gpointer data)
 {
-	struct config *cfg;
-	gboolean ret;
 	struct ui_psensor *ui = (struct ui_psensor *)data;
 
-	ret = TRUE;
-	cfg = ui->config;
+	pthread_setname_np(pthread_self(), "ui_refresh_thread");
 
-	pmutex_lock(&ui->sensors_mutex);
+	gboolean ret = TRUE;
+	struct config *cfg = ui->config;
 
-	graph_update(ui->sensors, ui_get_graph(), ui->config, ui->main_window);
-
-	ui_sensorlist_update(ui, 0);
+	if (cfg->is_new_data == false)
+	{
+		queue_another_execution(ui);
+		return false;
+	}
+    ////
+	ui_refresh_thread_lock(&ui->sensors_mutex);
 
 	if (is_appindicator_supported() || is_status_supported())
 		indicators_update(ui);
 
 	ui_unity_launcher_entry_update(ui->sensors);
 
-	if (ui->graph_update_interval != cfg->graph_update_interval) {
+	if (ui->graph_update_interval != cfg->graph_update_interval)
+	{
 		ui->graph_update_interval = cfg->graph_update_interval;
 		ret = FALSE;
 	}
+	
+	ui_refresh_thread_unlock(&ui->sensors_mutex);
+	////
+	if (!should_update_ui(ui)) {
+        queue_another_execution(ui);
+        return G_SOURCE_REMOVE;
+    }
 
-	pmutex_unlock(&ui->sensors_mutex);
+	ui_sensorlist_update(ui, 0);
+	// Instead of direct drawing, request a widget redraw
+	g_idle_add((GSourceFunc)queue_redraw_idle,
+			   ui_get_graph_widget());
 
 	if (ret == FALSE)
-		g_timeout_add(1000 * ui->graph_update_interval,
-			      ui_refresh_thread, ui);
+		queue_another_execution(ui);
 
 	return ret;
 }
 
 static void cb_alarm_raised(struct psensor *sensor, void *data)
 {
-	if (config_get_sensor_alarm_enabled(sensor->id)) {
+	if (config_get_sensor_alarm_enabled(sensor->id))
+	{
 		ui_notify(sensor, (struct ui_psensor *)data);
 		notify_cmd(sensor);
 	}
@@ -233,26 +282,29 @@ associate_cb_alarm_raised(struct psensor **sensors, struct ui_psensor *ui)
 
 	high_temp = config_get_default_high_threshold_temperature();
 
-	while (*sensors) {
+	while (sensors && *sensors)
+	{
 		s = *sensors;
 
 		s->cb_alarm_raised = cb_alarm_raised;
 		s->cb_alarm_raised_data = ui;
 
-		ret = config_get_sensor_alarm_high_threshold
-			(s->id, &s->alarm_high_threshold);
+		ret = config_get_sensor_alarm_high_threshold(s->id, &s->alarm_high_threshold);
 
-		if (!ret) {
-			if (s->max == UNKNOWN_DOUBLE_VALUE) {
+		if (!ret)
+		{
+			if (s->max == UNKNOWN_DOUBLE_VALUE)
+			{
 				if (s->type & SENSOR_TYPE_TEMP)
 					s->alarm_high_threshold = high_temp;
-			} else {
+			}
+			else
+			{
 				s->alarm_high_threshold = s->max;
 			}
 		}
 
-		ret = config_get_sensor_alarm_low_threshold
-			(s->id, &s->alarm_low_threshold);
+		ret = config_get_sensor_alarm_low_threshold(s->id, &s->alarm_low_threshold);
 
 		if (!ret && s->min != UNKNOWN_DOUBLE_VALUE)
 			s->alarm_low_threshold = s->min;
@@ -265,13 +317,15 @@ static void associate_preferences(struct psensor **sensors)
 {
 	struct psensor **sensor_cur = sensors;
 
-	while (*sensor_cur) {
+	while (*sensor_cur)
+	{
 		char *n;
 		struct psensor *s = *sensor_cur;
 
 		n = config_get_sensor_name(s->id);
 
-		if (n) {
+		if (n)
+		{
 			free(s->name);
 			s->name = n;
 		}
@@ -303,8 +357,7 @@ static struct option long_options[] = {
 	{"url", required_argument, NULL, 'u'},
 	{"debug", required_argument, NULL, 'd'},
 	{"new-instance", no_argument, NULL, 'n'},
-	{NULL, 0, NULL, 0}
-};
+	{NULL, 0, NULL, 0}};
 
 static gboolean initial_window_show(gpointer data)
 {
@@ -317,8 +370,7 @@ static gboolean initial_window_show(gpointer data)
 	log_debug("is_appindicator_supported: %d", is_appindicator_supported());
 	log_debug("hide_on_startup: %d", ui->config->hide_on_startup);
 
-	if (!ui->config->hide_on_startup
-	    || (!is_appindicator_supported() && !is_status_supported()))
+	if (!ui->config->hide_on_startup || (!is_appindicator_supported() && !is_status_supported()))
 		ui_window_show(ui);
 
 	ui_window_update(ui);
@@ -329,34 +381,44 @@ static gboolean initial_window_show(gpointer data)
 static void log_glib_info(void)
 {
 	log_debug("Compiled with GLib %d.%d.%d",
-		  GLIB_MAJOR_VERSION,
-		  GLIB_MINOR_VERSION,
-		  GLIB_MICRO_VERSION);
+			  GLIB_MAJOR_VERSION,
+			  GLIB_MINOR_VERSION,
+			  GLIB_MICRO_VERSION);
 
 	log_debug("Running with GLib %d.%d.%d",
-		  glib_major_version,
-		  glib_minor_version,
-		  glib_micro_version);
+			  glib_major_version,
+			  glib_minor_version,
+			  glib_micro_version);
 }
 
 static void cb_activate(GApplication *application,
-			gpointer data)
+						gpointer data)
 {
 	ui_window_show((struct ui_psensor *)data);
 }
 
+static int cleanup_lock(pthread_mutex_t *m)
+{
+	return pmutex_lock(m);
+}
+static int cleanup_unlock(pthread_mutex_t *m)
+{
+	return pmutex_unlock(m);
+}
 /*
  * Release memory for Valgrind.
  */
 static void cleanup(struct ui_psensor *ui)
 {
-	pmutex_lock(&ui->sensors_mutex);
+	cleanup_lock(&ui->sensors_mutex);
 
 	log_debug("Cleanup...");
 
 	nvidia_cleanup();
 	amd_cleanup();
 	rsensor_cleanup();
+	if (config_is_lmsensor_enabled())
+		lmsensor_cleanup();
 
 	psensor_list_free(ui->sensors);
 	ui->sensors = NULL;
@@ -365,7 +427,7 @@ static void cleanup(struct ui_psensor *ui)
 
 	ui_status_cleanup();
 
-	pmutex_unlock(&ui->sensors_mutex);
+	cleanup_unlock(&ui->sensors_mutex);
 
 	config_cleanup();
 
@@ -381,24 +443,32 @@ static void cleanup(struct ui_psensor *ui)
  *
  * 'url': remote psensor server url, null for local monitoring.
  */
-static struct psensor **create_sensors_list(const char *url)
+static struct psensor **create_sensors_list(const char *url, const struct config *config)
 {
-	const unsigned int measures_len = 600;
 	struct psensor **sensors;
 
-	if (url) {
-		if (rsensor_is_supported()) {
+	if (url)
+	{
+		if (rsensor_is_supported())
+		{
 			rsensor_init();
+			const unsigned int measures_len = 600;
 			sensors = get_remote_sensors(url, measures_len);
-		} else {
+		}
+		else
+		{
 			log_err(_("Psensor has not been compiled with remote "
-				  "sensor support."));
+					  "sensor support."));
 			exit(EXIT_FAILURE);
 		}
-	} else {
-		sensors = malloc(sizeof(struct psensor *));
-		*sensors = NULL;
+	}
+	else
+	{
+		sensors = (struct psensor **)calloc(1, sizeof(struct psensor *));
+		if (sensors == NULL)
+			return NULL;
 
+		const unsigned int measures_len = config->sensor_values_max_length;
 		if (config_is_lmsensor_enabled())
 			lmsensor_psensor_list_append(&sensors, measures_len);
 
@@ -428,20 +498,17 @@ static struct psensor **create_sensors_list(const char *url)
 
 int main(int argc, char **argv)
 {
-	struct ui_psensor ui;
-	pthread_t thread;
-	int optc, cmdok, opti, new_instance, ret;
+	int optc, cmdok, opti, ret;
 	char *url = NULL;
-	GApplication *app;
 
 	// cpu_set_t mask;
 	// CPU_ZERO(&mask);
-	// CPU_SET(0, &mask);  // Chỉ dùng CPU 0
+	// CPU_SET(0, &mask); // Only use CPU 0
 	// sched_setaffinity(0, sizeof(mask), &mask);
 
 	program_name = argv[0];
 
-	printf("DATE TIME: %s %s \n", __TIME__, __DATE__);
+	// printf("DATE TIME: %s %s \n", __TIME__, __DATE__);
 	// char *current_locale = setlocale(LC_ALL, "");
 	// printf("Current locale: %s\n", current_locale ? current_locale : "NULL");
 	// printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "NULL");
@@ -449,24 +516,26 @@ int main(int argc, char **argv)
 	// printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "NULL");
 
 #if ENABLE_NLS
-        //printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
+	// printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
-        // char *bound_dir = bindtextdomain(PACKAGE, NULL);
-        // printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
-        // printf("Current textdomain: %s\n", textdomain(NULL));
+	// char *bound_dir = bindtextdomain(PACKAGE, NULL);
+	// printf("Bound directory: %s\n", bound_dir ? bound_dir : "NULL");
+	// printf("Current textdomain: %s\n", textdomain(NULL));
 #else
-        printf("NLS not enabled\n");
+	printf("NLS not enabled\n");
 #endif
 
-	new_instance = 0;
+	int new_instance = 0;
 
 	cmdok = 1;
-	while ((optc = getopt_long(argc, argv, "vhd:u:n", long_options,
-				   &opti)) != -1) {
-		switch (optc) {
+	while ((optc = getopt_long(argc, argv, "vhd:u:n", long_options, &opti)) != -1)
+	{
+		switch (optc)
+		{
 		case 'u':
-			if (optarg) {
+			if (optarg)
+			{
 				if (url)
 					free(url);
 				url = strdup(optarg);
@@ -495,9 +564,10 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (!cmdok || optind != argc) {
+	if (!cmdok || optind != argc)
+	{
 		fprintf(stderr, _("Try `%s --help' for more information.\n"),
-			program_name);
+				program_name);
 		if (url)
 			free(url);
 		exit(EXIT_FAILURE);
@@ -505,17 +575,21 @@ int main(int argc, char **argv)
 
 	log_init();
 
-	app = g_application_new("wpitchoune.psensor", 0);
+	GApplication *app = g_application_new("wpitchoune.psensor", 0);
 
 	g_application_register(app, NULL, NULL);
 
-	if (!new_instance && g_application_get_is_remote(app)) {
+	if (!new_instance && g_application_get_is_remote(app))
+	{
 		g_application_activate(app);
 		log_warn(_("A Psensor instance already exists."));
 		if (url)
 			free(url);
 		exit(EXIT_SUCCESS);
 	}
+
+	struct ui_psensor ui;
+	memset((void *)&ui, 0, sizeof(struct ui_psensor));
 
 	g_signal_connect(app, "activate", G_CALLBACK(cb_activate), &ui);
 
@@ -535,14 +609,14 @@ int main(int argc, char **argv)
 
 	ui.config = config_load();
 
-	ui.sensors = create_sensors_list(url);
+	ui.sensors = create_sensors_list(url, ui.config);
 	associate_cb_alarm_raised(ui.sensors, &ui);
 
 	if (ui.config->slog_enabled)
 		slog_activate(NULL,
-			      ui.sensors,
-			      &ui.sensors_mutex,
-			      config_get_slog_interval());
+					  ui.sensors,
+					  &ui.sensors_mutex,
+					  config_get_slog_interval());
 
 	// ui_status_init(&ui);
 	// ui_status_set_visible(1);
@@ -551,7 +625,8 @@ int main(int argc, char **argv)
 	ui_window_create(&ui);
 
 	ui_enable_alpha_channel(&ui);
-
+	
+	pthread_t thread;
 	ret = pthread_create(&thread, NULL, update_measures, &ui);
 	if (ret)
 		log_err(_("Failed to create thread for monitoring sensors"));
@@ -571,7 +646,7 @@ int main(int argc, char **argv)
 	//  * drawn before determining whether the main window must be
 	//  * show.
 	//  */
-	if  (ui.config->hide_on_startup)
+	if (ui.config->hide_on_startup)
 	{
 		g_timeout_add(1000, (GSourceFunc)initial_window_show, &ui);
 	}
@@ -584,9 +659,8 @@ int main(int argc, char **argv)
 	gtk_main();
 
 	cleanup(&ui);
-	pthread_join(thread, NULL);
 
-	//graph_cleanup();
+	pthread_join(thread, NULL);
 
 	log_debug("Quitting...");
 	log_close();

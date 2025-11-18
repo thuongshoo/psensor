@@ -41,34 +41,45 @@ struct lmsensor_data {
 
 static const sensors_chip_name *get_chip_name(struct psensor *s)
 {
-	return ((struct lmsensor_data *)s->provider_data)->chip;
+	if (s)
+	{
+		struct lmsensor_data* provider_data = (struct lmsensor_data *) s->provider_data;
+		if (provider_data)
+			return provider_data->chip;		
+	}
+	return NULL;
 }
 
 static const sensors_feature *get_feature(struct psensor *s)
 {
-	return ((struct lmsensor_data *)s->provider_data)->feature;
+	if (s)
+	{
+		struct lmsensor_data* provider_data = (struct lmsensor_data *) s->provider_data;
+		if (provider_data)
+			return provider_data->feature;
+	}
+	return NULL;
 }
 
 static void lmsensor_data_set(struct psensor *s,
 			      const struct sensors_chip_name *chip,
 			      const struct sensors_feature *feature)
 {
-	struct lmsensor_data *data;
+	struct lmsensor_data *data = malloc(sizeof(struct lmsensor_data));
+	if (data != NULL)
+	{
+		data->chip = chip;
+		data->feature = feature;
 
-	data = malloc(sizeof(struct lmsensor_data));
-	data->chip = chip;
-	data->feature = feature;
-
-	s->provider_data = data;
+		s->provider_data = data;
+	}
 }
 
 static double get_value(const sensors_chip_name *name,
 			const sensors_subfeature *sub)
 {
 	double val;
-	int err;
-
-	err = sensors_get_value(name, sub->number, &val);
+	int err = sensors_get_value(name, sub->number, &val);
 	if (err) {
 		log_err(_("%s: Cannot get value of subfeature %s: %s."),
 			PROVIDER_NAME,
@@ -81,16 +92,10 @@ static double get_value(const sensors_chip_name *name,
 
 static double get_temp_input(struct psensor *sensor)
 {
-	const sensors_subfeature *sf;
+	const sensors_chip_name *chip = get_chip_name(sensor);
+	const sensors_feature *feature = get_feature(sensor);
 
-	const sensors_chip_name *chip;
-
-	const sensors_feature *feature;
-
-	chip = get_chip_name(sensor);
-	feature = get_feature(sensor);
-
-	sf = sensors_get_subfeature(chip,
+	const sensors_subfeature *sf = sensors_get_subfeature(chip,
 				    feature,
 				    SENSORS_SUBFEATURE_TEMP_INPUT);
 	if (sf)
@@ -101,15 +106,10 @@ static double get_temp_input(struct psensor *sensor)
 
 static double get_fan_input(struct psensor *sensor)
 {
-	const sensors_chip_name *chip;
-	const sensors_feature *feature;
+	const sensors_chip_name *chip = get_chip_name(sensor);
+	const sensors_feature *feature = get_feature(sensor);
 
-	const sensors_subfeature *sf;
-
-	chip = get_chip_name(sensor);
-	feature = get_feature(sensor);
-
-	sf = sensors_get_subfeature(chip,
+	const sensors_subfeature *sf = sensors_get_subfeature(chip,
 				    feature,
 				    SENSORS_SUBFEATURE_FAN_INPUT);
 
@@ -119,31 +119,35 @@ static double get_fan_input(struct psensor *sensor)
 	return UNKNOWN_DOUBLE_VALUE;
 }
 
-void lmsensor_psensor_list_update(struct psensor **sensors)
+size_t lmsensor_psensor_list_update(struct psensor **sensors)
 {
-	struct psensor *s;
-	double v;
-
 	if (!init_done || !sensors)
-		return;
+		return 0;
 
+	size_t count = 0;
 	while (*sensors) {
-		s = *sensors;
+		struct psensor *s = *sensors;
 
 		if (!(s->type & SENSOR_TYPE_REMOTE)
 		    && s->type & SENSOR_TYPE_LMSENSOR) {
-
+			
+			double v;
 			if (s->type & SENSOR_TYPE_TEMP)
 				v = get_temp_input(s);
 			else /* s->type & SENSOR_TYPE_RPM */
 				v = get_fan_input(s);
 
 			if (v != UNKNOWN_DOUBLE_VALUE)
+			{	
 				psensor_set_current_value(s, v);
+				++count;
+			}
 		}
 
 		sensors++;
 	}
+
+	return count;
 }
 
 static struct psensor *
@@ -152,16 +156,17 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 			unsigned int values_max_length)
 {
 	char name[200];
-	const sensors_subfeature *sf;
-	int type;
-	char *id, *label, *cname;
-	struct psensor *psensor;
-	sensors_subfeature_type fault_subfeature, min_subfeature,
-		max_subfeature;
-
+	
 	if (sensors_snprintf_chip_name(name, 200, chip) < 0)
 		return NULL;
 
+    // if (strcmp("spd5118-i2c-17-51", name)) {
+	// 	return NULL;
+	// }
+
+	sensors_subfeature_type fault_subfeature;
+	sensors_subfeature_type min_subfeature;
+	sensors_subfeature_type max_subfeature;
 	if (feature->type == SENSORS_FEATURE_TEMP) {
 		fault_subfeature = SENSORS_SUBFEATURE_TEMP_FAULT;
 		max_subfeature = SENSORS_SUBFEATURE_TEMP_MAX;
@@ -175,15 +180,11 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 		return NULL;
 	}
 
-	sf = sensors_get_subfeature(chip, feature, fault_subfeature);
-	if (sf && get_value(chip, sf))
-		return NULL;
-
-	label = sensors_get_label(chip, feature);
+	char* label = sensors_get_label(chip, feature);
 	if (!label)
 		return NULL;
 
-	type = SENSOR_TYPE_LMSENSOR;
+	unsigned int type = SENSOR_TYPE_LMSENSOR;
 	if (feature->type == SENSORS_FEATURE_TEMP)
 		type |= SENSOR_TYPE_TEMP;
 	else if (feature->type == SENSORS_FEATURE_FAN)
@@ -191,14 +192,18 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 	else
 		return NULL;
 
-	id = malloc(strlen(PROVIDER_NAME)
+	char* id = malloc(strlen(PROVIDER_NAME)
 		    + 1
 		    + strlen(name)
 		    + 1
 		    + strlen(label)
 		    + 1);
+	if (id == NULL)
+		return NULL;
+
 	sprintf(id, "%s %s %s", PROVIDER_NAME, name, label);
 
+	char* cname;
 	if (!strcmp(chip->prefix, "coretemp"))
 		cname = strdup(_("Intel CPU"));
 	else if (!strcmp(chip->prefix, "k10temp")
@@ -214,7 +219,21 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 	else
 		cname = strdup(chip->prefix);
 
-	psensor = psensor_create(id, label, cname, type, values_max_length);
+	struct psensor *psensor = psensor_create(id, label, cname, type, values_max_length);
+	if (psensor == NULL)
+	{
+		free(cname);
+		free(id);
+		free(label);
+		return NULL;
+	}
+
+	const sensors_subfeature *sf = sensors_get_subfeature(chip, feature, fault_subfeature);
+	if (sf && get_value(chip, sf))
+	{
+		psensor_free(psensor);
+		return NULL;
+	}
 
 	sf = sensors_get_subfeature(chip, feature, max_subfeature);
 	if (sf)
@@ -228,7 +247,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 
 	if (feature->type == SENSORS_FEATURE_TEMP
 	    && (get_temp_input(psensor) == UNKNOWN_DOUBLE_VALUE)) {
-		free(psensor);
+		psensor_free(psensor);
 		return NULL;
 	}
 
@@ -237,9 +256,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 
 static void lmsensor_init(void)
 {
-	int err;
-
-	err = sensors_init(NULL);
+	int err = sensors_init(NULL);
 
 	if (err) {
 		log_err(_("%s: initialization failure: %s."),
@@ -253,27 +270,22 @@ static void lmsensor_init(void)
 
 void lmsensor_psensor_list_append(struct psensor ***sensors, unsigned int values_max_length)
 {
-	const sensors_chip_name *chip;
-	int chip_nr, i;
-	const sensors_feature *feature;
-	struct psensor *s;
-
 	if (!init_done)
 		lmsensor_init();
 
 	if (!init_done)
 		return;
 
-	chip_nr = 0;
+	int chip_nr = 0;
+	const sensors_chip_name *chip;
 	while ((chip = sensors_get_detected_chips(NULL, &chip_nr))) {
-
-		i = 0;
+		int i = 0;
+		const sensors_feature *feature;
 		while ((feature = sensors_get_features(chip, &i))) {
 			if (feature->type == SENSORS_FEATURE_TEMP
 			    || feature->type == SENSORS_FEATURE_FAN) {
 
-				s = lmsensor_psensor_create(chip, feature, values_max_length);
-
+				struct psensor *s = lmsensor_psensor_create(chip, feature, values_max_length);
 				if (s)
 					psensor_list_append(sensors, s);
 			}

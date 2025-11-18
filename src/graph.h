@@ -31,7 +31,14 @@ void graph_update(struct psensor **sensors,
 		  struct config *config,
 		  GtkWidget *window);
 
+		  void
+redraw_graph(cairo_surface_t *graph_surface,
+	         cairo_t *cr,
+	         const struct psensor **sensors,
+	         GtkWidget *w_graph,
+	         const struct config *config,
+	         GtkWidget *window);
 /* Compute the number of measures which must be kept. */
-unsigned int compute_values_max_length(struct config *);
+unsigned int compute_values_max_length(const struct config *);
 
 #endif
