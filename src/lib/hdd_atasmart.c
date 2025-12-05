@@ -58,9 +58,8 @@ static SkDisk *get_disk(struct psensor *s)
 }
 
 static struct psensor *
-create_sensor(char *id, char *name, SkDisk *disk, unsigned int values_max_length)
+create_sensor(char *id, const char *name, SkDisk *disk, unsigned int values_max_length)
 {
-	
 	unsigned int t = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP;
 
 	char* chip = strdup(name);

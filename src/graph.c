@@ -808,7 +808,7 @@ void redraw_graph(cairo_surface_t *graph_surface, cairo_t *cr, const struct psen
     
     /* Get only enabled sensors */
     const struct psensor **enabled_sensors = 
-        (const struct psensor **)list_filter_graph_enabled((const struct psensor **)sensors);
+        (const struct psensor **)list_filter_graph_enabled(sensors);
     
     /* Create drawing context with all needed data */
     GraphDrawingContext *ctx = create_graph_context(enabled_sensors, config, w_graph);

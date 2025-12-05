@@ -92,7 +92,7 @@ void udisks2_psensor_list_update(struct psensor **sensors)
 	GDBusObject *o;
 	UDisksDriveAta *drive_ata;
 	double v;
-	struct udisks_data *data;
+	const struct udisks_data *data;
 
 	for (; *sensors; sensors++) {
 		s = *sensors;

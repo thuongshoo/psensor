@@ -80,7 +80,7 @@ char *get_current_ISO8601_time(void)
 	return time_to_ISO8601_time(&t);
 }
 
-char *time_to_str(const time_t s)
+char *time_to_str(time_t s)
 {
     /* note: localtime returns a static field, no free required */
     const struct tm *tm = localtime(&s);
@@ -100,9 +100,8 @@ char *time_to_str(const time_t s)
     return str;
 }
 
-char *time_to_str2(const time_t s)
+char *time_to_str2(time_t s)
 {
-    
     /* note: localtime returns a static field, no free required */
     const struct tm *tm = localtime(&s);
 

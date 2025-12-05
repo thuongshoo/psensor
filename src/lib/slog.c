@@ -79,14 +79,12 @@ static char *get_default_path(void)
 
 static bool slog_open(const char *path, struct psensor **sensors)
 {
-	char *lpath, *t;
-
 	if (file) {
 		log_err(_("Sensor log file already open."));
 		return 0;
 	}
 
-	lpath = path ? (char *)path : get_default_path();
+	char* lpath = path ? (char *)path : get_default_path();
 
 	file = fopen(lpath, "a");
 
@@ -100,9 +98,9 @@ static bool slog_open(const char *path, struct psensor **sensors)
 		return 0;
 
 	st = time(NULL);
-	t = time_to_str3(&st);
-	fprintf(file, "I,%s,%s\n", t, VERSION);
-	free(t);
+	char* time = time_to_str3(&st);
+	fprintf(file, "I,%s,%s\n", time, VERSION);
+	free(time);
 
 	while (*sensors) {
 		fprintf(file, "S,%s,%x\n", (*sensors)->id,  (*sensors)->type);
@@ -111,7 +109,7 @@ static bool slog_open(const char *path, struct psensor **sensors)
 
 	fflush(file);
 
-	return 1;
+	return true;
 }
 
 static void slog_write_sensors(struct psensor **sensors)

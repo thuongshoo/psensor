@@ -154,7 +154,6 @@ void psensor_values_resize(struct psensor *psensor, unsigned int new_size)
 
 	psensor->values_max_length = new_size;
 	psensor->measures = new_ms;
-	psensor->measures_size = new_size;
 
 	psensor->measures_size = new_size;
     psensor->measures_head = 0; 
@@ -197,8 +196,6 @@ void psensor_list_free(struct psensor **sensors)
 		}
 
 		free((void*)sensors);
-
-		//sensors = NULL;
 	}
 }
 
@@ -344,8 +341,6 @@ void psensor_set_current_value(struct psensor *sensor, double value)
 
 	if (gettimeofday(&tv, NULL) != 0)
 		timerclear(&tv);
-
-
 
 	psensor_set_current_measure(sensor, value, tv);
 }

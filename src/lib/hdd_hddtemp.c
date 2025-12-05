@@ -217,7 +217,7 @@ hddtemp_psensor_list_append(struct psensor ***sensors, unsigned int values_max_l
 	free(hddtemp_output);
 }
 
-static void update(struct psensor **sensors, struct hdd_info *info)
+static void update(struct psensor **sensors, const struct hdd_info *info)
 {
 	while (*sensors) {
 		if (!((*sensors)->type & SENSOR_TYPE_REMOTE)
@@ -232,13 +232,11 @@ static void update(struct psensor **sensors, struct hdd_info *info)
 
 static bool contains_hddtemp_sensor(struct psensor **sensors)
 {
-	struct psensor *s;
-
 	if (!sensors)
 		return false;
 
 	while (*sensors) {
-		s = *sensors;
+		const struct psensor *s = *sensors;
 		if (!(s->type & SENSOR_TYPE_REMOTE)
 		     && (s->type & SENSOR_TYPE_HDDTEMP))
 			return true;

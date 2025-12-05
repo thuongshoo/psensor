@@ -154,7 +154,11 @@ static void set_bool(const char *k, bool b)
 
 static bool get_bool(const char *k)
 {
-	return g_settings_get_boolean(settings, k);
+	int temp = g_settings_get_boolean(settings, k);
+	if (temp > 0)
+		return true;
+	
+	return false;
 }
 
 static void set_int(const char *k, int i)

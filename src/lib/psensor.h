@@ -202,9 +202,6 @@ typedef struct all_minmax_st {
 
 ALL_MINMAX get_all_minmax_value(const struct psensor **all_sensors);
 
-double get_max_value(const struct psensor **sensors, unsigned int type);
-double get_min_value(const struct psensor **all_sensors, unsigned int sensor_type_mask);
-
 char *psensor_current_value_to_str(const struct psensor *, unsigned int);
 
 void psensor_log_measures(struct psensor **sensors);
