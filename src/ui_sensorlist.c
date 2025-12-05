@@ -57,28 +57,22 @@ static int col_index_to_col(int idx)
 
 static void populate(struct ui_psensor *ui)
 {
-	GtkTreeIter iter;
-	GtkListStore *store;
-	GdkRGBA *color;
-	char *scolor;
-	struct psensor **ordered_sensors, **s_cur, *s;
-	unsigned int enabled;
-
-	ordered_sensors = ui_get_sensors_ordered_by_position(ui->sensors);
-	store = ui->sensors_store;
+	struct psensor **ordered_sensors = ui_get_sensors_ordered_by_position(ui->sensors);
+	GtkListStore *store = ui->sensors_store;
 
     gtk_list_store_clear(store);
 
-	for (s_cur = ordered_sensors; *s_cur; s_cur++) {
-        s = *s_cur;
+	for (struct psensor **s_cur = ordered_sensors; *s_cur; s_cur++) {
+        struct psensor *s = *s_cur;
 
+        GtkTreeIter iter;
         gtk_list_store_append(store, &iter);
 
-		color = config_get_sensor_color(s->id);
+		GdkRGBA *color = config_get_sensor_color(s->id);
 
-		scolor = gdk_rgba_to_string(color);
+		char *scolor = gdk_rgba_to_string(color);
 
-		enabled = config_is_sensor_enabled(s->id);
+		unsigned int enabled = (unsigned char)config_is_sensor_enabled(s->id);
         gtk_list_store_set(store, &iter,
                    COL_NAME, s->name,
                    COL_COLOR_STR, scolor,
@@ -90,7 +84,7 @@ static void populate(struct ui_psensor *ui)
         free(scolor);
         gdk_rgba_free(color);
     }
-    free(ordered_sensors);
+    free((void*)ordered_sensors);
 }
 
 void ui_sensorlist_update(struct ui_psensor *ui, bool complete)

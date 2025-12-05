@@ -68,7 +68,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 		else
 			use_celsius = 0;
 
-		printf("ui_notify name=%s count=%lu theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
+		//printf("ui_notify name=%s count=%lu theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
 		struct measure *measure = psensor_get_current_measure(sensor);
 		
 		svalue = psensor_measure_to_str

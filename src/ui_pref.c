@@ -66,7 +66,7 @@ void ui_pref_sensorlist_position_changed_cbk(GtkComboBox *combo, gpointer data)
 	config_set_sensorlist_position(gtk_combo_box_get_active(combo));
 }
 
-GdkRGBA color_to_GdkRGBA(struct color *color)
+GdkRGBA color_to_GdkRGBA(const struct color *color)
 {
 	GdkRGBA c;
 

@@ -538,8 +538,8 @@ static int cmp_sensors(const void *p1, const void *p2)
 	const struct psensor *s1, *s2;
 	int pos1, pos2;
 
-	s1 = *(void **)p1;
-	s2 = *(void **)p2;
+	s1 = *(const void **)p1;
+	s2 = *(const void **)p2;
 
 	pos1 = config_get_sensor_position(s1->id);
 	pos2 = config_get_sensor_position(s2->id);

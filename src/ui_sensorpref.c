@@ -496,7 +496,7 @@ static void populate(struct psensor *sensor, struct psensor **sensors)
 
 	select_sensor(sensor, ordered_sensors);
 
-	free(ordered_sensors);
+	free((void*)ordered_sensors);
 }
 
 void ui_sensorpref_dialog_run(struct psensor *sensor, struct ui_psensor *ui)

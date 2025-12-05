@@ -115,20 +115,21 @@ static int update_measures_unlock(pthread_mutex_t *m)
  * configuration.
  */
 static void
-update_psensor_values_size(struct psensor **sensors, struct config *cfg)
+update_psensor_values_size(struct psensor **sensors, const struct config *cfg)
 {
-	struct psensor **cur, *s;
-
-	for (cur = sensors; *cur; cur++)
+	for (struct psensor **cur = sensors; *cur; cur++)
 	{
-		s = *cur;
+		struct psensor *s = *cur;
 		// User can modify graph_monitoring_duration and sensor_update_interval in UI
 		// This triggers recalculation of sensor_values_max_length in configuration
 		if (s->values_max_length != cfg->sensor_values_max_length)
 			psensor_values_resize(s,
 								  cfg->sensor_values_max_length);
 		else
+		{
+			//Currently all sensors share the same buffer size so no need to check all
 			return;
+		}
 	}
 }
 
@@ -336,15 +337,14 @@ static void associate_preferences(struct psensor **sensors)
 
 static void log_init(void)
 {
-	const char *dir;
-	char *path;
-
-	dir = get_psensor_user_dir();
+	const char *dir = get_psensor_user_dir();
 
 	if (!dir)
 		return;
 
-	asprintf(&path, "%s/%s", dir, "log");
+	char *path;
+	if (-1 == asprintf(&path, "%s/%s", dir, "log"))
+		return;
 
 	log_open(path);
 

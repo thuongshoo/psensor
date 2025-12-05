@@ -31,8 +31,8 @@ char *time_to_ISO8601_date(time_t *);
 char *tm_to_ISO8601_date(const struct tm *);
 char *tm_to_ISO8601_time(const struct tm *);
 
-char *time_to_str(const time_t s);
-char *time_to_str2(const time_t s);
+char *time_to_str(time_t s);
+char *time_to_str2(time_t s);
 char *time_to_str3(const time_t *t);
 
 #endif

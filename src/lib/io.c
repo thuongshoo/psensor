@@ -38,7 +38,7 @@
 #define DIRSEP '/'
 #endif
 
-//#define FCOPY_BUF_SZ 4096
+// #define FCOPY_BUF_SZ 4096
 
 int is_dir(const char *path)
 {
@@ -66,15 +66,14 @@ int is_file(const char *path)
 
 static char *dir_normalize(const char *dpath)
 {
-	char *npath;
-	size_t n;
-
 	if (!dpath || !strlen(dpath))
 		return NULL;
 
-	npath = strdup(dpath);
+	char *npath = strdup(dpath);
+	if (npath == NULL)
+		return NULL;
 
-	n = strlen(npath);
+	size_t n = strlen(npath);
 
 	if (n > 1 && npath[n - 1] == '/')
 		npath[n - 1] = '\0';
@@ -84,9 +83,9 @@ static char *dir_normalize(const char *dpath)
 
 static char **paths_add(char **paths, int n, char *path)
 {
-	char **result;
-
-	result = (char **)malloc((n+1) * sizeof(void *));
+	char** result = (char**)malloc((n + 1) * sizeof(void *));
+	if (result == NULL)
+		return NULL;
 
 	memcpy(result + 1, paths, n * sizeof(void *));
 
@@ -95,40 +94,43 @@ static char **paths_add(char **paths, int n, char *path)
 	return result;
 }
 
-char **dir_list(const char *dpath, int (*filter) (const char *))
+char **dir_list(const char *dpath, int (*filter)(const char *))
 {
-	struct dirent *ent;
-	DIR *dir;
-	char **paths, *path, *name, **tmp;
-	int n;
-
-	dir = opendir(dpath);
+	DIR *dir = opendir(dpath);
 
 	if (!dir)
 		return NULL;
 
-	n = 1;
-	paths = (char **)malloc(sizeof(void *));
+	int n = 1;
+	char** paths = (char **)malloc(sizeof(void *));
 	if (paths == NULL)
+	{
+		closedir(dir);
 		return NULL;
+	}
 
 	*paths = NULL;
 
-	while ((ent = readdir(dir)) != NULL) {
-		name = ent->d_name;
+	struct dirent *ent;
+	while ((ent = readdir(dir)) != NULL)
+	{
+		char* name = ent->d_name;
 
 		if (!strcmp(name, ".") || !strcmp(name, ".."))
 			continue;
 
-		path = path_append(dpath, name);
+		char* path = path_append(dpath, name);
 
-		if (!filter || filter(path)) {
-			tmp = paths_add(paths, n, path);
+		if (!filter || filter(path))
+		{
+			char** tmp = paths_add(paths, n, path);
 			free(paths);
 			paths = tmp;
 
 			n++;
-		} else {
+		}
+		else
+		{
 			free(path);
 		}
 	}
@@ -140,10 +142,9 @@ char **dir_list(const char *dpath, int (*filter) (const char *))
 
 void paths_free(char **paths)
 {
-	char **paths_cur;
-
-	paths_cur = paths;
-	while (*paths_cur) {
+	char **paths_cur = paths;
+	while (*paths_cur)
+	{
 		free(*paths_cur);
 
 		paths_cur++;
@@ -154,32 +155,39 @@ void paths_free(char **paths)
 
 char *file_get_content(const char *fpath)
 {
-	long size;
-
 	char *page;
 
-	size = file_get_size(fpath);
-	if (size == -1) {
+	long size = file_get_size(fpath);
+	if (size == -1)
+	{
 		page = NULL;
-
-	} else if (size == 0) {
+	}
+	else if (size == 0)
+	{
 		page = malloc(1);
 		*page = '\0';
-
-	} else {
+	}
+	else
+	{
 		FILE *fp = fopen(fpath, "rb");
 
-		if (fp) {
+		if (fp)
+		{
 			page = malloc(size + 1);
-			if (!page || size != fread(page, 1, size, fp)) {
+			if (!page || size != fread(page, 1, size, fp))
+			{
 				free(page);
 				page = NULL;
-			} else {
+			}
+			else
+			{
 				*(page + size) = '\0';
 			}
 
 			fclose(fp);
-		} else {
+		}
+		else
+		{
 			page = NULL;
 		}
 	}
@@ -196,21 +204,24 @@ long file_get_size(const char *path)
 		return -1;
 
 	fp = fopen(path, "rb");
-	if (fp) {
+	if (fp)
+	{
 		if (fseek(fp, 0, SEEK_END) == -1)
 			size = -1;
 		else
 			size = ftell(fp);
 
 		fclose(fp);
-	} else {
+	}
+	else
+	{
 		size = -1;
 	}
 
 	return size;
 }
 
-#define FCOPY_BUF_SZ 4096
+#define FCOPY_BUF_SZ 4096U
 static int FILE_copy(FILE *src, FILE *dst)
 {
 	int ret = 0;
@@ -220,12 +231,16 @@ static int FILE_copy(FILE *src, FILE *dst)
 	if (!buf)
 		return FILE_COPY_ERROR_ALLOC_BUFFER;
 
-	while (!ret) {
+	while (!ret)
+	{
 		n = fread(buf, 1, FCOPY_BUF_SZ, src);
-		if (n) {
+		if (n)
+		{
 			if (fwrite(buf, 1, n, dst) != n)
 				ret = FILE_COPY_ERROR_WRITE;
-		} else {
+		}
+		else
+		{
 			if (!feof(src))
 				ret = FILE_COPY_ERROR_READ;
 			else
@@ -238,8 +253,7 @@ static int FILE_copy(FILE *src, FILE *dst)
 	return ret;
 }
 
-int
-file_copy(const char *src, const char *dst)
+int file_copy(const char *src, const char *dst)
 {
 	FILE *fsrc, *fdst;
 	int ret = 0;
@@ -248,18 +262,24 @@ file_copy(const char *src, const char *dst)
 
 	fsrc = fopen(src, "r");
 
-	if (fsrc) {
+	if (fsrc)
+	{
 		fdst = fopen(dst, "w+");
 
-		if (fdst) {
+		if (fdst)
+		{
 			ret = FILE_copy(fsrc, fdst);
 			fclose(fdst);
-		} else {
+		}
+		else
+		{
 			ret = FILE_COPY_ERROR_OPEN_DST;
 		}
 
 		fclose(fsrc);
-	} else {
+	}
+	else
+	{
 		ret = FILE_COPY_ERROR_OPEN_SRC;
 	}
 
@@ -275,13 +295,16 @@ char *path_append(const char *dir, const char *path)
 	if (!ndir && (!path || !strlen(path)))
 		ret = NULL;
 
-	else if (!ndir) {
+	else if (!ndir)
+	{
 		ret = strdup(path);
-
-	} else if (!path || !strlen(path)) {
+	}
+	else if (!path || !strlen(path))
+	{
 		return ndir;
-
-	} else {
+	}
+	else
+	{
 		ret = malloc(strlen(ndir) + 1 + strlen(path) + 1);
 		strcpy(ret, ndir);
 		strcat(ret, "/");
@@ -295,17 +318,18 @@ char *path_append(const char *dir, const char *path)
 
 void mkdirs(const char *dirs, mode_t mode)
 {
-	char *c, *dir;
-	int i;
-
 	log_functionname("mkdirs %s", dirs);
 
-	c = (char *)dirs;
-	dir = malloc(strlen(dirs) + 1);
+	char* c = (char *)dirs;
+	char* dir = malloc(strlen(dirs) + 1);
+	if (dir == NULL)
+		return;
 
-	i = 0;
-	while (*c) {
-		if ((*c == DIRSEP || *c == '\0') && c != dirs) {
+	size_t i = 0;
+	while (*c)
+	{
+		if ((*c == DIRSEP || *c == '\0') && c != dirs)
+		{
 			strncpy(dir, dirs, i);
 			dir[i] = '\0';
 			mkdir(dir, mode);
@@ -320,10 +344,10 @@ void mkdirs(const char *dirs, mode_t mode)
 	free(dir);
 }
 
-void
-file_copy_print_error(int code, const char *src, const char *dst)
+void file_copy_print_error(int code, const char *src, const char *dst)
 {
-	switch (code) {
+	switch (code)
+	{
 	case 0:
 		break;
 	case FILE_COPY_ERROR_OPEN_SRC:

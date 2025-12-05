@@ -25,8 +25,8 @@
 #include <color.h>
 
 enum temperature_unit {
-	CELSIUS,
-	FAHRENHEIT
+	CELSIUS = 0U,
+	FAHRENHEIT = 1U,
 };
 
 enum sensorlist_position {
@@ -55,8 +55,7 @@ struct config {
 	int window_h;
 	/* Last saved position of the window divider. */
 	int window_vertical_divider_pos;
-	int window_horizontal_divider_pos;
-	int hide_on_startup;
+	int window_horizontal_divider_pos;	
 	int graph_update_interval;
 	int graph_monitoring_duration;
 	unsigned int sensor_values_max_length;
@@ -69,6 +68,7 @@ struct config {
 	bool window_restore_enabled;
 	bool slog_enabled;
 	bool is_new_data;
+	bool hide_on_startup;
 };
 
 /* Loads psensor configuration */
