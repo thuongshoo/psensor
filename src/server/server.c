@@ -128,20 +128,24 @@ static void print_help(void)
  */
 static char *get_path(const char *url, const char *www_dir)
 {
-	const char *p;
-	char *res;
-
-	if (!strlen(url) || !strcmp(url, ".") || !strcmp(url, "/"))
-		p = "/index.html";
-	else
-		p = url;
-
-	res = malloc(strlen(www_dir)+strlen(p)+1);
-
-	strncpy(res, www_dir, strlen(www_dir));
-	strncat(res, p, strlen(p));
-
-	return res;
+    const char *p = "/index.html";
+    
+    if (strlen(url) && strcmp(url, ".") && strcmp(url, "/"))
+        p = url;
+    
+    size_t www_len = strlen(www_dir);
+    size_t p_len = strlen(p);
+    char *res = malloc(www_len + p_len + 1);
+    
+    if (!res) return NULL;
+    
+    // Manual concatenation - safe and portable
+    char *ptr = res;
+    memcpy(ptr, www_dir, www_len);
+    ptr += www_len;
+    memcpy(ptr, p, p_len + 1); // +1 : copy null terminator
+    
+    return res;
 }
 
 #if MHD_VERSION >= 0x00090200

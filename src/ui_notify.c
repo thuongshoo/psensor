@@ -40,27 +40,24 @@ static struct timeval last_notification_tv;
 
 void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 {
-	struct timeval t;
-	char *body, *svalue;
-	const char *summary;
-	NotifyNotification *notif;
 	unsigned int use_celsius;
 
 	log_debug("last_notification %d", last_notification_tv.tv_sec);
 
-	if (gettimeofday(&t, NULL) != 0) {
+	struct timeval time;
+	if (gettimeofday(&time, NULL) != 0) {
 		log_err(_("gettimeofday failed."));
 		return;
 	}
 
 	if (!last_notification_tv.tv_sec
-	    || t.tv_sec - last_notification_tv.tv_sec >= 60)
-		last_notification_tv = t;
+	    || time.tv_sec - last_notification_tv.tv_sec >= 60)
+		last_notification_tv = time;
 	else
 		return;
 
 	if (notify_is_initted() == FALSE)
-		notify_init("psensor");
+		notify_init("psensor-fork");
 
 	if (notify_is_initted() == TRUE) {
 		if (config_get_temperature_unit() == CELSIUS)
@@ -70,15 +67,21 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 
 		//printf("ui_notify name=%s count=%lu theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
 		struct measure *measure = psensor_get_current_measure(sensor);
-		
+		char *svalue;
 		svalue = psensor_measure_to_str
 			(measure,
 			 sensor->type,
 			 use_celsius);
-
-		asprintf(&body, "%s : %s", sensor->name, svalue);
+		
+		char *body;
+		if (-1 == asprintf(&body, "%s : %s", sensor->name, svalue))
+		{
+			free(svalue);
+			return;
+		} 
 		free(svalue);
 
+		const char *summary;
 		if (is_temp_type(sensor->type))
 			summary = _("Temperature alert");
 		else if (sensor->type & SENSOR_TYPE_RPM)
@@ -86,6 +89,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 		else
 			summary = _("N/A");
 
+		NotifyNotification *notif;
 		/*
 		 * Since libnotify 0.7 notify_notification_new has
 		 * only 3 parameters.

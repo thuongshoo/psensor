@@ -309,27 +309,31 @@ on_delete_event_cb(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 void ui_show_about_dialog(GtkWindow *parent)
 {
-	static const char *const authors[] = {"jeanfi@gmail.com", "Le Hoai Thanh yuyoonshoo@gmail.com", NULL};
+	static const char *const authors[] = {
+		"thuongshoo <yuyoonshoo@gmail.com> (Current Maintainer)",
+		"Jean-François Wauthy <jeanfi@gmail.com> (Original Author)",
+		NULL
+	};
 
 	log_functionname("parent=%p", parent);
 
 	gtk_show_about_dialog(parent,
 		 "authors", authors,
 		 "comments",
-		 _("Psensor is a GTK+ application for monitoring hardware "
-		   "sensors"),
+		 _("Psensor-Fork is a maintained GTK application for monitoring hardware sensors, based on the original psensor by Jean-François Wauthy."),
 		 "copyright",
-		 _("Copyright(c) 2010-2016 jeanfi@gmail.com"),
+		 _("Copyright (C) 2010-2016 Jean-François Wauthy\n"
+		   "Copyright (C) 2024-2025 Le Hoai Thanh"),
 #if GTK_CHECK_VERSION(3, 12, 0)
 		 "license-type", GTK_LICENSE_GPL_2_0,
 #endif
-		 "logo-icon-name", "psensor",
-		 "program-name", "Psensor",
-		 "title", _("About Psensor"),
+		 "logo-icon-name", "psensor-fork",
+		 "program-name", "Psensor-Fork",
+		 "title", _("About Psensor-Fork"),
 		 "translator-credits", _("translator-credits"),
 		 "version", VERSION,
-		 "website", PACKAGE_URL,
-		 "website-label", _("Psensor Homepage"),
+		 "website", "https://github.com/thuongshoo/psensor",
+		 "website-label", _("Project Page & Issue Tracker"),
 		 NULL);
 }
 
@@ -443,7 +447,7 @@ void ui_window_create(struct ui_psensor *ui)
 	error = NULL;
 	char *data_path = get_data_path();
 	//log_printf(LOG_INFO, "Data path: %s", data_path);
-	const char *str_format = "%s/psensor.glade";
+	const char *str_format = "%s/psensor-fork.glade";
 	char *glade_path;
 	asprintf(&glade_path, str_format, data_path);
 	//log_printf(LOG_INFO, "Loading glade file: %s", glade_path);
@@ -480,7 +484,7 @@ void ui_window_create(struct ui_psensor *ui)
 				    cfg->window_h);
 
 	icon_theme = gtk_icon_theme_get_default();
-	icon = gtk_icon_theme_load_icon(icon_theme, "psensor", 48, 0, NULL);
+	icon = gtk_icon_theme_load_icon(icon_theme, "psensor-fork", 48, 0, NULL);
 	if (icon)
 		gtk_window_set_icon(GTK_WINDOW(window), icon);
 	else
@@ -512,6 +516,18 @@ void ui_window_create(struct ui_psensor *ui)
 	connect_cbks(GTK_WINDOW(window), menu_bar, ui);
 
 	log_debug("ui_window_create(): show_all");
+
+	gboolean is_first_run = config_get_is_first_run();
+	if (is_first_run) {
+		log_debug("First run detected. Applying initial configuration.");
+		config_set_sensorlist_position(250);
+	
+		config_set_is_first_run(FALSE);
+		log_debug("First-run flag has been set to FALSE.");
+	} else {
+		log_debug(" no more First run detected.");
+	}
+
 	update_layout(ui);
 	gtk_widget_show_all(GTK_WIDGET(w_main_box));
 	set_menu_bar_enabled(menu_bar);

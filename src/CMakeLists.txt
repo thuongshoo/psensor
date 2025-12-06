@@ -72,9 +72,9 @@ else()
 endif()
 
 # Build GUI executable
-add_executable(psensor ${PSENSOR_SOURCES})
+add_executable(psensor-fork ${PSENSOR_SOURCES})
 
-target_link_libraries(psensor
+target_link_libraries(psensor-fork
     ${GTK3_LIBRARIES}
     ${X11_LIBRARIES}
     ${XEXT_LIBRARIES}
@@ -92,9 +92,9 @@ target_link_libraries(psensor
 )
 
 # Build server executable
-add_executable(psensor-server ${SERVER_SOURCES})
+add_executable(psensor-fork-server ${SERVER_SOURCES})
 
-target_link_libraries(psensor-server
+target_link_libraries(psensor-fork-server
     ${GTK3_LIBRARIES}
     ${X11_LIBRARIES}
     ${XEXT_LIBRARIES}
@@ -113,13 +113,13 @@ target_link_libraries(psensor-server
 )
 
 if(SENSORS_LIB)
-    target_link_libraries(psensor ${SENSORS_LIB})
+    target_link_libraries(psensor-fork ${SENSORS_LIB})
 endif()
 
 if(GTOP_FOUND)
-    target_link_libraries(psensor ${GTOP_LIBRARIES})
+    target_link_libraries(psensor-fork ${GTOP_LIBRARIES})
 endif()
 
 if(WITH_NVIDIA AND NVIDIA_LIB)
-    target_link_libraries(psensor ${NVIDIA_LIB})
+    target_link_libraries(psensor-fork ${NVIDIA_LIB})
 endif()

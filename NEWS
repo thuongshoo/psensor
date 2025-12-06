@@ -1,6 +1,17 @@
 = Psensor NEWS
 :docinfo2:
 
+v1.2.1
+------
+
+* Adjustment to avoid too small sensorlist area
+* Moved temperature units (C/F) below graph to maximize chart width
+* Enlarge "Monitor duration" textbox
+* Improve CPU usage
+* Fix memory leak
+* Support CMakefile
+* Fix or modernize code convention
+
 v1.2.0
 ------
 

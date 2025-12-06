@@ -1,15 +1,15 @@
-psensor
+psensor-fork
 - adjustment to avoid too small sensorlist area
 - fix memory leak.
 - support CMakefile.
 
-psensor — CMake build
+psensor-fork — CMake build
 
 This repository has been migrated from autotools to CMake. The CMake build
 produces two targets:
 
-- psensor — the GUI application
-- psensor-server — the HTTP server
+- psensor-fork — the GUI application
+- psensor-fork-server — the HTTP server
 
 Quick build
 

@@ -10,9 +10,9 @@
 #
 # Origin: gettext-0.16
 
-PACKAGE = psensor
-VERSION = 1.2.0
-PACKAGE_BUGREPORT = jeanfi@gmail.com
+PACKAGE = psensor-fork
+VERSION = 1.2.1-1
+PACKAGE_BUGREPORT = yuyoonshoo@gmail.com
 
 SHELL = /bin/sh
 

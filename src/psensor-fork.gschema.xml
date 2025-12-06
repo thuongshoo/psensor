@@ -1,5 +1,5 @@
 <schemalist>
-  <schema id="psensor" path="/apps/psensor/">
+  <schema id="com.github.thuongshoo.psensor-fork" path="/com/github/thuongshoo/psensor-fork/">
     <key name="graph-alpha-channel-enabled" type="b">
       <default>false</default>
       <summary>Whether the alpha channel is enabled</summary>
@@ -229,6 +229,11 @@
       hard disks information.</summary>
       <description>Whether the lm-sensors library is used to
       retrieved hard disks information.</description>
+    </key>
+    <key name="first-run" type="b">
+      <default>true</default>
+      <summary>First run flag</summary>
+      <description>Set to false after the application runs for the first time.</description>
     </key>
   </schema>
 </schemalist>
