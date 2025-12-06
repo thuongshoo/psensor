@@ -87,7 +87,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = psensor-server$(EXEEXT)
+bin_PROGRAMS = psensor-fork-server$(EXEEXT)
 @GTOP_TRUE@am__append_1 = $(GTOP_CFLAGS)
 @GTOP_TRUE@am__append_2 = $(GTOP_LIBS) 
 @GTOP_TRUE@am__append_3 = sysinfo.h sysinfo.c
@@ -109,12 +109,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__psensor_server_SOURCES_DIST = server.c server.h sysinfo.h \
+am__psensor_fork_server_SOURCES_DIST = server.c server.h sysinfo.h \
 	sysinfo.c
 @GTOP_TRUE@am__objects_1 = sysinfo.$(OBJEXT)
-am_psensor_server_OBJECTS = server.$(OBJEXT) $(am__objects_1)
-psensor_server_OBJECTS = $(am_psensor_server_OBJECTS)
-psensor_server_LDADD = $(LDADD)
+am_psensor_fork_server_OBJECTS = server.$(OBJEXT) $(am__objects_1)
+psensor_fork_server_OBJECTS = $(am_psensor_fork_server_OBJECTS)
+psensor_fork_server_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -144,8 +144,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(psensor_server_SOURCES)
-DIST_SOURCES = $(am__psensor_server_SOURCES_DIST)
+SOURCES = $(psensor_fork_server_SOURCES)
+DIST_SOURCES = $(am__psensor_fork_server_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -261,7 +261,7 @@ LIBMICROHTTPD_LIBS = @LIBMICROHTTPD_LIBS@
 LIBNOTIFY_CFLAGS = @LIBNOTIFY_CFLAGS@
 LIBNOTIFY_LIBS = @LIBNOTIFY_LIBS@
 LIBOBJS = @LIBOBJS@
-LIBS = ../lib/libpsensor.a $(SENSORS_LIBS) $(JSON_LIBS) \
+LIBS = ../lib/libpsensor-fork.a $(SENSORS_LIBS) $(JSON_LIBS) \
 	$(LIBMICROHTTPD_LIBS) $(PTHREAD_LIBS) $(am__append_2) \
 	$(am__append_5)
 LIBUDISKS2_CFLAGS = @LIBUDISKS2_CFLAGS@
@@ -359,13 +359,13 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-psensor_server_SOURCES = server.c server.h $(am__append_3)
+psensor_fork_server_SOURCES = server.c server.h $(am__append_3)
 AM_CPPFLAGS = -Wall -Werror -DDEFAULT_WWW_DIR=\""$(pkgdatadir)/www"\" \
 	-I$(top_srcdir)/src -I$(top_srcdir)/src/lib $(SENSORS_CFLAGS) \
 	$(JSON_CFLAGS) $(LIBMICROHTTPD_CFLAGS) $(am__append_1) \
 	$(am__append_4)
 @GTOP_TRUE@AM_LDFLAGS = -Wl,--as-needed
-dist_man_MANS = psensor-server.1
+dist_man_MANS = psensor-fork-server.1
 EXTRA_DIST = description.txt
 all: all-am
 
@@ -443,9 +443,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-psensor-server$(EXEEXT): $(psensor_server_OBJECTS) $(psensor_server_DEPENDENCIES) $(EXTRA_psensor_server_DEPENDENCIES) 
-	@rm -f psensor-server$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(psensor_server_OBJECTS) $(psensor_server_LDADD) $(LIBS)
+psensor-fork-server$(EXEEXT): $(psensor_fork_server_OBJECTS) $(psensor_fork_server_DEPENDENCIES) $(EXTRA_psensor_fork_server_DEPENDENCIES) 
+	@rm -f psensor-fork-server$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(psensor_fork_server_OBJECTS) $(psensor_fork_server_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -732,9 +732,9 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-@HELP2MAN_TRUE@psensor-server.1: server.c $(top_srcdir)/configure.ac
-@HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) psensor-server$(EXEEXT)
-@HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature and system monitoring Web server" --output=psensor-server.1 ./psensor-server$(EXEEXT)
+@HELP2MAN_TRUE@psensor-fork-server.1: server.c $(top_srcdir)/configure.ac
+@HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) psensor-fork-server$(EXEEXT)
+@HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature and system monitoring Web server" --output=psensor-fork-server.1 ./psensor-fork-server$(EXEEXT)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

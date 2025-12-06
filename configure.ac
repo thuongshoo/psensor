@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([psensor], [1.2.0],[jeanfi@gmail.com],[psensor],[http://wpitchoune.net/psensor])
+AC_INIT([psensor-fork], [1.2.1-1],[yuyoonshoo@gmail.com],[psensor-fork],[https://github.com/thuongshoo/psensor])
 
 AM_INIT_AUTOMAKE([-Wall gnu])
 
@@ -209,7 +209,7 @@ LIBMICROHTTPD_LIBS=
 PKG_CHECK_MODULES(LIBMICROHTTPD, 
   libmicrohttpd, 
   [AC_DEFINE([HAVE_LIBMICROHTTPD],[1],[Use libmicrohttpd])], 
-  [AC_MSG_WARN("libmicrohttpd not present, psensor-server will NOT be built")])
+  [AC_MSG_WARN("libmicrohttpd not present, psensor-fork-server will NOT be built")])
 AM_CONDITIONAL(LIBMICROHTTPD, test -n "$LIBMICROHTTPD_LIBS")
 AC_SUBST(LIBMICROHTTPD_CFLAGS)
 AC_SUBST(LIBMICROHTTPD_LIBS)
@@ -242,7 +242,7 @@ if test "x$datarootdir" = "x\${datarootdir}"; then
   datarootdir="$prefix/share"
 fi
 
-eval pkgdatadir="$datarootdir/psensor"
+eval pkgdatadir="$datarootdir/psensor-fork"
 AC_SUBST([pkgdatadir])
 AC_SUBST([datarootdir])
 

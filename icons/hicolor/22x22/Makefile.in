@@ -311,7 +311,7 @@ top_srcdir = @top_srcdir@
 themedir = $(datadir)/icons/hicolor
 size = 22x22
 context = apps
-EXTRA_DIST = psensor.png 
+EXTRA_DIST = psensor-fork.png 
 psensordistpixdir = $(themedir)/$(size)/$(context)
 psensordistpix_DATA = $(EXTRA_DIST)
 all: all-am

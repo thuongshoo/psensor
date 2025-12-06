@@ -60,14 +60,16 @@ static const char *program_name;
 
 static void print_version(void)
 {
-	printf("psensor %s\n", VERSION);
+	printf("psensor-fork %s\n", VERSION);
 	printf(_("Copyright (C) %s jeanfi@gmail.com\n"
+	         "Copyright (C) %s thuongshoo <yuyoonshoo@gmail.com>\n"
 			 "License GPLv2: GNU GPL version 2 or later "
 			 "<http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
 			 "This is free software: you are free to change and"
 			 " redistribute it.\n"
 			 "There is NO WARRANTY, to the extent permitted by law.\n"),
-		   "2010-2014");
+		   "2010-2016",
+		   "2024-2025");
 }
 
 static void print_help(void)
@@ -575,7 +577,7 @@ int main(int argc, char **argv)
 
 	log_init();
 
-	GApplication *app = g_application_new("wpitchoune.psensor", 0);
+	GApplication *app = g_application_new("com.github.thuongshoo.psensor-fork", 0);
 
 	g_application_register(app, NULL, NULL);
 

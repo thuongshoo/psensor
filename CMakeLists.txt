@@ -1,5 +1,37 @@
 cmake_minimum_required(VERSION 3.10)
-project(psensor VERSION 1.2.0 LANGUAGES C)
+project(psensor-fork VERSION 1.2.1 LANGUAGES C)
+
+set(PACKAGE_BUGREPORT "yuyoonshoo@gmail.com")
+set(PACKAGE_URL "https://github.com/thuongshoo/psensor")
+set(PACKAGE_VERSION "1.2.1")
+set(PACKAGE_NAME "psensor-fork")
+
+# enable compile commands database
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# 
+set(DESIRED_C_STANDARDS 23 17 11)
+
+# 
+foreach(STANDARD IN LISTS DESIRED_C_STANDARDS)
+    # 
+    list(FIND CMAKE_C_COMPILE_FEATURES "c_std_${STANDARD}" FEATURE_INDEX)
+    if(NOT FEATURE_INDEX EQUAL -1)
+        set(HIGHEST_SUPPORTED_STANDARD ${STANDARD})
+        break()
+    endif()
+endforeach()
+
+# 
+if(DEFINED HIGHEST_SUPPORTED_STANDARD)
+    message(STATUS "Using the highest supported C standard: C${HIGHEST_SUPPORTED_STANDARD}")
+    set(CMAKE_C_STANDARD ${HIGHEST_SUPPORTED_STANDARD})
+else()
+    # Fallback: 
+    message(STATUS "No desired C standard found. Falling back to C11.")
+    set(CMAKE_C_STANDARD ${HIGHEST_SUPPORTED_STANDARD})
+endif()
+
 
 # Set default build type if not specified
 if(NOT CMAKE_BUILD_TYPE)
@@ -187,9 +219,9 @@ endif()
 configure_file(config.h.cmake ${CMAKE_BINARY_DIR}/config.h)
 
 # Set the package data directory variable for paths.h.in
-set(pkgdatadir "${CMAKE_INSTALL_FULL_DATADIR}/psensor")
+set(pkgdatadir "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}")
 
-# Find psensor data directory at runtime
+# Find psensor-fork data directory at runtime
 configure_file(
     ${CMAKE_SOURCE_DIR}/src/paths.h.in
     ${CMAKE_BINARY_DIR}/paths.h
@@ -204,19 +236,19 @@ endif()
 include(GNUInstallDirs)
 
 # Desktop file macro and data dir for source use
-add_compile_definitions(PSENSOR_DESKTOP_FILE=\"psensor.desktop\")
+add_compile_definitions(PSENSOR_DESKTOP_FILE=\"${PROJECT_NAME}.desktop\")
 add_compile_definitions(DATADIR=\"${CMAKE_INSTALL_FULL_DATADIR}\")
-add_compile_definitions(DEFAULT_WWW_DIR=\"${CMAKE_INSTALL_FULL_DATADIR}/psensor/www\")
+add_compile_definitions(DEFAULT_WWW_DIR=\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}/www\")
 # Set default PACKAGE_DATA_DIR but allow environment override
 if(NOT DEFINED ENV{PSENSOR_DATA_DIR})
-    add_compile_definitions(PACKAGE_DATA_DIR=\"${CMAKE_INSTALL_FULL_DATADIR}/psensor\")
+    add_compile_definitions(PACKAGE_DATA_DIR=\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}\")
 else()
     add_compile_definitions(PACKAGE_DATA_DIR=\"$ENV{PSENSOR_DATA_DIR}\")
 endif()
 
 message(STATUS "Installation prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Full data directory: ${CMAKE_INSTALL_FULL_DATADIR}")
-message(STATUS "Package data directory: ${CMAKE_INSTALL_FULL_DATADIR}/psensor")
+message(STATUS "Package data directory: ${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}")
 
 if(NOT CANBERRA_GTK3_FOUND)
     message(STATUS "libcanberra-gtk3 not found - sound support will be disabled")
@@ -232,12 +264,12 @@ add_subdirectory(src)
 include(GNUInstallDirs)
 
 # Install binaries
-install(TARGETS psensor psensor-server
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}-server
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 # Install desktop file
-install(FILES psensor.desktop
+install(FILES ${PROJECT_NAME}.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
 
@@ -258,41 +290,42 @@ install(DIRECTORY icons/ubuntu-mono-light/
 # Ensure icons are also installed into the per-size "apps/" subdirectories
 # so GTK/desktop environments can find the application icon via the
 # hicolor theme (e.g. icons/hicolor/48x48/apps/psensor.png).
+set(PROJECT_ICON_FILENAME psensor-fork)
 set(HICOLOR_SIZES 14x14 16x16 22x22 24x24 32x32 48x48 64x64)
 foreach(size IN LISTS HICOLOR_SIZES)
-    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensor.png)
-        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensor.png
+    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/${PROJECT_ICON_FILENAME}.png)
+        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/${PROJECT_ICON_FILENAME}.png
             DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/${size}/apps
-            RENAME psensor.png)
+            RENAME ${PROJECT_ICON_FILENAME}.png)
     endif()
 endforeach()
 
 # Install scalable SVG icons into scalable/apps
-if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor.svg)
+if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}.svg)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor.svg
-        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor_normal.svg
-        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensor_hot.svg
+        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}.svg
+        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}_normal.svg
+        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}_hot.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
     )
 endif()
 
 # Install glade UI files
 # Main interface first
-install(FILES src/glade/psensor.glade
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/psensor)
+install(FILES src/glade/${PROJECT_NAME}.glade
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
 
 # Then install all glade files to the glade subdirectory
 install(FILES
-    src/glade/psensor-appindicator.glade
-    src/glade/psensor-pref.glade
-    src/glade/psensor.glade
-    src/glade/sensor-edit.glade
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/psensor)
+    src/glade/${PROJECT_NAME}-appindicator.glade
+    src/glade/${PROJECT_NAME}-pref.glade
+    src/glade/${PROJECT_NAME}.glade
+    src/glade/${PROJECT_NAME}-edit.glade
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
 
 # Install web interface files
 install(DIRECTORY www/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/psensor/www
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/www
     FILES_MATCHING 
     PATTERN "*.html"
     PATTERN "*.css"
@@ -302,12 +335,12 @@ install(DIRECTORY www/
 )
 
 # Install GSettings schema
-install(FILES src/psensor.gschema.xml
+install(FILES src/${PROJECT_NAME}.gschema.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas
 )
 
 # Install man pages
-install(FILES src/psensor.1
+install(FILES src/${PROJECT_NAME}.1
     DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
 )
 
@@ -337,40 +370,40 @@ message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 # Generate man page if help2man is available
 if(HELP2MAN)
     add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/psensor.1
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1
         COMMAND ${HELP2MAN} --include=${CMAKE_SOURCE_DIR}/src/description.txt
                            -N --name="Temperature monitoring application"
-                           --output=${CMAKE_CURRENT_BINARY_DIR}/psensor.1
-                           $<TARGET_FILE:psensor>
-        DEPENDS psensor
+                           --output=${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1
+                           $<TARGET_FILE:${PROJECT_NAME}>
+        DEPENDS ${PROJECT_NAME}
         COMMENT "Generating man page with help2man"
     )
-    add_custom_target(man ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/psensor.1)
+    add_custom_target(man ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1)
 endif()
 
-# Generate HTML documentation if asciidoc is available
-if(ASCIIDOC)
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/README.html
-        COMMAND ${ASCIIDOC} --theme style -a themedir=${CMAKE_SOURCE_DIR}/www -n -a toc
-                           -o ${CMAKE_CURRENT_BINARY_DIR}/README.html
-                           ${CMAKE_SOURCE_DIR}/README
-        DEPENDS ${CMAKE_SOURCE_DIR}/README ${CMAKE_SOURCE_DIR}/www/style.css
-        COMMENT "Generating README.html with asciidoc"
-    )
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NEWS.html
-        COMMAND ${ASCIIDOC} --theme style -a themedir=${CMAKE_SOURCE_DIR}/www
-                           -o ${CMAKE_CURRENT_BINARY_DIR}/NEWS.html
-                           ${CMAKE_SOURCE_DIR}/NEWS
-        DEPENDS ${CMAKE_SOURCE_DIR}/NEWS ${CMAKE_SOURCE_DIR}/www/style.css
-        COMMENT "Generating NEWS.html with asciidoc"
-    )
-    add_custom_target(docs ALL 
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/README.html
-                ${CMAKE_CURRENT_BINARY_DIR}/NEWS.html
-    )
-endif()
+# # Generate HTML documentation if asciidoc is available
+# if(ASCIIDOC)
+#     add_custom_command(
+#         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/README.html
+#         COMMAND ${ASCIIDOC} --theme style -a themedir=${CMAKE_SOURCE_DIR}/www -n -a toc
+#                            -o ${CMAKE_CURRENT_BINARY_DIR}/README.html
+#                            ${CMAKE_SOURCE_DIR}/README
+#         DEPENDS ${CMAKE_SOURCE_DIR}/README ${CMAKE_SOURCE_DIR}/www/style.css
+#         COMMENT "Generating README.html with asciidoc"
+#     )
+#     add_custom_command(
+#         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NEWS.html
+#         COMMAND ${ASCIIDOC} --theme style -a themedir=${CMAKE_SOURCE_DIR}/www
+#                            -o ${CMAKE_CURRENT_BINARY_DIR}/NEWS.html
+#                            ${CMAKE_SOURCE_DIR}/NEWS
+#         DEPENDS ${CMAKE_SOURCE_DIR}/NEWS ${CMAKE_SOURCE_DIR}/www/style.css
+#         COMMENT "Generating NEWS.html with asciidoc"
+#     )
+#     add_custom_target(docs ALL 
+#         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/README.html
+#                 ${CMAKE_CURRENT_BINARY_DIR}/NEWS.html
+#     )
+# endif()
 
 # Run cppcheck if available
 if(CPPCHECK AND ENABLE_CPPCHECK)

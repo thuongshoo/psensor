@@ -127,6 +127,9 @@ static const char *KEY_DEFAULT_HIGH_THRESHOLD_TEMPERATURE
 static const char *KEY_DEFAULT_SENSOR_ALARM_ENABLED
 = "default-sensor-alarm-enabled";
 
+static const char *KEY_FIRST_RUN
+= "first-run";
+
 static GSettings *settings;
 
 static char *user_dir;
@@ -390,7 +393,7 @@ static void init(void)
 	log_functionname_enter();
 
 	if (!settings)
-		settings = g_settings_new("psensor");
+		settings = g_settings_new("com.github.thuongshoo.psensor-fork");
 
 	log_functionname_exit();
 }
@@ -1004,4 +1007,14 @@ const char *config_get_sensorlist_position_str(enum sensorlist_position pos)
 		return "don't know";
 	}
 	
+}
+
+bool config_get_is_first_run(void)
+{
+	return get_bool(KEY_FIRST_RUN);
+}
+
+void config_set_is_first_run(bool enabled)
+{
+	set_bool(KEY_FIRST_RUN, enabled);
 }

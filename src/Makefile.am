@@ -1,6 +1,6 @@
 SUBDIRS = lib glade
-
-psensor_SOURCES = \
+PROJECT_NAME=psensor-fork
+psensor_fork_SOURCES = \
 	cfg.h cfg.c \
 	notify_cmd.c notify_cmd.h \
 	graph.h graph.c \
@@ -30,7 +30,7 @@ endif
 AM_CPPFLAGS =-Wall \
 	-DDEFAULT_WWW_DIR=\""$(pkgdatadir)/www"\"\
 	-DDATADIR=\""$(datadir)"\"\
-	-DPSENSOR_DESKTOP_FILE=\""psensor.desktop"\"\
+	-DPSENSOR_DESKTOP_FILE=\""$(PROJECT_NAME).desktop"\"\
 	-I$(top_srcdir)/src/lib \
 	-I$(top_srcdir)/src/unity \
 	$(GTK_CFLAGS)\
@@ -39,7 +39,7 @@ AM_CPPFLAGS =-Wall \
 DEFS = -DPACKAGE_DATA_DIR=\"$(pkgdatadir)\" -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 LIBS = \
-	lib/libpsensor.a \
+	lib/lib$(PROJECT_NAME).a \
 	$(GTK_LIBS)\
 	$(PTHREAD_LIBS)\
 	$(SENSORS_LIBS) -lm
@@ -47,8 +47,8 @@ LIBS = \
 if GTK
 if X11
 if XEXT
-bin_PROGRAMS = psensor
-dist_man_MANS = psensor.1
+bin_PROGRAMS = $(PROJECT_NAME)
+dist_man_MANS = $(PROJECT_NAME).1
 endif
 endif
 endif
@@ -59,13 +59,13 @@ LIBS += $(GTOP_LIBS)
 endif
 
 if LIBNOTIFY
-psensor_SOURCES += ui_notify.c
+psensor_fork_SOURCES += ui_notify.c
 LIBS += $(LIBNOTIFY_LIBS)
 AM_CPPFLAGS += $(LIBNOTIFY_CFLAGS)
 endif
 
 if APPINDICATOR 
-psensor_SOURCES += ui_appindicator.c 
+psensor_fork_SOURCES += ui_appindicator.c 
 LIBS +=	$(APPINDICATOR_LIBS)
 AM_CPPFLAGS += $(APPINDICATOR_CFLAGS)
 endif
@@ -92,26 +92,26 @@ LIBS += $(LIBUDISKS2_LIBS)
 endif
 
 if UNITY
-psensor_SOURCES += ui_unity.c
+psensor_fork_SOURCES += ui_unity.c
 AM_CPPFLAGS += $(UNITY_CFLAGS)
 LIBS += $(UNITY_LIBS) 
 endif
 
 if CURL
 if JSON
-psensor_SOURCES += rsensor.c
+psensor_fork_SOURCES += rsensor.c
 LIBS += $(CURL_LIBS) $(JSON_LIBS)
 AM_CPPFLAGS += $(CURL_CFLAGS) $(JSON_CFLAGS)
 endif
 endif
 
 if HELP2MAN
-psensor.1: main.c $(top_srcdir)/configure.ac
-	$(MAKE) $(AM_MAKEFLAGS) psensor$(EXEEXT)
-	help2man --include=description.txt -N --name="Temperature monitoring application" --output=psensor.1 ./psensor$(EXEEXT)
+psensor-fork.1: main.c $(top_srcdir)/configure.ac
+	$(MAKE) $(AM_MAKEFLAGS) $(PROJECT_NAME)$(EXEEXT)
+	help2man --include=description.txt -N --name="Temperature monitoring application" --output=$(PROJECT_NAME).1 ./$(PROJECT_NAME)$(EXEEXT)
 endif
 
-gsettings_SCHEMAS=psensor.gschema.xml
+gsettings_SCHEMAS=$(PROJECT_NAME).gschema.xml
 
 EXTRA_DIST = description.txt\
 	$(gsettings_SCHEMAS)\

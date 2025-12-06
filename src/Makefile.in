@@ -88,7 +88,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @JSON_TRUE@@LIBMICROHTTPD_TRUE@am__append_1 = server
-@GTK_TRUE@@X11_TRUE@@XEXT_TRUE@bin_PROGRAMS = psensor$(EXEEXT)
+@GTK_TRUE@@X11_TRUE@@XEXT_TRUE@bin_PROGRAMS = $(am__EXEEXT_1)
 @GTOP_TRUE@am__append_2 = $(GTOP_CFLAGS)
 @GTOP_TRUE@am__append_3 = $(GTOP_LIBS)
 @LIBNOTIFY_TRUE@am__append_4 = ui_notify.c
@@ -124,9 +124,10 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = paths.h
 CONFIG_CLEAN_VPATH_FILES =
+am__EXEEXT_1 = psensor-fork$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__psensor_SOURCES_DIST = cfg.h cfg.c notify_cmd.c notify_cmd.h \
+am__psensor_fork_SOURCES_DIST = cfg.h cfg.c notify_cmd.c notify_cmd.h \
 	graph.h graph.c main.c pxdg.h pxdg.c rsensor.h ui.h ui.c \
 	ui_appindicator.h ui_color.h ui_color.c ui_graph.h ui_graph.c \
 	ui_notify.h ui_pref.h ui_pref.c ui_sensorlist.h \
@@ -137,14 +138,14 @@ am__psensor_SOURCES_DIST = cfg.h cfg.c notify_cmd.c notify_cmd.h \
 @APPINDICATOR_TRUE@am__objects_2 = ui_appindicator.$(OBJEXT)
 @UNITY_TRUE@am__objects_3 = ui_unity.$(OBJEXT)
 @CURL_TRUE@@JSON_TRUE@am__objects_4 = rsensor.$(OBJEXT)
-am_psensor_OBJECTS = cfg.$(OBJEXT) notify_cmd.$(OBJEXT) \
+am_psensor_fork_OBJECTS = cfg.$(OBJEXT) notify_cmd.$(OBJEXT) \
 	graph.$(OBJEXT) main.$(OBJEXT) pxdg.$(OBJEXT) ui.$(OBJEXT) \
 	ui_color.$(OBJEXT) ui_graph.$(OBJEXT) ui_pref.$(OBJEXT) \
 	ui_sensorlist.$(OBJEXT) ui_sensorpref.$(OBJEXT) \
 	ui_status.$(OBJEXT) $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3) $(am__objects_4)
-psensor_OBJECTS = $(am_psensor_OBJECTS)
-psensor_LDADD = $(LDADD)
+psensor_fork_OBJECTS = $(am_psensor_fork_OBJECTS)
+psensor_fork_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -181,8 +182,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(psensor_SOURCES)
-DIST_SOURCES = $(am__psensor_SOURCES_DIST)
+SOURCES = $(psensor_fork_SOURCES)
+DIST_SOURCES = $(am__psensor_fork_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -340,10 +341,11 @@ LIBMICROHTTPD_LIBS = @LIBMICROHTTPD_LIBS@
 LIBNOTIFY_CFLAGS = @LIBNOTIFY_CFLAGS@
 LIBNOTIFY_LIBS = @LIBNOTIFY_LIBS@
 LIBOBJS = @LIBOBJS@
-LIBS = lib/libpsensor.a $(GTK_LIBS) $(PTHREAD_LIBS) $(SENSORS_LIBS) \
-	-lm $(am__append_3) $(am__append_5) $(am__append_8) \
-	$(am__append_11) $(am__append_13) $(am__append_15) \
-	$(am__append_16) $(am__append_19) $(am__append_21)
+LIBS = lib/lib$(PROJECT_NAME).a $(GTK_LIBS) $(PTHREAD_LIBS) \
+	$(SENSORS_LIBS) -lm $(am__append_3) $(am__append_5) \
+	$(am__append_8) $(am__append_11) $(am__append_13) \
+	$(am__append_15) $(am__append_16) $(am__append_19) \
+	$(am__append_21)
 LIBUDISKS2_CFLAGS = @LIBUDISKS2_CFLAGS@
 LIBUDISKS2_LIBS = @LIBUDISKS2_LIBS@
 LTLIBICONV = @LTLIBICONV@
@@ -440,7 +442,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = lib glade $(am__append_1)
-psensor_SOURCES = cfg.h cfg.c notify_cmd.c notify_cmd.h graph.h \
+PROJECT_NAME = psensor-fork
+psensor_fork_SOURCES = cfg.h cfg.c notify_cmd.c notify_cmd.h graph.h \
 	graph.c main.c pxdg.h pxdg.c rsensor.h ui.h ui.c \
 	ui_appindicator.h ui_color.h ui_color.c ui_graph.h ui_graph.c \
 	ui_notify.h ui_pref.h ui_pref.c ui_sensorlist.h \
@@ -452,14 +455,14 @@ psensor_SOURCES = cfg.h cfg.c notify_cmd.c notify_cmd.h graph.h \
 AM_LDFLAGS = -Wl,--as-needed -export-dynamic
 AM_CPPFLAGS = -Wall -DDEFAULT_WWW_DIR=\""$(pkgdatadir)/www"\" \
 	-DDATADIR=\""$(datadir)"\" \
-	-DPSENSOR_DESKTOP_FILE=\""psensor.desktop"\" \
+	-DPSENSOR_DESKTOP_FILE=\""$(PROJECT_NAME).desktop"\" \
 	-I$(top_srcdir)/src/lib -I$(top_srcdir)/src/unity \
 	$(GTK_CFLAGS) $(SENSORS_CFLAGS) $(am__append_2) \
 	$(am__append_6) $(am__append_9) $(am__append_10) \
 	$(am__append_12) $(am__append_14) $(am__append_18) \
 	$(am__append_22)
-@GTK_TRUE@@X11_TRUE@@XEXT_TRUE@dist_man_MANS = psensor.1
-gsettings_SCHEMAS = psensor.gschema.xml
+@GTK_TRUE@@X11_TRUE@@XEXT_TRUE@dist_man_MANS = $(PROJECT_NAME).1
+gsettings_SCHEMAS = $(PROJECT_NAME).gschema.xml
 EXTRA_DIST = description.txt\
 	$(gsettings_SCHEMAS)\
 	paths.h.in\
@@ -546,9 +549,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-psensor$(EXEEXT): $(psensor_OBJECTS) $(psensor_DEPENDENCIES) $(EXTRA_psensor_DEPENDENCIES) 
-	@rm -f psensor$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(psensor_OBJECTS) $(psensor_LDADD) $(LIBS)
+psensor-fork$(EXEEXT): $(psensor_fork_OBJECTS) $(psensor_fork_DEPENDENCIES) $(EXTRA_psensor_fork_DEPENDENCIES) 
+	@rm -f psensor-fork$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(psensor_fork_OBJECTS) $(psensor_fork_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -952,9 +955,9 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-@HELP2MAN_TRUE@psensor.1: main.c $(top_srcdir)/configure.ac
-@HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) psensor$(EXEEXT)
-@HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature monitoring application" --output=psensor.1 ./psensor$(EXEEXT)
+@HELP2MAN_TRUE@psensor-fork.1: main.c $(top_srcdir)/configure.ac
+@HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) $(PROJECT_NAME)$(EXEEXT)
+@HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature monitoring application" --output=$(PROJECT_NAME).1 ./$(PROJECT_NAME)$(EXEEXT)
 
 @GSETTINGS_RULES@
 

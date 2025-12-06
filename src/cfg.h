@@ -161,6 +161,8 @@ void config_set_count_visible(bool);
 enum sensorlist_position config_get_sensorlist_position(void);
 void config_set_sensorlist_position(enum sensorlist_position pos);
 
+bool config_get_is_first_run(void);
+void config_set_is_first_run(bool enabled);
 /*
  * Returns the user directory containing psensor data (configuration
  * and log).

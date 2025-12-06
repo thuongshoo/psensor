@@ -33,7 +33,7 @@
 
 #include "psensor.h"
 
-#define PSENSOR_ICON "psensor"
+#define PSENSOR_ICON "psensor-fork"
 
 struct ui_psensor {
 	struct psensor **sensors;

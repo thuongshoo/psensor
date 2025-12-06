@@ -24,7 +24,7 @@ dist_doc_DATA = AUTHORS \
 	README.html
 
 desktopdir = $(datadir)/applications
-desktop_DATA = psensor.desktop
+desktop_DATA = psensor-fork.desktop
 
 EXTRA_DIST = $(desktop_DATA) $(autostart_DATA)
 

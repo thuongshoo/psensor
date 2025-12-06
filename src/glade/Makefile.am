@@ -1,8 +1,8 @@
 gladedir = $(pkgdatadir)
 glade_DATA = \
-	psensor.glade \
-	psensor-appindicator.glade \
-	sensor-edit.glade \
-	psensor-pref.glade
+	psensor-fork.glade \
+	psensor-fork-appindicator.glade \
+	psensor-fork-edit.glade \
+	psensor-fork-pref.glade
 
 EXTRA_DIST = $(glade_DATA) 

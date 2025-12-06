@@ -125,12 +125,12 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libpsensor_a_AR = $(AR) $(ARFLAGS)
-libpsensor_a_LIBADD =
-am__libpsensor_a_SOURCES_DIST = amd.h bool.h color.h color.c hdd.h \
-	hdd_hddtemp.c lmsensor.h measure.h measure.c nvidia.h parray.h \
-	pgtop2.h plog.h plog.c pmutex.h pmutex.c psensor.h psensor.c \
-	ptime.h ptime.c io.h io.c pudisks2.h slog.c slog.h \
+libpsensor_fork_a_AR = $(AR) $(ARFLAGS)
+libpsensor_fork_a_LIBADD =
+am__libpsensor_fork_a_SOURCES_DIST = amd.h bool.h color.h color.c \
+	hdd.h hdd_hddtemp.c lmsensor.h measure.h measure.c nvidia.h \
+	parray.h pgtop2.h plog.h plog.c pmutex.h pmutex.c psensor.h \
+	psensor.c ptime.h ptime.c io.h io.c pudisks2.h slog.c slog.h \
 	temperature.c temperature.h url.c url.h lmsensor.c \
 	hdd_atasmart.c nvidia.c amd.c pgtop2.c psensor_json.h \
 	psensor_json.c pudisks2.c
@@ -141,13 +141,13 @@ am__libpsensor_a_SOURCES_DIST = amd.h bool.h color.h color.c hdd.h \
 @GTOP_TRUE@am__objects_5 = pgtop2.$(OBJEXT)
 @JSON_TRUE@am__objects_6 = psensor_json.$(OBJEXT)
 @LIBUDISKS2_TRUE@am__objects_7 = pudisks2.$(OBJEXT)
-am_libpsensor_a_OBJECTS = color.$(OBJEXT) hdd_hddtemp.$(OBJEXT) \
+am_libpsensor_fork_a_OBJECTS = color.$(OBJEXT) hdd_hddtemp.$(OBJEXT) \
 	measure.$(OBJEXT) plog.$(OBJEXT) pmutex.$(OBJEXT) \
 	psensor.$(OBJEXT) ptime.$(OBJEXT) io.$(OBJEXT) slog.$(OBJEXT) \
 	temperature.$(OBJEXT) url.$(OBJEXT) $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
 	$(am__objects_5) $(am__objects_6) $(am__objects_7)
-libpsensor_a_OBJECTS = $(am_libpsensor_a_OBJECTS)
+libpsensor_fork_a_OBJECTS = $(am_libpsensor_fork_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -185,8 +185,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libpsensor_a_SOURCES)
-DIST_SOURCES = $(am__libpsensor_a_SOURCES_DIST)
+SOURCES = $(libpsensor_fork_a_SOURCES)
+DIST_SOURCES = $(am__libpsensor_fork_a_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -368,8 +368,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libpsensor.a
-libpsensor_a_SOURCES = amd.h bool.h color.h color.c hdd.h \
+noinst_LIBRARIES = libpsensor-fork.a
+libpsensor_fork_a_SOURCES = amd.h bool.h color.h color.c hdd.h \
 	hdd_hddtemp.c lmsensor.h measure.h measure.c nvidia.h parray.h \
 	pgtop2.h plog.h plog.c pmutex.h pmutex.c psensor.h psensor.c \
 	ptime.h ptime.c io.h io.c pudisks2.h slog.c slog.h \
@@ -378,7 +378,7 @@ libpsensor_a_SOURCES = amd.h bool.h color.h color.c hdd.h \
 	$(am__append_10) $(am__append_13) $(am__append_16)
 AM_CPPFLAGS = -Wall -Werror $(am__append_5) $(am__append_8) \
 	$(am__append_12) $(am__append_15) $(am__append_18)
-EXTRA_DIST = $(libpsensor_a_SOURCES) \
+EXTRA_DIST = $(libpsensor_fork_a_SOURCES) \
 	amd.c \
 	pgtop2.c \
 	lmsensor.c \
@@ -423,10 +423,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libpsensor.a: $(libpsensor_a_OBJECTS) $(libpsensor_a_DEPENDENCIES) $(EXTRA_libpsensor_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libpsensor.a
-	$(AM_V_AR)$(libpsensor_a_AR) libpsensor.a $(libpsensor_a_OBJECTS) $(libpsensor_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libpsensor.a
+libpsensor-fork.a: $(libpsensor_fork_a_OBJECTS) $(libpsensor_fork_a_DEPENDENCIES) $(EXTRA_libpsensor_fork_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libpsensor-fork.a
+	$(AM_V_AR)$(libpsensor_fork_a_AR) libpsensor-fork.a $(libpsensor_fork_a_OBJECTS) $(libpsensor_fork_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libpsensor-fork.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
