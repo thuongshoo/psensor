@@ -1,0 +1,75 @@
+name: 01. Build Packages
+
+on:
+  push:
+    tags: ['v*']  # TỰ ĐỘNG khi có tag mới
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false  # Không dừng cả matrix nếu 1 job lỗi
+      matrix:
+        include:
+          - name: "Ubuntu 24.04 amd64"
+            distro: ubuntu
+            distro_version: "24.04"
+            arch: amd64
+            package_type: deb
+            
+          - name: "Ubuntu 24.04 arm64"
+            distro: ubuntu
+            distro_version: "24.04"
+            arch: arm64
+            package_type: deb
+            needs_qemu: true
+            
+          - name: "Debian 12 amd64"
+            distro: debian
+            distro_version: "12"
+            arch: amd64
+            package_type: deb
+
+    outputs:
+      artifacts_json: ${{ steps.artifacts.outputs.json }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup QEMU for ARM64
+        if: matrix.needs_qemu == true
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Common Setup
+        uses: ./.github/actions/common/setup
+        with:
+          architecture: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+      
+      - name: Setup Build Environment
+        uses: ./.github/actions/build/setup-env
+        with:
+          distro: ${{ matrix.distro }}
+          distro_version: ${{ matrix.distro_version }}
+      
+      - name: Compile psensor
+        uses: ./.github/actions/build/compile
+        with:
+          architecture: ${{ matrix.arch }}
+      
+      - name: Package as DEB
+        uses: ./.github/actions/build/package-deb
+        id: package
+        with:
+          distro: ${{ matrix.distro }}
+          distro_version: ${{ matrix.distro_version }}
+          architecture: ${{ matrix.arch }}
+          version: ${{ steps.setup.outputs.version }}
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}
+          path: ${{ steps.package.outputs.package-file }}
+          retention-days: 7

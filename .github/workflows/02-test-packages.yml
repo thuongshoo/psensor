@@ -1,0 +1,36 @@
+name: 02. Test Packages
+on:
+  workflow_run:
+    workflows: ['Build Matrix']
+    types: [completed]
+
+jobs:
+  test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        artifact: ${{ fromJSON(github.event.workflow_run.outputs.artifacts) }}
+    
+    steps:
+      - name: Download Specific Artifact
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          name: ${{ matrix.artifact }}
+      
+      - name: Parse Artifact Info
+        id: info
+        run: |
+          # Tách tên artifact thành các thành phần
+          IFS='-' read -r distro distro_version arch <<< "${{ matrix.artifact }}"
+          echo "distro=${distro}" >> $GITHUB_OUTPUT
+          echo "distro_version=${distro_version}" >> $GITHUB_OUTPUT
+          echo "arch=${arch}" >> $GITHUB_OUTPUT
+      
+      - uses: ./.github/actions/test-basic
+        with:
+          package-file: '*.deb'
+          distro: ${{ steps.info.outputs.distro }}
+          distro-version: ${{ steps.info.outputs.distro_version }}
+          architecture: ${{ steps.info.outputs.arch }}

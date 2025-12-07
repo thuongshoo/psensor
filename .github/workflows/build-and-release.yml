@@ -1,0 +1,77 @@
+name: Build and Release Psensor
+
+# Workflow này sẽ chạy khi bạn push một tag mới lên repo
+on:
+  push:
+    tags:
+      - 'v*'  # Kích hoạt khi push tag có dạng v1.0, v1.2.3,...
+
+# Cấp quyền cần thiết để tạo Release
+permissions:
+  contents: write  # Cho phép ghi vào Releases
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Cài đặt các dependency cần thiết để build Psensor
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake gettext libgtk-3-dev libsensors-dev libnotify-dev libappindicator3-dev libxnvctrl-dev dpkg-dev
+
+      # 3. Build Psensor từ source
+      - name: Configure and Build
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+
+      # 4. Tạo cấu trúc gói .deb
+      - name: Prepare Debian Package Structure
+        run: |
+          # Tạo thư mục cho package
+          mkdir -p pkg_debian/DEBIAN
+          mkdir -p pkg_debian/usr
+
+          # Cài đặt các file vào đúng vị trí trong cây thư mục package
+          cd build
+          make DESTDIR=../pkg_debian install
+
+      # 5. Tạo file control cho gói Debian
+      - name: Create DEBIAN/control file
+        run: |
+          cat > pkg_debian/DEBIAN/control <<EOF
+          Package: psensor
+          Version: ${{ github.ref_name }}
+          Section: utils
+          Priority: optional
+          Architecture: amd64
+          Maintainer: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          Description: Graphical hardware temperature monitor for Linux.
+           Psensor is a graphical hardware temperature monitor for Linux.
+           It can display:
+           * the temperature of the motherboard and CPU sensors (using lm-sensors)
+           * the temperature of the NVidia GPU (using XNVCtrl)
+           * the temperature of ATI/AMD GPU (using the AMD ADL SDK)
+           * the rotational speed of the fans
+           * and CPU usage.
+          EOF
+
+      # 6. Build gói .deb
+      - name: Build .deb Package
+        run: |
+          dpkg-deb --build pkg_debian psensor_${{ github.ref_name }}_amd64.deb
+
+      # 7. Tạo GitHub Release và đăng tải file .deb
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: psensor_${{ github.ref_name }}_amd64.deb
+          generate_release_notes: true

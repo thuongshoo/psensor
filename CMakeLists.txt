@@ -339,10 +339,7 @@ install(FILES src/${PROJECT_NAME}.gschema.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas
 )
 
-# Install man pages
-install(FILES src/${PROJECT_NAME}.1
-    DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
-)
+
 
 # Install documentation
 install(FILES
@@ -367,6 +364,7 @@ install(FILES
 # )
 message(STATUS "CMAKE_INSTALL_FULL_LOCALEDIR = ${CMAKE_INSTALL_FULL_LOCALEDIR}")
 message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+
 # Generate man page if help2man is available
 if(HELP2MAN)
     add_custom_command(
@@ -379,7 +377,15 @@ if(HELP2MAN)
         COMMENT "Generating man page with help2man"
     )
     add_custom_target(man ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1)
+    
+    # CHUYỂN install() VÀO ĐÂY - CHỈ KHI help2man TỒN TẠI
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+    )
+else()
+    message(STATUS "help2man not found, man page will not be installed")
 endif()
+
 
 # # Generate HTML documentation if asciidoc is available
 # if(ASCIIDOC)
