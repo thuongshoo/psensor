@@ -1,0 +1,55 @@
+name: 'Package as Debian'
+description: 'Create .deb package for specific distribution'
+
+inputs:
+  distro:
+    description: 'Distribution name'
+    required: true
+  distro-version:
+    description: 'Distribution version'
+    required: true
+  architecture:
+    description: 'Target architecture'
+    required: true
+  version:
+    description: 'Package version (without v prefix)'
+    required: true
+
+outputs:
+  package-name:
+    description: 'Generated package filename'
+    value: ${{ steps.package.outputs.filename }}
+
+runs:
+  using: composite
+  steps:
+    - name: Create Debian Package Structure
+      shell: bash
+      run: |
+        mkdir -p pkg_debian/DEBIAN pkg_debian/usr
+        cd build
+        make DESTDIR=../pkg_debian install
+        
+    - name: Generate Control File
+      shell: bash
+      run: |
+        # File control sẽ khác nhau giữa các distro
+        cat > pkg_debian/DEBIAN/control <<EOF
+        Package: psensor-fork
+        Version: ${{ inputs.version }}
+        Section: utils
+        Priority: optional
+        Architecture: ${{ inputs.architecture }}
+        Maintainer: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        Depends: ${{ fromJSON(steps.deps.outputs.runtime_deps) }}
+        Description: Graphical hardware temperature monitor for Linux.
+         Psensor fork with multi-distro support.
+        EOF
+        
+    - name: Build Package
+      id: package
+      shell: bash
+      run: |
+        FILENAME="psensor-fork_${{ inputs.version }}_${{ inputs.distro }}${{ inputs.distro-version }}_${{ inputs.architecture }}.deb"
+        dpkg-deb --build pkg_debian "${FILENAME}"
+        echo "filename=${FILENAME}" >> $GITHUB_OUTPUT
