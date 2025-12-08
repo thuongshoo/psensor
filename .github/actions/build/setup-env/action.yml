@@ -1,0 +1,52 @@
+name: "Setup Build Environment"
+description: "Cài đặt dependencies cho từng distribution"
+
+inputs:
+  distro:
+    description: "Distribution name"
+    required: true
+    default: "ubuntu"
+  distro_version:
+    description: "Distribution version"
+    required: true
+    default: "24.04"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup for ${{ inputs.distro }} ${{ inputs.distro_version }}
+      shell: bash
+      run: |
+        echo "🔧 Setting up ${{ inputs.distro }} ${{ inputs.distro_version }}..."
+        
+        case "${{ inputs.distro }}" in
+          ubuntu|debian)
+            sudo apt-get update
+            # Danh sách packages cốt lõi
+            CORE_DEPS="build-essential cmake gettext help2man pkg-config"
+            # Dependencies development
+            DEV_DEPS="libappindicator3-dev libatasmart-dev libcairo2-dev \
+              libcurl4-openssl-dev libglib2.0-dev libgtk-3-dev \
+              libgtop2-dev libjson-c-dev libmicrohttpd-dev \
+              libnotify-dev libsensors-dev libudisks2-dev \
+              libx11-dev libxnvctrl-dev"
+            
+            sudo apt-get install -y $CORE_DEPS $DEV_DEPS dpkg-dev
+            ;;
+            
+          fedora)
+            sudo dnf install -y gcc-c++ cmake gettext help2man \
+              libappindicator3-devel libatasmart-devel cairo-devel \
+              libcurl-devel glib2-devel gtk3-devel \
+              libgtop2-devel json-c-devel libmicrohttpd-devel \
+              libnotify-devel lm_sensors-devel udisks2-devel \
+              libX11-devel libxnvctrl-devel pkg-config
+            ;;
+            
+          *)
+            echo "❌ Distribution chưa hỗ trợ: ${{ inputs.distro }}"
+            exit 1
+            ;;
+        esac
+        
+        echo "✅ Setup completed for ${{ inputs.distro }}"

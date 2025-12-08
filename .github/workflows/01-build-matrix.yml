@@ -58,6 +58,17 @@ jobs:
         with:
           architecture: ${{ matrix.arch }}
       
+      - name: Extract clean version
+        id: extract_version
+        run: |
+          # Lấy version từ tag và bỏ 'v' nếu có
+          if [[ "${{ github.ref_name }}" == v* ]]; then
+            CLEAN_VERSION="${GITHUB_REF_NAME#v}"
+          else
+            CLEAN_VERSION="${{ github.ref_name }}"
+          fi
+          echo "clean_version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+      
       - name: Package as DEB
         uses: ./.github/actions/build/package-deb
         id: package
@@ -65,11 +76,11 @@ jobs:
           distro: ${{ matrix.distro }}
           distro_version: ${{ matrix.distro_version }}
           architecture: ${{ matrix.arch }}
-          version: ${{ steps.setup.outputs.version }}
+          version: ${{ steps.extract_version.outputs.clean_version }}
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pkg-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}
+          name: psensor-fork-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}
           path: ${{ steps.package.outputs.package-file }}
           retention-days: 7
