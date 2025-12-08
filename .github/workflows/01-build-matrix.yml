@@ -89,6 +89,6 @@ jobs:
         run: |
           # Tạo JSON chứa thông tin artifacts
           ARTIFACTS_JSON=$(jq -n \
-            --arg name "pkg-${{ matrix.distro }}-${{ matrix.version }}-${{ matrix.arch }}" \
+            --arg name "psensor-fork-${{ matrix.distro }}-${{ matrix.version }}-${{ matrix.arch }}" \
             '[$name]')
           echo "artifacts-json=$ARTIFACTS_JSON" >> $GITHUB_OUTPUT
