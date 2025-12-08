@@ -56,15 +56,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG_NAME="${{ steps.create_tag.outputs.tag_name }}"
+          TAG_NAME="v${{ github.event.inputs.version }}"
           RELEASE_NOTES="${{ github.event.inputs.release_notes }}"
-          
+          # Lấy SHA của commit hiện tại (HEAD)
+          CURRENT_COMMIT_SHA=$(git rev-parse HEAD)
           # Tạo draft release
           gh release create "$TAG_NAME" \
             --title "psensor-fork $TAG_NAME" \
             --notes "$RELEASE_NOTES" \
             --draft \
-            --target "$TAG_NAME"
+            --target "$CURRENT_COMMIT_SHA"
           
           echo "✅ Đã tạo draft release: $TAG_NAME"
           echo "⏳ Các workflow build sẽ tự động chạy..."

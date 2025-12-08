@@ -84,3 +84,11 @@ jobs:
           name: psensor-fork-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}
           path: ${{ steps.package.outputs.package-file }}
           retention-days: 7
+      
+      - name: Trigger Test Workflow
+        if: success()
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.REPO_PAT }}
+          event-type: trigger-test
+          client-payload: '{"tag": "${{ github.ref_name }}", "build_run_id": "${{ github.run_id }}"}'

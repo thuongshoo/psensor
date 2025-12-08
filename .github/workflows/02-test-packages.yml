@@ -3,7 +3,6 @@ on:
   workflow_run:
     workflows: ['01. Build Packages']
     types: [completed]
-    branches: ['workflows2', 'master']
 
 jobs:
   test:
