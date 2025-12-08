@@ -87,8 +87,7 @@ jobs:
 
       - name: Generate artifacts list
         run: |
-          # Tạo JSON chứa thông tin artifacts
-          ARTIFACTS_JSON=$(jq -n \
-            --arg name "psensor-fork-${{ matrix.distro }}-${{ matrix.version }}-${{ matrix.arch }}" \
+          ARTIFACTS_JSON=$(jq -n -c \
+            --arg name "psensor-fork-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}" \
             '[$name]')
           echo "artifacts-json=$ARTIFACTS_JSON" >> $GITHUB_OUTPUT
