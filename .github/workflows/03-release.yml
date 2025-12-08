@@ -1,0 +1,64 @@
+name: "03. Release Packages (Manual)"
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: 'ID của workflow Build đã chạy (tìm trong tab Actions)'
+        required: true
+      test_run_id:
+        description: 'ID của workflow Test tương ứng (tìm trong tab Actions)'
+        required: true
+      version:
+        description: 'Phiên bản cần release (phải khớp với tag, ví dụ: 1.2.13)'
+        required: true
+
+jobs:
+  promote-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.inputs.test_run_id }}
+          name: test-results-v${{ github.event.inputs.version }}
+          
+      - name: Parse and Display Test Results
+        run: |
+          echo "📋 Kết quả Test cho v${{ github.event.inputs.version }}:"
+          cat test-result-manifest.json | jq '.'
+          
+          # Đếm số package passed
+          PASS_COUNT=$(jq '.status == "PASSED"' test-result-manifest.json | grep -c true || true)
+          echo "✅ Số package đã PASS: $PASS_COUNT"
+          
+          if [ "$PASS_COUNT" -eq 0 ]; then
+            echo "❌ Không có package nào test passed!"
+            exit 1
+          fi
+
+      - name: Download Built Packages
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.inputs.build_run_id }}
+          # Tải tất cả artifacts từ build run
+          
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          TAG_NAME="v$VERSION"
+          
+          # Tìm draft release
+          DRAFT_ID=$(gh release list --json tagName,isDraft,id | jq -r ".[] | select(.tagName==\"$TAG_NAME\" and .isDraft==true) | .id")
+          
+          if [ -z "$DRAFT_ID" ]; then
+            echo "❌ Không tìm thấy draft release cho tag $TAG_NAME"
+            exit 1
+          fi
+          
+          # Chuyển từ draft sang release chính thức
+          gh release edit $TAG_NAME --draft=false
+          
+          echo "🚀 Đã publish release: $TAG_NAME"
+          echo "📦 Các package đã được test và sẵn sàng để download."

@@ -1,8 +1,9 @@
 name: 02. Test Packages
 on:
   workflow_run:
-    workflows: ['Build Matrix']
+    workflows: ['01. Build Packages']
     types: [completed]
+    branches: ['workflows2', 'master']
 
 jobs:
   test:
@@ -34,3 +35,31 @@ jobs:
           distro: ${{ steps.info.outputs.distro }}
           distro-version: ${{ steps.info.outputs.distro_version }}
           architecture: ${{ steps.info.outputs.arch }}
+      
+      - name: Create Test Result Manifest
+        if: success()  # Chỉ chạy nếu tất cả các bước test trước đều passed
+        run: |
+          # Tạo file JSON chứa thông tin package đã test thành công
+          TEST_RESULT=$(jq -n \
+            --arg pkg_name "$PACKAGE_NAME" \
+            --arg distro "$DISTRO" \
+            --arg arch "$ARCH" \
+            --arg version "$VERSION" \
+            --arg status "PASSED" \
+            --arg workflow_run "${{ github.run_id }}" \
+            '{package: $pkg_name, distro: $distro, arch: $arch, version: $version, status: $status, tested_in_run: $workflow_run}')
+          
+          echo "$TEST_RESULT" > test-result-manifest.json
+          echo "✅ Test result saved for $PACKAGE_NAME"
+        env:
+          PACKAGE_NAME: ${{ steps.download.outputs.package-name }}
+          DISTRO: ${{ matrix.distro }}
+          ARCH: ${{ matrix.arch }}
+          VERSION: ${{ github.ref_name }}
+
+      - name: Upload Test Manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.ref_name }}
+          path: test-result-manifest.json
+          retention-days: 7

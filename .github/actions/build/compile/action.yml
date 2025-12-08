@@ -1,0 +1,46 @@
+name: "Compile psensor"
+description: "Configure and build psensor from source"
+
+inputs:
+  architecture:
+    description: "Target architecture"
+    required: true
+    default: "amd64"
+
+runs:
+  using: composite
+  steps:
+    - name: Configure with CMake
+      shell: bash
+      run: |
+        mkdir -p build
+        cd build
+        # Xóa cache CMake cũ nếu có
+        rm -f CMakeCache.txt
+        
+        echo "🔧 Configuring psensor for ${{ inputs.architecture }}..."
+        
+        # Cấu hình với các tuỳ chọn cần thiết
+        cmake .. \
+          -DCMAKE_INSTALL_PREFIX=/usr \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DENABLE_MAN=ON \
+          -DWITH_GTOP=ON \
+          -DWITH_NVIDIA=ON \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        
+        echo "✅ CMake configuration completed"
+
+    - name: Build psensor
+      shell: bash
+      run: |
+        cd build
+        echo "🏗️ Building psensor..."
+        
+        # Build với số luồng tối ưu
+        make -j$(nproc)
+        
+        # Kiểm tra các file đã được build
+        echo "📁 Build output:"
+        find . -type f -name "psensor*" -executable 2>/dev/null || true
+        echo "✅ Build completed successfully"
