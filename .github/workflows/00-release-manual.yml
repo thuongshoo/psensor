@@ -1,0 +1,71 @@
+name: 00. Create Release Tag
+
+on:
+  workflow_dispatch:  # CHỈ chạy khi bạn click "Run workflow"
+    inputs:
+      version:
+        description: "Phiên bản số (KHÔNG có 'v' ở đầu), VD: 1.2.8"
+        required: true
+        default: ""
+      release_notes:
+        description: "Ghi chú cho release"
+        required: false
+        default: ""
+
+jobs:
+  create-release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write  # Cần quyền để tạo tag và release
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Lấy toàn bộ history để tag đúng
+        
+      - name: Setup Git Identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          # Kiểm tra version có đúng format số không
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Lỗi: Version '$VERSION' phải có dạng X.Y.Z (VD: 1.2.8)"
+            exit 1
+          fi
+          echo "✅ Version hợp lệ: $VERSION"
+      
+      - name: Create and push Git tag
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          TAG_NAME="v$VERSION"
+          
+          # Tạo tag
+          git tag -a "$TAG_NAME" -m "Release version $VERSION"
+          git push origin "$TAG_NAME"
+          
+          echo "✅ Đã tạo tag: $TAG_NAME"
+          echo "::set-output name=tag_name::$TAG_NAME"
+        id: create_tag
+      
+      - name: Create GitHub Release (Draft)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG_NAME="v${{ github.event.inputs.version }}"
+          RELEASE_NOTES="${{ github.event.inputs.release_notes }}"
+          # Lấy SHA của commit hiện tại (HEAD)
+          CURRENT_COMMIT_SHA=$(git rev-parse HEAD)
+          # Tạo draft release
+          gh release create "$TAG_NAME" \
+            --title "psensor-fork $TAG_NAME" \
+            --notes "$RELEASE_NOTES" \
+            --draft \
+            --target "$CURRENT_COMMIT_SHA"
+          
+          echo "✅ Đã tạo draft release: $TAG_NAME"
+          echo "⏳ Các workflow build sẽ tự động chạy..."
