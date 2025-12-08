@@ -1,0 +1,54 @@
+name: "Common Setup"
+description: "Cài đặt công cụ cơ bản và xác định thông tin build"
+
+inputs:
+  architecture:
+    description: "Kiến trúc đích"
+    required: false
+    default: "amd64"
+  distro:
+    description: "Distribution name"
+    required: false
+    default: "ubuntu"
+
+outputs:
+  build-info:
+    description: "Thông tin build dạng JSON"
+    value: ${{ steps.info.outputs.build-info }}
+
+runs:
+  using: composite
+  steps:
+    - name: Detect version from tag
+      id: version
+      shell: bash
+      run: |
+        # Lấy version từ tag (bỏ 'v' nếu có)
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          VERSION="${GITHUB_REF#refs/tags/v}"
+        else
+          VERSION="0.0.0-dev"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Prepare build info
+      id: info
+      shell: bash
+      run: |
+        # Đọc giá trị từ bước trước
+        VERSION="${{ steps.version.outputs.version }}"
+        # Tạo JSON và ghi vào output
+        INFO_JSON=$(jq -n -c \
+          --arg arch "${{ inputs.architecture }}" \
+          --arg distro "${{ inputs.distro }}" \
+          --arg version "$VERSION" \
+          --arg runner "${{ runner.os }}" \
+          '{
+            architecture: $arch,
+            distro: $distro,
+            version: $version,
+            runner: $runner,
+            timestamp: (now | todateiso8601)
+          }')
+        echo "build-info=$INFO_JSON" >> $GITHUB_OUTPUT
+        echo "📦 Build info: $INFO_JSON"

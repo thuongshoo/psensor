@@ -1,0 +1,141 @@
+name: "Test Basic Installation"
+description: "Basic installation test in a clean container"
+
+inputs:
+  package-file:
+    description: "Path to the .deb package file"
+    required: true
+  distro:
+    description: "Distribution name"
+    required: true
+    default: "ubuntu"
+  distro-version:
+    description: "Distribution version"
+    required: true
+    default: "24.04"
+  architecture:
+    description: "Target architecture"
+    required: true
+    default: "amd64"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup QEMU for cross-architecture (if needed)
+      if: inputs.architecture != 'amd64'
+      shell: bash
+      run: |
+        echo "⚙️ Setting up QEMU for ${{ inputs.architecture }}..."
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static binfmt-support
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+        
+    - name: Prepare test environment
+      shell: bash
+      run: |
+        echo "🧪 Preparing test for: ${{ inputs.package-file }}"
+        PACKAGE_BASENAME=$(basename "${{ inputs.package-file }}")
+        echo "Package: $PACKAGE_BASENAME"
+        echo "Distro: ${{ inputs.distro }}:${{ inputs.distro-version }}"
+        echo "Arch: ${{ inputs.architecture }}"
+        
+        # Save package name for later steps
+        echo "PACKAGE_BASENAME=$PACKAGE_BASENAME" >> $GITHUB_ENV
+    
+    - name: Create test container and update packages
+      shell: bash
+      run: |
+        echo "📦 Step 1: Creating container and updating packages..."
+        docker run -d --platform linux/${{ inputs.architecture }} \
+          --name test-container \
+          ${{ inputs.distro }}:${{ inputs.distro-version }} \
+          tail -f /dev/null
+        
+        echo "⏳ Waiting for container to start..."
+        sleep 3
+        
+        echo "🔄 Updating package lists..."
+        docker exec test-container apt-get update
+    
+    - name: Check container OS and dependencies
+      shell: bash
+      run: |
+        echo "🔍 Step 2: Checking container environment..."
+        
+        echo "Container OS info:"
+        docker exec test-container cat /etc/os-release
+        
+        echo "Current libc6 version:"
+        docker exec test-container apt-cache policy libc6
+        
+        echo "Available dependencies for psensor-fork:"
+        docker exec test-container apt-cache search "libcurl" | head -5
+        docker exec test-container apt-cache search "libgtk-3" | head -5
+        docker exec test-container apt-cache search "libglib2.0" | head -5
+    
+    - name: Copy package to container
+      shell: bash
+      run: |
+        echo "📁 Step 3: Copying package to container..."
+        docker cp "${{ inputs.package-file }}" test-container:/tmp/
+        
+        echo "Verifying package in container:"
+        docker exec test-container ls -la /tmp/"$PACKAGE_BASENAME"
+    
+    - name: Install package
+      shell: bash
+      run: |
+        echo "⚙️ Step 4: Installing package..."
+        
+        echo "Attempting to install $PACKAGE_BASENAME..."
+        set +e  # Don't fail immediately
+        
+        # Try direct install
+        docker exec test-container apt-get install -y /tmp/"$PACKAGE_BASENAME"
+        INSTALL_STATUS=$?
+        
+        if [ $INSTALL_STATUS -ne 0 ]; then
+          echo "⚠️ Direct install failed, trying with --fix-broken..."
+          docker exec test-container apt-get install -f -y
+        fi
+        
+        set -e  # Re-enable fail on error
+        
+        echo "Checking installed packages:"
+        docker exec test-container dpkg -l | grep -i psensor || echo "No psensor packages found"
+    
+    - name: Verify installation
+      shell: bash
+      run: |
+        echo "✅ Step 5: Verifying installation..."
+        
+        echo "Checking if psensor-fork command exists:"
+        if docker exec test-container which psensor-fork; then
+          echo "🎉 SUCCESS: psensor-fork command found!"
+        else
+          echo "❌ FAILED: psensor-fork command not found"
+          echo "Checking binary location:"
+          docker exec test-container find /usr -name "*psensor*" -type f 2>/dev/null || true
+          exit 1
+        fi
+        
+        echo "Testing version command:"
+        docker exec test-container psensor-fork --version || echo "Version check failed"
+    
+    - name: Test basic functionality
+      shell: bash
+      run: |
+        echo "🔧 Step 6: Testing basic functionality..."
+        
+        echo "Checking psensor-fork help:"
+        docker exec test-container timeout 5 psensor-fork --help || echo "Help command timeout"
+        
+        echo "Checking configuration:"
+        docker exec test-container ls -la /etc/psensor/ 2>/dev/null || echo "No psensor config directory"
+    
+    - name: Cleanup test container
+      if: always()
+      shell: bash
+      run: |
+        echo "🧹 Cleaning up test container..."
+        docker rm -f test-container 2>/dev/null || true

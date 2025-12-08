@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 
 #if defined(HAVE_APPINDICATOR)
-#include <libappindicator/app-indicator.h>
+#include "appindicator_compat.h"
 #endif
 
 #include "psensor.h"

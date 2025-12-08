@@ -21,8 +21,8 @@
 #include <string.h>
 
 #include <gtk/gtk.h>
-#include <libappindicator/app-indicator.h>
 
+#include "appindicator_compat.h"
 #include <cfg.h>
 #include <psensor.h>
 #include <ui.h>

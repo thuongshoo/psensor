@@ -12,7 +12,7 @@ include_directories(
     ${LIBNOTIFY_INCLUDE_DIRS}
     ${UDISKS2_INCLUDE_DIRS}
     ${ATASMART_INCLUDE_DIRS}
-    ${APPINDICATOR3_INCLUDE_DIRS}
+    ${APPINDICATOR_INCLUDE_DIRS}
 )
 
 # Source files
@@ -44,7 +44,8 @@ else()
     add_compile_definitions(HAVE_LIBUDISKS2=1)
 endif()
 
-if(APPINDICATOR3_LIBRARIES)
+#if(APPINDICATOR3_LIBRARIES)
+if(APPINDICATOR_LIBRARIES)
     add_compile_definitions(HAVE_APPINDICATOR=1)
 else()
     list(REMOVE_ITEM PSENSOR_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_appindicator.c")
@@ -72,9 +73,12 @@ else()
 endif()
 
 # Build GUI executable
-add_executable(psensor-fork ${PSENSOR_SOURCES})
+add_executable(${CMAKE_PROJECT_NAME} ${PSENSOR_SOURCES})
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE 
+    APPINDICATOR_INCLUDE_NAME=${APPINDICATOR_INCLUDE_STRING}
+)
 
-target_link_libraries(psensor-fork
+target_link_libraries(${CMAKE_PROJECT_NAME}
     ${GTK3_LIBRARIES}
     ${X11_LIBRARIES}
     ${XEXT_LIBRARIES}
@@ -84,7 +88,7 @@ target_link_libraries(psensor-fork
     ${LIBNOTIFY_LIBRARIES}
     ${UDISKS2_LIBRARIES}
     ${ATASMART_LIBRARIES}
-    ${APPINDICATOR3_LIBRARIES}
+    ${APPINDICATOR_LIBRARIES}
     ${PSENSOR_EXTRA_LIBS}
     ${CMAKE_THREAD_LIBS_INIT}
     ${LIB_RT}
@@ -92,9 +96,12 @@ target_link_libraries(psensor-fork
 )
 
 # Build server executable
-add_executable(psensor-fork-server ${SERVER_SOURCES})
+add_executable(${CMAKE_PROJECT_NAME}-server ${SERVER_SOURCES})
+target_compile_definitions(${CMAKE_PROJECT_NAME}-server  PRIVATE 
+    APPINDICATOR_INCLUDE_NAME=${APPINDICATOR_INCLUDE_STRING}
+)
 
-target_link_libraries(psensor-fork-server
+target_link_libraries(${CMAKE_PROJECT_NAME}-server
     ${GTK3_LIBRARIES}
     ${X11_LIBRARIES}
     ${XEXT_LIBRARIES}
@@ -113,13 +120,13 @@ target_link_libraries(psensor-fork-server
 )
 
 if(SENSORS_LIB)
-    target_link_libraries(psensor-fork ${SENSORS_LIB})
+    target_link_libraries(${CMAKE_PROJECT_NAME} ${SENSORS_LIB})
 endif()
 
 if(GTOP_FOUND)
-    target_link_libraries(psensor-fork ${GTOP_LIBRARIES})
+    target_link_libraries(${CMAKE_PROJECT_NAME} ${GTOP_LIBRARIES})
 endif()
 
 if(WITH_NVIDIA AND NVIDIA_LIB)
-    target_link_libraries(psensor-fork ${NVIDIA_LIB})
+    target_link_libraries(${CMAKE_PROJECT_NAME} ${NVIDIA_LIB})
 endif()

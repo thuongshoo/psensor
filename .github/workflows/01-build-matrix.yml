@@ -1,0 +1,195 @@
+name: Build and Test Packages
+
+on:
+# Cách 1: Khi push tag v*
+  push:
+    tags: ['v*']
+  # Cách 2: Trigger bằng tay từ UI GitHub
+  workflow_dispatch:
+    inputs:
+      use_dev_version:
+        description: 'Use dev version (git hash) instead of tag'
+        required: false
+        default: false
+        type: boolean
+      force_build:
+        description: 'Force build even if no changes'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Ubuntu 24.04 amd64"
+            runner: ubuntu-24.04
+            distro: ubuntu
+            distro_version: "24.04"
+            arch: amd64
+            package_type: deb
+            
+          - name: "Ubuntu 24.04 arm64"
+            runner: ubuntu-24.04-arm 
+            distro: ubuntu
+            distro_version: "24.04"
+            arch: arm64
+            package_type: deb
+            
+          - name: "Debian 12 amd64"
+            runner: ubuntu-24.04
+            distro: debian
+            distro_version: "12"
+            arch: amd64
+            package_type: deb
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout code (with debian/ directory)
+        uses: actions/checkout@v4
+      
+      - name: Get version from tag
+        id: version
+        shell: bash
+        run: |
+          # Logic xác định version thông minh
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == refs/tags/* ]]; then
+            # TRƯỜNG HỢP 1: Có tag v*
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            VERSION_SOURCE="tag"
+            echo "🎯 Using version from tag: $VERSION"
+            
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.use_dev_version }}" == "true" ]]; then
+            # TRƯỜNG HỢP 2: Trigger bằng tay + chọn dùng dev version
+            SHORT_SHA=$(git rev-parse --short HEAD)
+            VERSION="0.0.0-dev+$SHORT_SHA"
+            VERSION_SOURCE="dev"
+            echo "🔧 Using dev version from commit: $VERSION"
+            
+          else
+            # TRƯỜNG HỢP 3: Trigger bằng tay nhưng KHÔNG chọn dev version
+            # Tìm tag gần nhất
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+            TAG_VERSION="${LATEST_TAG#v}"
+            
+            # Tăng patch version
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$TAG_VERSION"
+            PATCH=$((PATCH + 1))
+            VERSION="$MAJOR.$MINOR.$PATCH-dev"
+            VERSION_SOURCE="auto"
+            echo "⚡ Auto-incremented version: $VERSION (from last tag: $LATEST_TAG)"
+          fi
+
+          # if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          #   VERSION="${GITHUB_REF#refs/tags/v}"
+          # else
+          #   VERSION="0.0.0-dev"
+          # fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Build package
+        id: build
+        shell: bash
+        run: |
+          mkdir -p build-logs
+          {
+            echo "=== BUILD START ==="
+            echo "Timestamp: $(date)"
+            echo "Matrix: ${{ matrix.distro }} ${{ matrix.distro_version }} ${{ matrix.arch }}"
+            
+            chmod +x .github/scripts/build-package.sh
+            # $1: DISTRO
+            # $2: DISTRO_VERSION
+            # $3: ARCH
+            # $4: VERSION
+            # $5: OUTPUT_DIR
+            ./.github/scripts/build-package.sh \
+              "${{ matrix.distro }}" \
+              "${{ matrix.distro_version }}" \
+              "${{ matrix.arch }}" \
+              "${{ steps.version.outputs.version }}" \
+              "./artifacts" 2>&1
+            
+            BUILD_EXIT=$?
+            PACKAGE_PATH=$(find . -name "psensor-fork_*_${{ matrix.distro }}${{ matrix.distro_version }}_${{ matrix.arch }}.deb" -type f | head -1)
+            
+            if [ $BUILD_EXIT -eq 0 ] && [ -n "$PACKAGE_PATH" ]; then
+              echo "package_path=$PACKAGE_PATH" >> $GITHUB_OUTPUT
+              echo "✅ Built: $PACKAGE_PATH"
+            else
+              echo "❌ Build failed or no package path"
+              exit 1
+            fi
+          } 2>&1 | tee "build-logs/build.log"
+
+      - name: Test package installation
+        if: success() # Chỉ chạy nếu bước build thành công
+        shell: bash
+        run: |
+          echo "🧪 Running installation test..."
+          PACKAGE_FILE="${{ steps.build.outputs.package_path }}"
+          
+          if [ ! -f "$PACKAGE_FILE" ]; then
+            echo "❌ ERROR: Package file not found at: $PACKAGE_FILE"
+            exit 1
+          fi
+          
+          chmod +x .github/scripts/test-package.sh
+          ./.github/scripts/test-package.sh \
+            "$PACKAGE_FILE" \
+            "${{ matrix.distro }}" \
+            "${{ matrix.distro_version }}" \
+            "${{ matrix.arch }}"
+          
+          echo "✅ Installation test completed successfully."
+
+      # --- Bước 4: Upload Artifact (Chỉ khi cả build và test đều pass) ---
+      - name: Upload successful package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: psensor-fork-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}-v${{ steps.version.outputs.version }}
+          path: ${{ steps.build.outputs.package_path }}
+          retention-days: 7
+      
+      # # --- Bước 5: Upload Logs (Tùy chọn) ---
+      # - name: Upload build logs
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build-logs-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}
+      #     path: build-logs/
+      #     retention-days: 7
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: [build-and-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # THÊM: Gộp tất cả artifact vào cùng một thư mục
+          merge-multiple: true
+          # Tùy chọn: Đặt tên thư mục đích
+          # path: release-packages
+      
+      - name: Debug - Show downloaded files
+        run: |
+          echo "=== Current directory structure ==="
+          pwd
+          ls -la
+          echo "=== Looking for .deb files ==="
+          find . -name "*.deb" -type f | xargs ls -lh
+          echo "=== Total .deb files found: ==="
+          find . -name "*.deb" -type f | wc -l
+      
+      - name: Create Release with all .deb files
+        uses: softprops/action-gh-release@v1
+        with:
+          # SỬA: Tìm tất cả file .deb ở mọi thư mục
+          files: |
+            **/*.deb
+          generate_release_notes: true
+          # Tùy chọn: Đổi tên file cho gọn
+          # body: "Packages built from tag ${{ github.ref_name }}"

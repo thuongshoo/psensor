@@ -40,7 +40,7 @@ endif()
 
 # Add compiler flags for Debug build
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
 
 # Build options
 option(WITH_GTOP "Build with libgtop support" ON)
@@ -157,7 +157,32 @@ pkg_check_modules(LIBMICROHTTPD REQUIRED libmicrohttpd)
 pkg_check_modules(LIBNOTIFY REQUIRED libnotify)
 pkg_check_modules(UDISKS2 REQUIRED udisks2)
 pkg_check_modules(ATASMART REQUIRED libatasmart)
-pkg_check_modules(APPINDICATOR3 REQUIRED appindicator3-0.1)
+
+set(APPINDICATOR_INCLUDE_STRING "")
+# 1. Attempt to find the Ubuntu/upstream AppIndicator
+pkg_check_modules(APPINDICATOR_UPSTREAM appindicator3-0.1)
+if(APPINDICATOR_UPSTREAM_FOUND)
+    message(STATUS "Found AppIndicator (Ubuntu/Upstream). Setting include path for <libappindicator/app-indicator.h>")
+    set(APPINDICATOR_PC_NAME appindicator3-0.1)
+    # Define the exact string to use in the #include directive
+    set(APPINDICATOR_INCLUDE_STRING "\"libappindicator/app-indicator.h\"")
+
+else()
+    # 2. Attempt to find the Debian/Ayatana variant
+    pkg_check_modules(APPINDICATOR_AYATANA ayatana-appindicator3-0.1)
+    if(APPINDICATOR_AYATANA_FOUND)
+        message(STATUS "Found Ayatana AppIndicator (Debian). Setting include path for <libayatana-appindicator/app-indicator.h>")
+        set(APPINDICATOR_PC_NAME ayatana-appindicator3-0.1)
+        # Define the exact string to use in the #include directive
+        set(APPINDICATOR_INCLUDE_STRING "\"libayatana-appindicator/app-indicator.h\"")
+    else()
+        # 3. If neither is found, error out.
+        message(FATAL_ERROR "Could not find either 'appindicator3-0.1' or 'ayatana-appindicator3-0.1' development packages.")
+    endif()
+endif()
+
+# Use pkg-config one last time to populate all linker variables correctly
+pkg_check_modules(APPINDICATOR REQUIRED ${APPINDICATOR_PC_NAME})
 
 # Define HAVE_* macros for pkg-config-found libs so headers that expect
 # autoconf-style macros will choose the real implementations (not inline stubs)
@@ -339,11 +364,6 @@ install(FILES src/${PROJECT_NAME}.gschema.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas
 )
 
-# Install man pages
-install(FILES src/${PROJECT_NAME}.1
-    DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
-)
-
 # Install documentation
 install(FILES
     AUTHORS
@@ -356,17 +376,9 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
 )
 
-# Install translations
-# install(DIRECTORY po/
-#     # Install the po/ (compiled .mo) files into the canonical locale
-#     # location under the installation prefix. Use
-#     # CMAKE_INSTALL_FULL_LOCALEDIR to ensure the directory is absolute
-#     # and not empty during package creation.
-#     DESTINATION ${CMAKE_INSTALL_FULL_LOCALEDIR}/locale
-#     FILES_MATCHING PATTERN "*.mo"
-# )
 message(STATUS "CMAKE_INSTALL_FULL_LOCALEDIR = ${CMAKE_INSTALL_FULL_LOCALEDIR}")
 message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+
 # Generate man page if help2man is available
 if(HELP2MAN)
     add_custom_command(
@@ -379,7 +391,15 @@ if(HELP2MAN)
         COMMENT "Generating man page with help2man"
     )
     add_custom_target(man ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1)
+    
+    # CHUYỂN install() VÀO ĐÂY - CHỈ KHI help2man TỒN TẠI
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/src/${PROJECT_NAME}.1
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+    )
+else()
+    message(STATUS "help2man not found, man page will not be installed")
 endif()
+
 
 # # Generate HTML documentation if asciidoc is available
 # if(ASCIIDOC)

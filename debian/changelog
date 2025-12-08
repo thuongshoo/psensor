@@ -1,0 +1,12 @@
+psensor-fork (1.2.1-1) noble; urgency=medium
+
+  * Adjustment to avoid too small sensorlist area
+  * Moved temperature units (C/F) below graph to maximize chart width
+  * Enlarge "Monitor duration" textbox
+  * Improve CPU usage
+  * Fix memory leak
+  * Support CMakefile
+  * Fix or modernize code convention
+  * Initial release
+
+ -- thuongshoo <yuyoonshoo@gmail.com>  Fri, 05 Dec 2025 17:00:00 +0000

@@ -6,7 +6,6 @@ config.status
 config.log
 obj-x86_64-linux-gnu/**
 autom4te.cache/**
-debian/**
 m4/**
 Makefile
 *.gmo
@@ -14,3 +13,10 @@ stamp-*
 Makevars.template
 config.h
 *~
+src/psensor-fork
+src/psensor-fork.1
+src/psensor-fork.gschema.valid
+src/server/psensor-fork-server
+src/server/psensor-fork-server.1
+po/psensor-fork.pot
+po/POTFILES
