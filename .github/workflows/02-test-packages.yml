@@ -8,11 +8,30 @@ jobs:
   test:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-      # artifact: ${{ fromJSON(github.event.workflow_run.outputs.artifacts_json || '[]') }}
-    
     steps:
+      - name: Get workflow run job outputs via API
+        id: get-outputs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Lấy danh sách jobs trong workflow run
+          JOBS_JSON=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs)
+          
+          # 2. Tìm job 'build' và lấy outputs (giả sử job tên là 'build')
+          # Cấu trúc JSON phức tạp, cần parse cẩn thận
+          # Đây là logic đơn giản, có thể cần điều chỉnh
+          ARTIFACTS_JSON=$(echo "$JOBS_JSON" | jq -r '.jobs[] | select(.name == "build") | .outputs.artifacts_json // "[]"')
+          
+          # 3. Đặt output cho step này
+          echo "artifacts_json=$ARTIFACTS_JSON" >> $GITHUB_OUTPUT
+          echo "Fetched artifacts: $ARTIFACTS_JSON"
+
+      - name: Setup test matrix
+        id: matrix-setup
+        run: |
+          # Tạo biến môi trường cho strategy (cách này đơn giản hơn dùng matrix phức tạp)
+          ARTIFACTS="${{ steps.get-outputs.outputs.artifacts_json }}"
+          echo "ARTIFACTS_JSON=$ARTIFACTS" >> $GITHUB_ENV
       - name: Debug - Show artifact info
         run: |
           echo "Artifact to test: ${{ matrix.artifact }}"

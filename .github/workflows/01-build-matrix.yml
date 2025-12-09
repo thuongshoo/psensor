@@ -94,3 +94,4 @@ jobs:
             '[$name]')
           echo "artifacts-json=$ARTIFACTS_JSON" >> $GITHUB_OUTPUT
           echo "Generated artifacts list: $ARTIFACTS_JSON"
+          echo $ARTIFACTS_JSON>artifacts-list.json
