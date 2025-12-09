@@ -86,8 +86,11 @@ jobs:
           retention-days: 7
 
       - name: Generate artifacts list
+        id: generate-artifacts  # THÊM ID
         run: |
+          # Tạo JSON dạng compact một dòng
           ARTIFACTS_JSON=$(jq -n -c \
             --arg name "psensor-fork-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}" \
             '[$name]')
           echo "artifacts-json=$ARTIFACTS_JSON" >> $GITHUB_OUTPUT
+          echo "Generated artifacts list: $ARTIFACTS_JSON"
