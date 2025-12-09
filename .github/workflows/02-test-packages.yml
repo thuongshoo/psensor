@@ -10,9 +10,14 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        artifact: ${{ fromJSON(github.event.workflow_run.outputs.artifacts) }}
+        artifact: ${{ fromJSON(github.event.workflow_run.outputs.artifacts_json || '[]') }}
     
     steps:
+      - name: Debug - Show artifact info
+        run: |
+          echo "Artifact to test: ${{ matrix.artifact }}"
+          echo "Workflow run ID: ${{ github.event.workflow_run.id }}"
+
       - name: Download Specific Artifact
         uses: actions/download-artifact@v4
         with:

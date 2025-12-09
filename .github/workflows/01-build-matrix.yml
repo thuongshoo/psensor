@@ -31,7 +31,7 @@ jobs:
             package_type: deb
 
     outputs:
-      artifacts_json: ${{ steps.artifacts.outputs.json }}
+      artifacts_json: ${{ steps.generate-artifacts.outputs.artifacts-json }}      
 
     steps:
       - name: Checkout code
