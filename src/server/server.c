@@ -99,7 +99,7 @@ static void print_help(void)
 {
 	printf(_("Usage: %s [OPTION]...\n"), program_name);
 
-	puts(_("psensor-server is an HTTP server for monitoring hardware "
+	puts(_("psensor-fork-server is an HTTP server for monitoring hardware "
 	       "sensors remotely."));
 
 	puts("");

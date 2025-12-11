@@ -288,12 +288,12 @@ static void update_pref(struct psensor *s)
 		chip = _("Unknown");
 	gtk_label_set_text(w_sensor_chipname, chip);
 
-	unsigned int use_celsius = config_get_temperature_unit() == CELSIUS ? 1U : 0U;
+	Temperature_Unit temperature_unit = config_get_temperature_unit();
 
 	if (s->min == UNKNOWN_DOUBLE_VALUE)
 		smin = strdup(_("Unknown"));
 	else
-		smin = psensor_value_to_str(s->type, s->min, use_celsius);
+		smin = psensor_value_to_str(s->type, s->min, temperature_unit);
 
 	gtk_label_set_text(w_sensor_min, smin);
 	free(smin);
@@ -301,7 +301,7 @@ static void update_pref(struct psensor *s)
 	if (s->max == UNKNOWN_DOUBLE_VALUE)
 		smax = strdup(_("Unknown"));
 	else
-		smax = psensor_value_to_str(s->type, s->max, use_celsius);
+		smax = psensor_value_to_str(s->type, s->max, temperature_unit);
 	gtk_label_set_text(w_sensor_max, smax);
 	free(smax);
 
@@ -316,9 +316,9 @@ static void update_pref(struct psensor *s)
 	gdk_rgba_free(color);
 
 	gtk_label_set_text(w_sensor_high_threshold_unit,
-			   psensor_type_to_unit_str(s->type, use_celsius));
+			   psensor_type_to_unit_str(s->type, temperature_unit));
 	gtk_label_set_text(w_sensor_low_threshold_unit,
-			   psensor_type_to_unit_str(s->type, use_celsius));
+			   psensor_type_to_unit_str(s->type, temperature_unit));
 
 	if (is_appindicator_supported()) {
 		gtk_widget_set_has_tooltip
@@ -340,12 +340,12 @@ static void update_pref(struct psensor *s)
 				     config_get_sensor_alarm_enabled(s->id));
 
 	int threshold = s->alarm_high_threshold;
-	if (!use_celsius)
+	if (!is_celsius(temperature_unit))
 		threshold = celsius_to_fahrenheit(threshold);
 	gtk_spin_button_set_value(w_sensor_high_threshold, threshold);
 
 	threshold = s->alarm_low_threshold;
-	if (!use_celsius)
+	if (!is_celsius(temperature_unit))
 		threshold = celsius_to_fahrenheit(threshold);
 	gtk_spin_button_set_value(w_sensor_low_threshold, threshold);
 

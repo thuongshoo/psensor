@@ -127,9 +127,6 @@ static const char *KEY_DEFAULT_HIGH_THRESHOLD_TEMPERATURE
 static const char *KEY_DEFAULT_SENSOR_ALARM_ENABLED
 = "default-sensor-alarm-enabled";
 
-static const char *KEY_FIRST_RUN
-= "first-run";
-
 static GSettings *settings;
 
 static char *user_dir;
@@ -169,11 +166,6 @@ static void set_int(const char *k, int i)
 	g_settings_set_int(settings, k, i);
 }
 
-static void set_uint(const char *k, int i)
-{
-	g_settings_set_uint(settings, k, i);
-}
-
 static double get_double(const char *k)
 {
 	return g_settings_get_double(settings, k);
@@ -187,11 +179,6 @@ static void set_double(const char *k, double d)
 static int get_int(const char *k)
 {
 	return g_settings_get_int(settings, k);
-}
-
-static unsigned int get_uint(const char *k)
-{
-	return g_settings_get_uint(settings, k);
 }
 
 char *config_get_notif_script(void)
@@ -505,10 +492,6 @@ void config_save_to_g_file(const struct config *c)
 	set_int(KEY_INTERFACE_WINDOW_W, c->window_w);
 	set_int(KEY_INTERFACE_WINDOW_H, c->window_h);
 	
-	// printf("save pos=%s vert=%d hori=%d \n", 
-	// 	config_get_sensorlist_position_str(config_get_sensorlist_position()),
-	// 	c->window_vertical_divider_pos,
-	// 	c->window_horizontal_divider_pos);
 	set_int(KEY_INTERFACE_WINDOW_VERTICAL_DIVIDER_POS, c->window_vertical_divider_pos);
 	set_int(KEY_INTERFACE_WINDOW_HORIZONTAL_DIVIDER_POS, c->window_horizontal_divider_pos);
 }
@@ -525,7 +508,7 @@ const char *get_psensor_user_dir(void)
 		if (!home)
 			return NULL;
 
-		user_dir = path_append(home, ".psensor");
+		user_dir = path_append(home, ".psensor-fork");
 
 		if (mkdir(user_dir, 0700) == -1 && errno != EEXIST) {
 			log_err(_("Failed to create the directory %s: %s"),
@@ -550,7 +533,7 @@ static const char *get_sensor_config_path(void)
 		dir = get_psensor_user_dir();
 
 		if (dir)
-			sensor_config_path = path_append(dir, "psensor.cfg");
+			sensor_config_path = path_append(dir, "psensor-fork.cfg");
 	}
 
 	return sensor_config_path;
@@ -953,20 +936,12 @@ void config_set_udisks2_enable(bool b)
 	set_bool(KEY_PROVIDER_UDISKS2_ENABLED, b);
 }
 
-enum temperature_unit config_get_temperature_unit(void)
+Temperature_Unit config_get_temperature_unit(void)
 {
 	return get_int(KEY_INTERFACE_TEMPERATURE_UNIT);
 }
 
-unsigned int config_get_temperature_unit_2(void)
-{
-	if (config_get_temperature_unit() == CELSIUS)
-		return 1U;
-	
-	return 0U;
-}
-
-void config_set_temperature_unit(enum temperature_unit u)
+void config_set_temperature_unit(Temperature_Unit u)
 {
 	set_int(KEY_INTERFACE_TEMPERATURE_UNIT, u);
 }
@@ -1009,12 +984,3 @@ const char *config_get_sensorlist_position_str(enum sensorlist_position pos)
 	
 }
 
-bool config_get_is_first_run(void)
-{
-	return get_bool(KEY_FIRST_RUN);
-}
-
-void config_set_is_first_run(bool enabled)
-{
-	set_bool(KEY_FIRST_RUN, enabled);
-}

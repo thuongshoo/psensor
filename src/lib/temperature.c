@@ -32,3 +32,11 @@ double kelvin_to_celsius(double k)
 {
 	return k - 273.5;
 }
+
+bool is_celsius(Temperature_Unit unit)
+{
+	if (unit == CELSIUS)
+		return true;
+
+	return false;
+}

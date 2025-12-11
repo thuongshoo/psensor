@@ -691,10 +691,15 @@ CURL_FALSE
 CURL_TRUE
 CURL_LIBS
 CURL_CFLAGS
-APPINDICATOR_FALSE
-APPINDICATOR_TRUE
+APPINDICATOR_INCLUDE_STRING
+HAVE_APPINDICATOR_FALSE
+HAVE_APPINDICATOR_TRUE
 APPINDICATOR_LIBS
 APPINDICATOR_CFLAGS
+APPINDICATOR_AYATANA_LIBS
+APPINDICATOR_AYATANA_CFLAGS
+APPINDICATOR_UPSTREAM_LIBS
+APPINDICATOR_UPSTREAM_CFLAGS
 LIBNOTIFY_FALSE
 LIBNOTIFY_TRUE
 LIBNOTIFY_LIBS
@@ -886,6 +891,10 @@ ATASMART_CFLAGS
 ATASMART_LIBS
 LIBNOTIFY_CFLAGS
 LIBNOTIFY_LIBS
+APPINDICATOR_UPSTREAM_CFLAGS
+APPINDICATOR_UPSTREAM_LIBS
+APPINDICATOR_AYATANA_CFLAGS
+APPINDICATOR_AYATANA_LIBS
 APPINDICATOR_CFLAGS
 APPINDICATOR_LIBS
 CURL_CFLAGS
@@ -1588,6 +1597,15 @@ Some influential environment variables:
               C compiler flags for LIBNOTIFY, overriding pkg-config
   LIBNOTIFY_LIBS
               linker flags for LIBNOTIFY, overriding pkg-config
+  APPINDICATOR_UPSTREAM_CFLAGS
+              C compiler flags for APPINDICATOR_UPSTREAM, overriding
+              pkg-config
+  APPINDICATOR_UPSTREAM_LIBS
+              linker flags for APPINDICATOR_UPSTREAM, overriding pkg-config
+  APPINDICATOR_AYATANA_CFLAGS
+              C compiler flags for APPINDICATOR_AYATANA, overriding pkg-config
+  APPINDICATOR_AYATANA_LIBS
+              linker flags for APPINDICATOR_AYATANA, overriding pkg-config
   APPINDICATOR_CFLAGS
               C compiler flags for APPINDICATOR, overriding pkg-config
   APPINDICATOR_LIBS
@@ -8144,13 +8162,17 @@ fi
 
 # Checks AppIndicator
 APPINDICATOR_LIBS=
+APPINDICATOR_PC_NAME=
+APPINDICATOR_INCLUDE_STRING=""
+
+# Kiểm tra lần lượt cả hai loại AppIndicator
 
 pkg_failed=no
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for appindicator3-0.1" >&5
 printf %s "checking for appindicator3-0.1... " >&6; }
 
-if test -n "$APPINDICATOR_CFLAGS"; then
-    pkg_cv_APPINDICATOR_CFLAGS="$APPINDICATOR_CFLAGS"
+if test -n "$APPINDICATOR_UPSTREAM_CFLAGS"; then
+    pkg_cv_APPINDICATOR_UPSTREAM_CFLAGS="$APPINDICATOR_UPSTREAM_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"appindicator3-0.1\""; } >&5
@@ -8158,7 +8180,7 @@ if test -n "$APPINDICATOR_CFLAGS"; then
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_APPINDICATOR_CFLAGS=`$PKG_CONFIG --cflags "appindicator3-0.1" 2>/dev/null`
+  pkg_cv_APPINDICATOR_UPSTREAM_CFLAGS=`$PKG_CONFIG --cflags "appindicator3-0.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -8166,8 +8188,8 @@ fi
  else
     pkg_failed=untried
 fi
-if test -n "$APPINDICATOR_LIBS"; then
-    pkg_cv_APPINDICATOR_LIBS="$APPINDICATOR_LIBS"
+if test -n "$APPINDICATOR_UPSTREAM_LIBS"; then
+    pkg_cv_APPINDICATOR_UPSTREAM_LIBS="$APPINDICATOR_UPSTREAM_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"appindicator3-0.1\""; } >&5
@@ -8175,7 +8197,7 @@ if test -n "$APPINDICATOR_LIBS"; then
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_APPINDICATOR_LIBS=`$PKG_CONFIG --libs "appindicator3-0.1" 2>/dev/null`
+  pkg_cv_APPINDICATOR_UPSTREAM_LIBS=`$PKG_CONFIG --libs "appindicator3-0.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -8196,36 +8218,304 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-                APPINDICATOR_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "appindicator3-0.1" 2>&1`
+                APPINDICATOR_UPSTREAM_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "appindicator3-0.1" 2>&1`
         else
-                APPINDICATOR_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "appindicator3-0.1" 2>&1`
+                APPINDICATOR_UPSTREAM_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "appindicator3-0.1" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$APPINDICATOR_UPSTREAM_PKG_ERRORS" >&5
+
+
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ayatana-appindicator3-0.1" >&5
+printf %s "checking for ayatana-appindicator3-0.1... " >&6; }
+
+if test -n "$APPINDICATOR_AYATANA_CFLAGS"; then
+    pkg_cv_APPINDICATOR_AYATANA_CFLAGS="$APPINDICATOR_AYATANA_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ayatana-appindicator3-0.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ayatana-appindicator3-0.1") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_APPINDICATOR_AYATANA_CFLAGS=`$PKG_CONFIG --cflags "ayatana-appindicator3-0.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$APPINDICATOR_AYATANA_LIBS"; then
+    pkg_cv_APPINDICATOR_AYATANA_LIBS="$APPINDICATOR_AYATANA_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ayatana-appindicator3-0.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ayatana-appindicator3-0.1") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_APPINDICATOR_AYATANA_LIBS=`$PKG_CONFIG --libs "ayatana-appindicator3-0.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                APPINDICATOR_AYATANA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ayatana-appindicator3-0.1" 2>&1`
+        else
+                APPINDICATOR_AYATANA_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ayatana-appindicator3-0.1" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$APPINDICATOR_AYATANA_PKG_ERRORS" >&5
+
+
+                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&5
+printf "%s\n" "$as_me: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&2;}
+                found_appindicator="no"
+
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&5
+printf "%s\n" "$as_me: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&2;}
+                found_appindicator="no"
+
+
+else
+        APPINDICATOR_AYATANA_CFLAGS=$pkg_cv_APPINDICATOR_AYATANA_CFLAGS
+        APPINDICATOR_AYATANA_LIBS=$pkg_cv_APPINDICATOR_AYATANA_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+                # Tìm thấy Ayatana (Debian) AppIndicator
+                APPINDICATOR_PC_NAME="ayatana-appindicator3-0.1"
+                APPINDICATOR_INCLUDE_STRING="<libayatana-appindicator/app-indicator.h>"
+                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Found Debian Ayatana AppIndicator" >&5
+printf "%s\n" "$as_me: Found Debian Ayatana AppIndicator" >&6;}
+                found_appindicator="yes"
+
+fi
+
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ayatana-appindicator3-0.1" >&5
+printf %s "checking for ayatana-appindicator3-0.1... " >&6; }
+
+if test -n "$APPINDICATOR_AYATANA_CFLAGS"; then
+    pkg_cv_APPINDICATOR_AYATANA_CFLAGS="$APPINDICATOR_AYATANA_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ayatana-appindicator3-0.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ayatana-appindicator3-0.1") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_APPINDICATOR_AYATANA_CFLAGS=`$PKG_CONFIG --cflags "ayatana-appindicator3-0.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$APPINDICATOR_AYATANA_LIBS"; then
+    pkg_cv_APPINDICATOR_AYATANA_LIBS="$APPINDICATOR_AYATANA_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ayatana-appindicator3-0.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ayatana-appindicator3-0.1") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_APPINDICATOR_AYATANA_LIBS=`$PKG_CONFIG --libs "ayatana-appindicator3-0.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                APPINDICATOR_AYATANA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ayatana-appindicator3-0.1" 2>&1`
+        else
+                APPINDICATOR_AYATANA_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ayatana-appindicator3-0.1" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$APPINDICATOR_AYATANA_PKG_ERRORS" >&5
+
+
+                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&5
+printf "%s\n" "$as_me: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&2;}
+                found_appindicator="no"
+
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&5
+printf "%s\n" "$as_me: WARNING: Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found." >&2;}
+                found_appindicator="no"
+
+
+else
+        APPINDICATOR_AYATANA_CFLAGS=$pkg_cv_APPINDICATOR_AYATANA_CFLAGS
+        APPINDICATOR_AYATANA_LIBS=$pkg_cv_APPINDICATOR_AYATANA_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+                # Tìm thấy Ayatana (Debian) AppIndicator
+                APPINDICATOR_PC_NAME="ayatana-appindicator3-0.1"
+                APPINDICATOR_INCLUDE_STRING="<libayatana-appindicator/app-indicator.h>"
+                { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Found Debian Ayatana AppIndicator" >&5
+printf "%s\n" "$as_me: Found Debian Ayatana AppIndicator" >&6;}
+                found_appindicator="yes"
+
+fi
+
+
+else
+        APPINDICATOR_UPSTREAM_CFLAGS=$pkg_cv_APPINDICATOR_UPSTREAM_CFLAGS
+        APPINDICATOR_UPSTREAM_LIBS=$pkg_cv_APPINDICATOR_UPSTREAM_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+        # Tìm thấy upstream (Ubuntu) AppIndicator
+        APPINDICATOR_PC_NAME="appindicator3-0.1"
+        APPINDICATOR_INCLUDE_STRING="<libappindicator/app-indicator.h>"
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Found Ubuntu/upstream AppIndicator" >&5
+printf "%s\n" "$as_me: Found Ubuntu/upstream AppIndicator" >&6;}
+        found_appindicator="yes"
+
+fi
+
+if test "x$found_appindicator" = "xyes"; then
+    # Gán lại biến APPINDICATOR_LIBS và CFLAGS chung từ PC_NAME đã xác định
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${APPINDICATOR_PC_NAME}" >&5
+printf %s "checking for ${APPINDICATOR_PC_NAME}... " >&6; }
+
+if test -n "$APPINDICATOR_CFLAGS"; then
+    pkg_cv_APPINDICATOR_CFLAGS="$APPINDICATOR_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"\${APPINDICATOR_PC_NAME}\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "${APPINDICATOR_PC_NAME}") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_APPINDICATOR_CFLAGS=`$PKG_CONFIG --cflags "${APPINDICATOR_PC_NAME}" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$APPINDICATOR_LIBS"; then
+    pkg_cv_APPINDICATOR_LIBS="$APPINDICATOR_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"\${APPINDICATOR_PC_NAME}\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "${APPINDICATOR_PC_NAME}") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_APPINDICATOR_LIBS=`$PKG_CONFIG --libs "${APPINDICATOR_PC_NAME}" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                APPINDICATOR_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "${APPINDICATOR_PC_NAME}" 2>&1`
+        else
+                APPINDICATOR_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "${APPINDICATOR_PC_NAME}" 2>&1`
         fi
         # Put the nasty error message in config.log where it belongs
         echo "$APPINDICATOR_PKG_ERRORS" >&5
 
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: AppIndicator 3-0.1 not present\"" >&5
-printf "%s\n" "$as_me: WARNING: AppIndicator 3-0.1 not present\"" >&2;}
+        as_fn_error $? "Failed to finalize check for ${APPINDICATOR_PC_NAME}" "$LINENO" 5
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: AppIndicator 3-0.1 not present\"" >&5
-printf "%s\n" "$as_me: WARNING: AppIndicator 3-0.1 not present\"" >&2;}
+        as_fn_error $? "Failed to finalize check for ${APPINDICATOR_PC_NAME}" "$LINENO" 5
 else
         APPINDICATOR_CFLAGS=$pkg_cv_APPINDICATOR_CFLAGS
         APPINDICATOR_LIBS=$pkg_cv_APPINDICATOR_LIBS
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
+fi
+
+    # Định nghĩa macro QUAN TRỌNG: Đảm bảo giá trị này được ghi vào config.h
+
+printf "%s\n" "#define APPINDICATOR_INCLUDE_NAME $APPINDICATOR_INCLUDE_STRING" >>confdefs.h
+
+
 printf "%s\n" "#define HAVE_APPINDICATOR 1" >>confdefs.h
 
 fi
- if test -n "$APPINDICATOR_LIBS"; then
-  APPINDICATOR_TRUE=
-  APPINDICATOR_FALSE='#'
+
+ if test "x$found_appindicator" = "xyes"; then
+  HAVE_APPINDICATOR_TRUE=
+  HAVE_APPINDICATOR_FALSE='#'
 else
-  APPINDICATOR_TRUE='#'
-  APPINDICATOR_FALSE=
+  HAVE_APPINDICATOR_TRUE='#'
+  HAVE_APPINDICATOR_FALSE=
 fi
+
 
 
 
@@ -9279,8 +9569,8 @@ if test -z "${LIBNOTIFY_TRUE}" && test -z "${LIBNOTIFY_FALSE}"; then
   as_fn_error $? "conditional \"LIBNOTIFY\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${APPINDICATOR_TRUE}" && test -z "${APPINDICATOR_FALSE}"; then
-  as_fn_error $? "conditional \"APPINDICATOR\" was never defined.
+if test -z "${HAVE_APPINDICATOR_TRUE}" && test -z "${HAVE_APPINDICATOR_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_APPINDICATOR\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${CURL_TRUE}" && test -z "${CURL_FALSE}"; then

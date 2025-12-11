@@ -1,0 +1,35 @@
+Source: psensor-fork
+Section: utils
+Priority: optional
+Maintainer: thuongshoo <yuyoonshoo@gmail.com>
+Build-Depends: debhelper (>= 13),
+               cmake,
+               pkg-config,
+               libgtk-3-dev (>= 3.4),
+               libappindicator3-dev,
+               libsensors-dev,
+               libnotify-dev,
+               libglib2.0-dev,
+               libglib2.0-bin,
+               libjson-c-dev,
+               libcurl4-openssl-dev,
+               libmicrohttpd-dev,
+               libatasmart-dev,
+               libunity-dev,
+               help2man,
+               gettext,
+               asciidoc
+
+Package: psensor-fork
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: Hardware temperature monitor
+ Psensor-fork is a graphical hardware temperature monitor for Linux.
+ .
+ It can monitor:
+  * the temperature of the motherboard and CPU sensors
+  * the temperature of the NVidia GPUs
+  * the temperature of the Hard Disk Drives
+  * the rotation speed of the fans
+  * the CPU usage

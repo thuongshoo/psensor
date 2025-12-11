@@ -22,7 +22,7 @@
 #define P_LOG_VER 3
 
 enum log_level {
-	LOG_ERR,
+	LOG_ERR = 0,
 	LOG_WARN,
 	LOG_INFO,
 	LOG_DEBUG

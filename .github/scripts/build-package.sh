@@ -66,18 +66,26 @@ apt-get install -y \
     libsensors-dev \
     libudisks2-dev \
     libx11-dev \
-    libxnvctrl-dev
+    libxnvctrl-dev \
+    libunity-dev \
+    asciidoc
 
 # 2. BUILD
 echo "--- Building package ---"
+
+if [ -f ./debian ]; then
+    rm -rf debian
+fi
+cp -rv debian_data debian
+
 echo "Checking debian directory..."
 ls -la debian/ 2>/dev/null || echo "No debian directory yet"
 
-# Remove compat file
-if [ -f debian/compat ]; then
-    echo "Removing debian/compat"
-    rm debian/compat
-fi
+# # Remove compat file
+# if [ -f debian/compat ]; then
+#     echo "Removing debian/compat"
+#     rm debian/compat
+# fi
 
 echo "Running dpkg-buildpackage..."
 dpkg-buildpackage -us -uc -b --no-sign

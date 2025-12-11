@@ -30,7 +30,14 @@ jobs:
             distro_version: "24.04"
             arch: amd64
             package_type: deb
-            
+         
+          # - name: "Ubuntu latest amd64" At this time on github ubuntu latest is 24.04, not 25.03
+          #   runner: ubuntu-latest
+          #   distro: ubuntu
+          #   distro_version: "latest"
+          #   arch: amd64
+          #   package_type: deb
+
           - name: "Ubuntu 24.04 arm64"
             runner: ubuntu-24.04-arm 
             distro: ubuntu
@@ -89,6 +96,33 @@ jobs:
           # fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       
+          # Determine OS version dynamically if set to "latest"
+          if [[ "${{ matrix.distro_version }}" == "latest" ]]; then
+            # First, try /etc/os-release (standard location)
+            if [ -f /etc/os-release ]; then
+                CURRENT_VERSION=$(grep '^VERSION_ID=' /etc/os-release | cut -d '"' -f 2 | head -n 1)
+            # Fall back to /usr/lib/os-release if the above doesn't exist
+            elif [ -f /usr/lib/os-release ]; then
+                CURRENT_VERSION=$(grep '^VERSION_ID=' /usr/lib/os-release | cut -d '"' -f 2 | head -n 1)
+            else
+                echo "Error: Could not find os-release file to determine version."
+                exit 1
+            fi
+
+            # If VERSION_ID is empty (e.g., rolling release), you could set a default or fail gracefully
+            if [ -z "$CURRENT_VERSION" ]; then
+                # Option 1: Set a placeholder (e.g., "rolling")
+                # CURRENT_VERSION="rolling"
+                # Option 2: Fail the step with a clear message
+                echo "Error: VERSION_ID is empty. Cannot determine a specific version for 'latest'."
+                exit 1
+            fi
+
+            echo "distro_version=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "distro_version=${{ matrix.distro_version }}" >> $GITHUB_OUTPUT
+          fi
+            
       - name: Build package
         id: build
         shell: bash
@@ -97,7 +131,7 @@ jobs:
           {
             echo "=== BUILD START ==="
             echo "Timestamp: $(date)"
-            echo "Matrix: ${{ matrix.distro }} ${{ matrix.distro_version }} ${{ matrix.arch }}"
+            echo "Matrix: ${{ matrix.distro }} ${{ steps.version.outputs.distro_version }} ${{ matrix.arch }}"
             
             chmod +x .github/scripts/build-package.sh
             # $1: DISTRO
@@ -107,13 +141,13 @@ jobs:
             # $5: OUTPUT_DIR
             ./.github/scripts/build-package.sh \
               "${{ matrix.distro }}" \
-              "${{ matrix.distro_version }}" \
+              "${{ steps.version.outputs.distro_version }}" \
               "${{ matrix.arch }}" \
               "${{ steps.version.outputs.version }}" \
               "./artifacts" 2>&1
             
             BUILD_EXIT=$?
-            PACKAGE_PATH=$(find . -name "psensor-fork_*_${{ matrix.distro }}${{ matrix.distro_version }}_${{ matrix.arch }}.deb" -type f | head -1)
+            PACKAGE_PATH=$(find . -name "psensor-fork_*_${{ matrix.distro }}${{ steps.version.outputs.distro_version }}_${{ matrix.arch }}.deb" -type f | head -1)
             
             if [ $BUILD_EXIT -eq 0 ] && [ -n "$PACKAGE_PATH" ]; then
               echo "package_path=$PACKAGE_PATH" >> $GITHUB_OUTPUT
@@ -140,7 +174,7 @@ jobs:
           ./.github/scripts/test-package.sh \
             "$PACKAGE_FILE" \
             "${{ matrix.distro }}" \
-            "${{ matrix.distro_version }}" \
+            "${{ steps.version.outputs.distro_version }}" \
             "${{ matrix.arch }}"
           
           echo "✅ Installation test completed successfully."
@@ -149,7 +183,7 @@ jobs:
       - name: Upload successful package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: psensor-fork-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}-v${{ steps.version.outputs.version }}
+          name: psensor-fork-${{ matrix.distro }}-${{ steps.version.outputs.distro_version }}-${{ matrix.arch }}-v${{ steps.version.outputs.version }}
           path: ${{ steps.build.outputs.package_path }}
           retention-days: 7
       
@@ -158,7 +192,7 @@ jobs:
       #   if: always()
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: build-logs-${{ matrix.distro }}-${{ matrix.distro_version }}-${{ matrix.arch }}
+      #     name: build-logs-${{ matrix.distro }}-${{ steps.version.outputs.distro_version }}-${{ matrix.arch }}
       #     path: build-logs/
       #     retention-days: 7
   release:

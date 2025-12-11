@@ -19,6 +19,15 @@
 #ifndef PSENSOR_TEMPERATURE_H
 #define PSENSOR_TEMPERATURE_H
 
+#include <bool.h>
+
+typedef enum temperature_unit {
+	CELSIUS = 0,
+	FAHRENHEIT = 1,
+} Temperature_Unit;
+
+bool is_celsius(Temperature_Unit unit);
+
 double celsius_to_fahrenheit(double c);
 double fahrenheit_to_celsius(double c);
 double kelvin_to_celsius(double k);

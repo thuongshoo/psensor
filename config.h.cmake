@@ -19,8 +19,8 @@
 #define PACKAGE_NAME "@PROJECT_NAME@"
 #define PACKAGE_VERSION "@PROJECT_VERSION@"
 #define PACKAGE_STRING "@PROJECT_NAME@ @PROJECT_VERSION@"
-#define PACKAGE_BUGREPORT "jeanfi@gmail.com"
-#define PACKAGE_URL "http://wpitchoune.net/psensor"
+#define PACKAGE_BUGREPORT "yuyoonshoo@gmail.com"
+#define PACKAGE_URL "https://github.com/thuongshoo/psensor"
 #define VERSION "@PROJECT_VERSION@"
 
 #endif /* CONFIG_H */

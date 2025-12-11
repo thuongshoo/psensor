@@ -641,13 +641,13 @@ static GraphDrawingContext* create_graph_context(const struct psensor **enabled_
     GraphDrawingContext *ctx = calloc(1, sizeof(GraphDrawingContext));
     if (!ctx) return NULL;
     
-    const unsigned int use_celsius = config_get_temperature_unit_2();
+    const Temperature_Unit temperature_unit = config_get_temperature_unit();
     ctx->all_minmax = get_all_minmax_value(enabled_sensors);
     
     /* Setup value ranges and labels */
-    ctx->str_min = psensor_value_to_str(SENSOR_TYPE_TEMP, ctx->all_minmax.temp.min, use_celsius);
-    ctx->str_max = psensor_value_to_str(SENSOR_TYPE_TEMP, ctx->all_minmax.temp.max, use_celsius);
-    ctx->str_unit = psensor_unit_to_str(SENSOR_TYPE_TEMP, use_celsius);
+    ctx->str_min = psensor_value_to_str(SENSOR_TYPE_TEMP, ctx->all_minmax.temp.min, temperature_unit);
+    ctx->str_max = psensor_value_to_str(SENSOR_TYPE_TEMP, ctx->all_minmax.temp.max, temperature_unit);
+    ctx->str_unit = psensor_unit_to_str(SENSOR_TYPE_TEMP, temperature_unit);
     
     /* Setup time range and labels */
     ctx->end_time = get_graph_end_time_s(enabled_sensors);

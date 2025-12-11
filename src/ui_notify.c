@@ -40,8 +40,6 @@ static struct timeval last_notification_tv;
 
 void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 {
-	unsigned int use_celsius;
-
 	log_debug("last_notification %d", last_notification_tv.tv_sec);
 
 	struct timeval time;
@@ -60,10 +58,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 		notify_init("psensor-fork");
 
 	if (notify_is_initted() == TRUE) {
-		if (config_get_temperature_unit() == CELSIUS)
-			use_celsius = 1;
-		else
-			use_celsius = 0;
+		Temperature_Unit temperature_unit = config_get_temperature_unit();
 
 		//printf("ui_notify name=%s count=%lu theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
 		struct measure *measure = psensor_get_current_measure(sensor);
@@ -71,7 +66,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 		svalue = psensor_measure_to_str
 			(measure,
 			 sensor->type,
-			 use_celsius);
+			 temperature_unit);
 		
 		char *body;
 		if (-1 == asprintf(&body, "%s : %s", sensor->name, svalue))

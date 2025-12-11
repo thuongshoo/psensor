@@ -20,3 +20,4 @@ src/server/psensor-fork-server
 src/server/psensor-fork-server.1
 po/psensor-fork.pot
 po/POTFILES
+debian/**

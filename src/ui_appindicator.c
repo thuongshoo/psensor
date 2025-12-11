@@ -32,8 +32,8 @@
 #include <ui_pref.h>
 #include <paths.h>
 
-static const char *ICON = "psensor_normal";
-static const char *ATTENTION_ICON = "psensor_hot";
+static const char *ICON = "psensor-fork_normal";
+static const char *ATTENTION_ICON = "psensor-fork_hot";
 
 /* Build GLADE path at runtime using get_data_path() so the installed
  * data directory is resolved the same way as the main UI. */
@@ -63,12 +63,12 @@ void ui_appindicator_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
 }
 
 static void
-update_menu_item(GtkMenuItem *item, struct psensor *s, int use_celsius)
+update_menu_item(GtkMenuItem *item, struct psensor *s, Temperature_Unit temperature_unit)
 {
 	gchar *str;
 	char *v;
 
-	v = psensor_current_value_to_str(s, use_celsius);
+	v = psensor_current_value_to_str(s, temperature_unit);
 
 	str = g_strdup_printf("%s: %s", s->name, v);
 
@@ -78,7 +78,7 @@ update_menu_item(GtkMenuItem *item, struct psensor *s, int use_celsius)
 	g_free(str);
 }
 
-static void update_menu_items(int use_celsius)
+static void update_menu_items(Temperature_Unit temperature_unit)
 {
 	struct psensor **s;
 	GtkMenuItem **m;
@@ -87,20 +87,13 @@ static void update_menu_items(int use_celsius)
 		return;
 
 	for (s = sensors, m = menu_items; *s; s++, m++)
-		update_menu_item(*m, *s, use_celsius);
+		update_menu_item(*m, *s, temperature_unit);
 }
 
 static void
 create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 {
-	int celsius;
-	const char *name;
 	struct psensor **sorted_sensors;
-
-	if (config_get_temperature_unit() == CELSIUS)
-		celsius = 1;
-	else
-		celsius = 0;
 
 	sorted_sensors = ui_get_sensors_ordered_by_position(ui->sensors);
 	size_t n = psensor_list_size((const struct psensor **)sorted_sensors);
@@ -116,11 +109,12 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 		return;
 	}
 
+	Temperature_Unit temperature_unit = config_get_temperature_unit();
 	size_t i, j;
 	for ( i = 0, j = 0; i < n; i++) {
 		if (config_is_appindicator_enabled(sorted_sensors[i]->id)) {
 			sensors[j] = sorted_sensors[i];
-			name = sensors[j]->name;
+			const char *name = sensors[j]->name;
 
 			menu_items[j] = GTK_MENU_ITEM
 				(gtk_menu_item_new_with_label(name));
@@ -129,7 +123,7 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 					      GTK_WIDGET(menu_items[j]),
 					      j+2);
 
-			update_menu_item(menu_items[j], sensors[j], celsius);
+			update_menu_item(menu_items[j], sensors[j], temperature_unit);
 
 			j++;
 		}
@@ -185,65 +179,93 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 
 	return menu;
 }
+	
+static const char* get_unit_format_string(unsigned int sensor_type)
+{
+	if (is_temp_type(sensor_type))
+		return  "999UUU";
+	else if ( sensor_type & SENSOR_TYPE_RPM)
+		return "999UUU";
+	/* percent */
+	return "999%";
+}
+
+static int append_sensor_to_strings(char **label, char **guide, 
+                                     const char *value_string,
+                                     const char *unit_format)
+{
+    char *new_label = NULL;
+    char *new_guide = NULL;
+    
+    // Cập nhật label
+    if (*label) {
+        if (asprintf(&new_label, "%s %s", *label, value_string) == -1) {
+            return -1;
+        }
+    } else {
+        new_label = strdup(value_string);
+        if (!new_label) return -1;
+    }
+    
+    // Cập nhật guide
+    if (*guide) {
+        if (asprintf(&new_guide, "%sW%s", *guide, unit_format) == -1) {
+            free(new_label);
+            return -1;
+        }
+    } else {
+        new_guide = strdup(value_string);
+        if (!new_guide) {
+            free(new_label);
+            return -1;
+        }
+    }
+    
+    free(*label);
+    free(*guide);
+    *label = new_label;
+    *guide = new_guide;
+    
+    return 0;
+}
 
 static void update_label(struct ui_psensor *ui)
 {
-	char *label, *str, *tmp, *guide;
-	struct psensor **p, **original_sensors;
-	int use_celsius;
+    struct psensor **sensorList = ui_get_sensors_ordered_by_position(ui->sensors);
+    struct psensor **original_sensors = sensorList;
+    
+    char *label = NULL;
+    char *guide = NULL;
+    Temperature_Unit temperature_unit = config_get_temperature_unit();
 
-	p =  ui_get_sensors_ordered_by_position(ui->sensors);
-	original_sensors = p;
-	label = NULL;
-	guide = NULL;
+    for (; *sensorList; sensorList++) {
+        if (!config_is_appindicator_label_enabled((*sensorList)->id)) {
+            continue;
+        }
 
-	if (config_get_temperature_unit() == CELSIUS)
-		use_celsius = 1;
-	else
-		use_celsius = 0;
+        char *value_string = psensor_current_value_to_str(*sensorList, temperature_unit);
+        if (!value_string) {
+            continue;
+        }
 
-	while (*p) {
-		if (config_is_appindicator_label_enabled((*p)->id)) {
-			str = psensor_current_value_to_str(*p, use_celsius);
+        const char* unit_format = get_unit_format_string((*sensorList)->type);
+        
+        if (append_sensor_to_strings(&label, &guide, value_string, unit_format) != 0) {
+            free(value_string);
+            // Có thể log lỗi ở đây
+            continue;
+        }
+        
+        free(value_string);
+    }
 
-			if (label == NULL) {
-				label = str;
-			} else {
-				size_t len;
-				len = strlen(label) + strlen(str) + 2;
-				tmp = malloc(strlen(label)
-					     + 1
-					     + strlen(str)
-					     + 1);
-				snprintf(tmp, len, "%s %s", label, str);
-				free(label);
-				free(str);
-				label = tmp;
-			}
-
-			if (is_temp_type((*p)->type))
-				str = "999UUU";
-			else if ((*p)->type & SENSOR_TYPE_RPM)
-				str = "999UUU";
-			else /* percent */
-				str = "999%";
-
-			if (guide == NULL) {
-				guide = strdup(str);
-			} else {
-				asprintf(&tmp, "%sW%s", guide, str);
-				free(guide);
-				guide = tmp;
-			}
-
-		}
-		p++;
-	}
-
-	app_indicator_set_label(indicator, label, guide);
-	free(label);
-	free(guide);
-	free(original_sensors);
+    if (label && guide) {
+        app_indicator_set_label(indicator, label, guide);
+    }
+    
+    free(label);
+    free(guide);
+    free(original_sensors);
 }
 
 void ui_appindicator_update(struct ui_psensor *ui, bool attention)
@@ -265,10 +287,7 @@ void ui_appindicator_update(struct ui_psensor *ui, bool attention)
 		app_indicator_set_status(indicator,
 		APP_INDICATOR_STATUS_ATTENTION);
 
-	if (config_get_temperature_unit() == CELSIUS)
-		update_menu_items(1);
-	else
-		update_menu_items(0);
+	update_menu_items(config_get_temperature_unit());
 }
 
 static void remove_sensor_menu_items(GtkMenu *menu)

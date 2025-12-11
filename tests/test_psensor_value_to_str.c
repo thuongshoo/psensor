@@ -30,12 +30,12 @@
 static int
 test_psensor_value_to_str(unsigned int type,
 			  double value,
-			  unsigned int celsius,
+			  Temperature_Unit temperature_unit,
 			  const char *ref)
 {
 	char *str;
 
-	str = psensor_value_to_str(type, value, celsius);
+	str = psensor_value_to_str(type, value, temperature_unit);
 	if (strcmp(ref, str)) {
 		fprintf(stderr, "returns: %s expected: %s\n", str, ref);
 		return 1;

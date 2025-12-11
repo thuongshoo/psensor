@@ -107,12 +107,48 @@ AC_SUBST(LIBNOTIFY_LIBS)
 
 # Checks AppIndicator 
 APPINDICATOR_LIBS=
-PKG_CHECK_MODULES(APPINDICATOR, appindicator3-0.1,
-     [AC_DEFINE([HAVE_APPINDICATOR],[1],[Use AppIndicator3-0.1])],
-     [AC_MSG_WARN(AppIndicator 3-0.1 not present")])
-AM_CONDITIONAL(APPINDICATOR, test -n "$APPINDICATOR_LIBS")
+APPINDICATOR_PC_NAME=
+APPINDICATOR_INCLUDE_STRING=""
+
+# Kiểm tra lần lượt cả hai loại AppIndicator
+PKG_CHECK_MODULES([APPINDICATOR_UPSTREAM], [appindicator3-0.1],
+    [
+        # Tìm thấy upstream (Ubuntu) AppIndicator
+        APPINDICATOR_PC_NAME="appindicator3-0.1"
+        APPINDICATOR_INCLUDE_STRING="<libappindicator/app-indicator.h>"
+        AC_MSG_NOTICE([Found Ubuntu/upstream AppIndicator])
+        found_appindicator="yes"
+    ],
+    [
+        PKG_CHECK_MODULES([APPINDICATOR_AYATANA], [ayatana-appindicator3-0.1],
+            [
+                # Tìm thấy Ayatana (Debian) AppIndicator
+                APPINDICATOR_PC_NAME="ayatana-appindicator3-0.1"
+                APPINDICATOR_INCLUDE_STRING="<libayatana-appindicator/app-indicator.h>"
+                AC_MSG_NOTICE([Found Debian Ayatana AppIndicator])
+                found_appindicator="yes"
+            ],
+            [
+                AC_MSG_WARN([Neither AppIndicator 3-0.1 nor Ayatana AppIndicator 3-0.1 found.])
+                found_appindicator="no"
+            ]
+        )
+    ]
+)
+
+if test "x$found_appindicator" = "xyes"; then
+    # Gán lại biến APPINDICATOR_LIBS và CFLAGS chung từ PC_NAME đã xác định
+    PKG_CHECK_MODULES([APPINDICATOR], [${APPINDICATOR_PC_NAME}], [], [AC_MSG_ERROR([Failed to finalize check for ${APPINDICATOR_PC_NAME}])])
+    
+    # Định nghĩa macro QUAN TRỌNG: Đảm bảo giá trị này được ghi vào config.h
+    AC_DEFINE_UNQUOTED([APPINDICATOR_INCLUDE_NAME], [$APPINDICATOR_INCLUDE_STRING], [Path to AppIndicator header])
+    AC_DEFINE([HAVE_APPINDICATOR], [1], [Define if AppIndicator is available])
+fi
+
+AM_CONDITIONAL([HAVE_APPINDICATOR], [test "x$found_appindicator" = "xyes"])
 AC_SUBST(APPINDICATOR_CFLAGS)
 AC_SUBST(APPINDICATOR_LIBS)
+AC_SUBST(APPINDICATOR_INCLUDE_STRING)
 
 # Check CURL, needed for remote monitoring
 CURL_LIBS=

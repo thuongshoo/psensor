@@ -37,7 +37,7 @@ static GtkContainer *w_main_box;
 static enum sensorlist_position last_sensorlist_position;
 
 enum psensor_layout {
-	PSENSOR_LAYOUT_HORIZONTAL,
+	PSENSOR_LAYOUT_HORIZONTAL = 0,
 	PSENSOR_LAYOUT_VERTICAL
 };
 
@@ -102,11 +102,6 @@ static void calculate_slider_position(struct ui_psensor *ui, enum sensorlist_pos
 													slider_position,
 													sensorlist_pos);
 	}
-	// printf("pos2=%s slider=%d lastV=%d lastH=%d \n", 
-	// 	config_get_sensorlist_position_str(sensorlist_pos), 
-	// 	slider_position, 
-	// 	ui->config->window_vertical_divider_pos, 
-	// 	ui->config->window_horizontal_divider_pos);
 }
 
 static void pack_widgets_with_new_layout()
@@ -446,10 +441,14 @@ void ui_window_create(struct ui_psensor *ui)
 	builder = gtk_builder_new();
 	error = NULL;
 	char *data_path = get_data_path();
-	//log_printf(LOG_INFO, "Data path: %s", data_path);
+	
 	const char *str_format = "%s/psensor-fork.glade";
 	char *glade_path;
-	asprintf(&glade_path, str_format, data_path);
+	if (-1 == asprintf(&glade_path, str_format, data_path) )
+	{
+		log_printf(LOG_ERR, "Cannot load %s .Data path: %s", str_format, data_path);
+		return;
+	}
 	//log_printf(LOG_INFO, "Loading glade file: %s", glade_path);
 	
 	// Test translation
@@ -517,17 +516,6 @@ void ui_window_create(struct ui_psensor *ui)
 
 	log_debug("ui_window_create(): show_all");
 
-	gboolean is_first_run = config_get_is_first_run();
-	if (is_first_run) {
-		log_debug("First run detected. Applying initial configuration.");
-		config_set_sensorlist_position(250);
-	
-		config_set_is_first_run(FALSE);
-		log_debug("First-run flag has been set to FALSE.");
-	} else {
-		log_debug(" no more First run detected.");
-	}
-
 	update_layout(ui);
 	gtk_widget_show_all(GTK_WIDGET(w_main_box));
 	set_menu_bar_enabled(menu_bar);
@@ -567,7 +555,7 @@ struct psensor **ui_get_sensors_ordered_by_position(struct psensor **sensors)
 {
 	struct psensor **result;
 
-	result = psensor_list_copy((const struct psensor **)sensors);
+	result = psensor_list_copy(sensors);
 	qsort(result,
 	      psensor_list_size((const struct psensor **)result),
 	      sizeof(struct psensor *),

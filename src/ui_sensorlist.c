@@ -97,11 +97,7 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
 
 	GtkListStore *store = ui->sensors_store;
 
-	unsigned int use_celsius;
-	if (config_get_temperature_unit() == CELSIUS)
-		use_celsius = 1;
-	else
-		use_celsius = 0;
+	Temperature_Unit temperature_unit = config_get_temperature_unit();
 
     GtkTreeIter iter;
     gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
@@ -112,13 +108,13 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
 
         char*value = psensor_value_to_str(s->type,
                          psensor_get_current_value(s),
-                         use_celsius);
+                         temperature_unit);
         char* min = psensor_value_to_str(s->type,
                        s->sess_lowest,
-                       use_celsius);
+                       temperature_unit);
         char* max = psensor_value_to_str(s->type,
                        s->sess_highest,
-                       use_celsius);
+                       temperature_unit);
 
         gtk_list_store_set(store, &iter,
                    COL_TEMP, value,

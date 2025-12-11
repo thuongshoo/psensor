@@ -1,6 +1,6 @@
 [description]
 
-/psensor is a/
+/psensor\-fork is a/
 
 It displays a curve for each sensor, and uses Desktop Notification to
 raise an alarm when a temperature is too high. On Ubuntu an
@@ -14,7 +14,7 @@ It can monitor:
   * the temperature of the Hard Disk Drives (using hddtemp or atasmart
     library).
   * the rotation speed of the fans (using lm\-sensors).
-  * the sensors of a remote computer (using psensor\-server).
+  * the sensors of a remote computer (using psensor\-fork\-server).
 
 Psensor requires lm\-sensors to be correctly installed and configured,
 it can be checked by running the command 'sensors'. If it has never be
@@ -26,20 +26,20 @@ To retrieve the temperature of the Hard Disk Drives, the hddtemp
 daemon must be running or atasmart used ('\-\-use\-libatasmart').
 
 For remote monitoring:
-  * start psensor\-server(1) on the remote computer
-  * run psensor with '\-\-url' option: 'psensor \-\-url=http://localhost:3131'
+  * start psensor\-fork\-server(1) on the remote computer
+  * run psensor\-fork with '\-\-url' option: 'psensor\-fork \-\-url=http://localhost:3131'
 
 ATI/AMD GPUs monitoring is available if the library libatiadlxx is
-present in the directory /usr/lib and psensor has been compiled with
+present in the directory /usr/lib and psensor\-fork has been compiled with
 the ATI ADL SDK.
 
-Log messages are written to '$HOME/.psensor/log'.
+Log messages are written to '$HOME/.psensor\-fork/log'.
 
-By default, if a Psensor process is already running, the command
-psensor will show the graph window then exit.  
-It is possible to run multiple instances of Psensor by using the
+By default, if a Psensor\-fork process is already running, the command
+psensor\-fork will show the graph window then exit.  
+It is possible to run multiple instances of Psensor\-fork by using the
 option '\-\-new\-instance'.
 
 [SEE ALSO]
 
-psensor\-server(1), sensors(1), sensors\-detect(8), hddtemp(8)
+psensor\-fork\-server(1), sensors(1), sensors\-detect(8), hddtemp(8)

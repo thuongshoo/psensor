@@ -19,8 +19,8 @@
 #include <plog.h>
 #include "ui_status.h"
 
-//static const char *ICON = "psensor_normal";
-//static const char *ATTENTION_ICON = "psensor_hot";
+//static const char *ICON = "psensor-fork_normal";
+//static const char *ATTENTION_ICON = "psensor-fork_hot";
 
 static GtkStatusIcon *status;
 //static unsigned int status_attention;
@@ -77,7 +77,7 @@ void ui_status_cleanup(void)
 	}
 }
 
-void ui_status_update(struct ui_psensor *ui, unsigned int attention)
+void ui_status_update(struct ui_psensor *ui, bool attention)
 {
 	log_debug("ui_status_update()");
 

@@ -23,17 +23,14 @@
 
 #include <bool.h>
 #include <color.h>
+#include <temperature.h>
 
-enum temperature_unit {
-	CELSIUS = 0U,
-	FAHRENHEIT = 1U,
-};
 
 enum sensorlist_position {
-	SENSORLIST_POSITION_RIGHT,
-	SENSORLIST_POSITION_LEFT,
-	SENSORLIST_POSITION_TOP,
-	SENSORLIST_POSITION_BOTTOM
+	SENSORLIST_POSITION_RIGHT = 0,
+	SENSORLIST_POSITION_LEFT = 1,
+	SENSORLIST_POSITION_TOP = 2,
+	SENSORLIST_POSITION_BOTTOM = 3
 };
 const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
@@ -140,8 +137,7 @@ void config_set_nvctrl_enable(bool);
 bool config_is_atiadlsdk_enabled(void);
 void config_set_atiadlsdk_enable(bool);
 
-enum temperature_unit config_get_temperature_unit(void);
-unsigned int config_get_temperature_unit_2(void);
+Temperature_Unit config_get_temperature_unit(void);
 void config_set_temperature_unit(enum temperature_unit);
 
 double config_get_default_high_threshold_temperature(void);
@@ -161,8 +157,6 @@ void config_set_count_visible(bool);
 enum sensorlist_position config_get_sensorlist_position(void);
 void config_set_sensorlist_position(enum sensorlist_position pos);
 
-bool config_get_is_first_run(void);
-void config_set_is_first_run(bool enabled);
 /*
  * Returns the user directory containing psensor data (configuration
  * and log).

@@ -96,7 +96,7 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 	GtkScale *w_bg_opacity;
 	GtkSpinButton *w_update_interval, *w_monitoring_duration,
 		*w_s_update_interval, *w_slog_interval;
-	GtkComboBox *w_sensorlist_pos;
+	
 	GtkToggleButton *w_enable_menu, *w_enable_launcher_counter,
 		*w_hide_on_startup, *w_win_restore, *w_slog_enabled,
 		*w_autostart, *w_smooth_curves, *w_atiadlsdk, *w_lmsensors,
@@ -173,10 +173,11 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 	gtk_spin_button_set_value(w_monitoring_duration,
 				  cfg->graph_monitoring_duration);
 
-	w_sensorlist_pos = GTK_COMBO_BOX
+	GtkComboBox *w_sensorlist_pos = GTK_COMBO_BOX
 		(gtk_builder_get_object(builder, "sensors_list_position"));
+	enum sensorlist_position sensorlist_pos = config_get_sensorlist_position();
 	gtk_combo_box_set_active(w_sensorlist_pos,
-				 config_get_sensorlist_position());
+				sensorlist_pos);
 
 	w_autostart = GTK_TOGGLE_BUTTON
 		(gtk_builder_get_object(builder, "autostart"));
@@ -184,8 +185,9 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 
 	w_enable_menu = GTK_TOGGLE_BUTTON
 		(gtk_builder_get_object(builder, "enable_menu"));
+	bool enable_menu = config_is_menu_bar_enabled();
 	gtk_toggle_button_set_active(w_enable_menu,
-				     config_is_menu_bar_enabled());
+				     enable_menu);
 
 	w_enable_launcher_counter = GTK_TOGGLE_BUTTON
 		(gtk_builder_get_object(builder, "enable_launcher_counter"));
@@ -216,21 +218,19 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 	gtk_spin_button_set_value(w_slog_interval, cfg->slog_interval);
 
 	w_hide_on_startup
-		= GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,
-							   "hide_on_startup"));
+		= GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "hide_on_startup"));
 	gtk_toggle_button_set_active(w_hide_on_startup, cfg->hide_on_startup);
 
 	w_win_restore
-		= GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,
-							   "restore_window"));
+		= GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "restore_window"));
 	gtk_toggle_button_set_active(w_win_restore,
 				     cfg->window_restore_enabled);
 
 	w_temp_unit
-		= GTK_COMBO_BOX_TEXT(gtk_builder_get_object
-				     (builder, "temperature_unit"));
+		= GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "temperature_unit"));
+	Temperature_Unit temperature_unit = config_get_temperature_unit();
 	gtk_combo_box_set_active(GTK_COMBO_BOX(w_temp_unit),
-				 config_get_temperature_unit());
+				temperature_unit );
 
 	/* providers */
 	w_lmsensors

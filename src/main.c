@@ -168,7 +168,7 @@ static void *update_measures(void *data)
 		{
 			cfg->is_new_data = true;
 		}
-		int period = cfg->sensor_update_interval;
+		unsigned int period = (unsigned int)cfg->sensor_update_interval;
 
 		update_measures_unlock(&ui->sensors_mutex);
 

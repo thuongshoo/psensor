@@ -32,7 +32,7 @@ static inline char *get_data_path(void) {
 
     /* 2) Try PACKAGE_DATA_DIR as provided (may be absolute or relative) */
     if (PACKAGE_DATA_DIR[0] != '\0') {
-        if (access(PACKAGE_DATA_DIR "/psensor.glade", F_OK) == 0) {
+        if (access(PACKAGE_DATA_DIR "/psensor-fork.glade", F_OK) == 0) {
             return strdup(PACKAGE_DATA_DIR);
         }
     }
@@ -53,10 +53,10 @@ static inline char *get_data_path(void) {
                 snprintf(path, need, "%s/%s", selfpath, PACKAGE_DATA_DIR);
 
                 /* build full glade path to test presence */
-                size_t glade_need = strlen(path) + sizeof("/psensor.glade");
+                size_t glade_need = strlen(path) + sizeof("/psensor-fork.glade");
                 char *glade = (char *)malloc(glade_need);
                 if (glade) {
-                    snprintf(glade, glade_need, "%s/psensor.glade", path);
+                    snprintf(glade, glade_need, "%s/psensor-fork.glade", path);
                     if (access(glade, F_OK) == 0) {
                         free(glade);
                         return path;
@@ -69,7 +69,7 @@ static inline char *get_data_path(void) {
             /* 4) Try common locations relative to executable */
             path = (char *)malloc(strlen(selfpath) + 32);
             if (!path) return NULL;
-            snprintf(path, strlen(selfpath) + 32, "%s/share/psensor", selfpath);
+            snprintf(path, strlen(selfpath) + 32, "%s/share/psensor-fork", selfpath);
             if (access(path, F_OK) == 0) {
                 return path;
             }

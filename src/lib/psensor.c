@@ -34,8 +34,9 @@
 #include <psensor.h>
 #include <temperature.h>
 
+
 char *
-psensor_value_to_str(unsigned int type, double value, unsigned int use_celsius)
+psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperature_unit)
 {
 	/*
 	 * should not be possible to exceed 16 characters with temp or
@@ -46,7 +47,7 @@ psensor_value_to_str(unsigned int type, double value, unsigned int use_celsius)
 	if (str == NULL)
 		return NULL;
 
-	if (is_temp_type(type) && !use_celsius)
+	if (is_temp_type(type) && !is_celsius(temperature_unit))
 		value = celsius_to_fahrenheit(value);
 
 	snprintf(str, MAX_STR_LEN, "%.0f", value);
@@ -55,7 +56,7 @@ psensor_value_to_str(unsigned int type, double value, unsigned int use_celsius)
 }
 
 char *
-psensor_unit_to_str(unsigned int type, unsigned int use_celsius)
+psensor_unit_to_str(unsigned int type, Temperature_Unit temperature_unit)
 {
 	/*
 	 * should not be possible to exceed 4 characters with temp or
@@ -67,7 +68,7 @@ psensor_unit_to_str(unsigned int type, unsigned int use_celsius)
 	if(str == NULL)
 		return NULL;
 
-	const char *unit = psensor_type_to_unit_str(type, use_celsius);
+	const char *unit = psensor_type_to_unit_str(type, temperature_unit);
 
 	snprintf(str, MAX_STR_LEN, "%s", unit);
 
@@ -77,9 +78,9 @@ psensor_unit_to_str(unsigned int type, unsigned int use_celsius)
 char *
 psensor_measure_to_str(const struct measure *m,
 					   unsigned int type,
-					   unsigned int use_celsius)
+					   Temperature_Unit temperature_unit)
 {
-	return psensor_value_to_str(type, m->value, use_celsius);
+	return psensor_value_to_str(type, m->value, temperature_unit);
 }
 
 struct psensor *psensor_create(char *id,
@@ -242,7 +243,7 @@ static struct psensor **psensor_list_add(struct psensor **all_sensors,
 
 /// @brief append sensor to sensors list
 /// @param list_sensors
-/// @param sensor
+/// @param new_sensor
 void psensor_list_append(struct psensor ***list_sensors, struct psensor *new_sensor)
 {
 	if (!new_sensor)
@@ -556,11 +557,11 @@ const char *psensor_type_to_str(unsigned int type)
 	return "N/A";
 }
 
-const char *psensor_type_to_unit_str(unsigned int type, unsigned int use_celsius)
+const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit temperature_unit)
 {
 	if (is_temp_type(type))
 	{
-		if (use_celsius)
+		if (temperature_unit == CELSIUS)
 			return "\302\260C";
 
 		return "\302\260F";
@@ -597,17 +598,17 @@ void psensor_log_measures(struct psensor **sensors)
 	}
 }
 
-struct psensor **psensor_list_copy(const struct psensor **sensors)
+struct psensor **psensor_list_copy(struct psensor **sensors)
 {
 	struct psensor **result;
 
-	size_t n = psensor_list_size(sensors);
+	size_t n = psensor_list_size((const struct psensor **)sensors);
 
 	result = (struct psensor **)malloc((n + 1) * sizeof(struct psensor *));
 	if (result != NULL)
 	{
 		for (size_t i = 0; i < n; i++)
-			result[i] = (struct psensor *)sensors[i];
+			result[i] = sensors[i];
 		result[n] = NULL;
 	}
 
@@ -615,9 +616,9 @@ struct psensor **psensor_list_copy(const struct psensor **sensors)
 }
 
 char *
-psensor_current_value_to_str(const struct psensor *s, unsigned int use_celsius)
+psensor_current_value_to_str(const struct psensor *s, Temperature_Unit temperature_unit)
 {
 	return psensor_value_to_str(s->type,
 								psensor_get_current_value(s),
-								use_celsius);
+								temperature_unit);
 }

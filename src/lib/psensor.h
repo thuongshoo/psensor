@@ -24,6 +24,7 @@
 #include <bool.h>
 #include <measure.h>
 #include <plog.h>
+#include <temperature.h>
 
 enum psensor_type {
 	/* type of sensor values */
@@ -111,7 +112,7 @@ struct psensor {
 
 // Iterator để vẽ từ OLDEST đến NEWEST
 struct measure_iterator {
-    struct psensor *sensor;
+    const struct psensor *sensor;
     int current_pos;
     int remaining;
 	int direction; // Thêm trường direction để xác định hướng iteration
@@ -158,21 +159,21 @@ double get_max_rpm(const struct psensor **sensors);
  */
 char *psensor_value_to_str(unsigned int type,
 			   double value,
-			   unsigned int use_celsius);
+			   Temperature_Unit temperature_unit);
 
 char *psensor_unit_to_str(unsigned int type,
-			   unsigned int use_celsius);
+			   Temperature_Unit temperature_unit);
 
 char *psensor_measure_to_str(const struct measure *m,
 			     unsigned int type,
-			     unsigned int use_celsius);
+			     Temperature_Unit temperature_unit);
 
 // struct psensor **psensor_list_add(struct psensor **sensors,
 // 				  struct psensor *sensor);
 
 void psensor_list_append(struct psensor ***sensors, struct psensor *sensor);
 
-struct psensor **psensor_list_copy(const struct psensor **);
+struct psensor **psensor_list_copy(struct psensor **);
 
 void psensor_set_current_value(struct psensor *sensor, double value);
 void psensor_set_current_measure(struct psensor *sensor, double value,
@@ -185,7 +186,7 @@ struct measure *psensor_get_current_measure(struct psensor *sensor);
 /* Returns a string representation of a psensor type. */
 const char *psensor_type_to_str(unsigned int type);
 
-const char *psensor_type_to_unit_str(unsigned int type, unsigned int use_celsius);
+const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit temperature_unit);
 
 typedef struct minmax_st {
 	double min;
@@ -202,7 +203,7 @@ typedef struct all_minmax_st {
 
 ALL_MINMAX get_all_minmax_value(const struct psensor **all_sensors);
 
-char *psensor_current_value_to_str(const struct psensor *, unsigned int);
+char *psensor_current_value_to_str(const struct psensor *, Temperature_Unit temperature_unit);
 
 void psensor_log_measures(struct psensor **sensors);
 

@@ -63,6 +63,7 @@
     </key>
     <key name="interface-sensorlist-position" type="i">
       <default>0</default>
+      <range min="0" max="3"/>
       <summary>Position of the sensor list in the graph
       window</summary>
       <description>Position of the sensor list in the graph
@@ -78,6 +79,7 @@
     </key>
     <key name="interface-temperature-unit" type="i">
       <default>0</default>
+      <range min="0" max="1"/>
       <summary>The displayed temperature unit</summary>
       <description>The displayed temperature unit, '0' for Celsius,
       '1' for Fahenrenheit.</description>
@@ -104,7 +106,7 @@
       are restored</description>
     </key>
     <key name="interface-window-horizontal-divider-pos" type="i">
-      <default>0</default>
+      <default>400</default>
       <summary>Position of the divider between the graph and sensor list 
       when sensors are positioned to the right or left of the graph</summary>
       <description>Position of the divider between the graph window 
@@ -113,7 +115,7 @@
     </key>
 
     <key name="interface-window-vertical-divider-pos" type="i">
-        <default>0</default>
+        <default>400</default>
         <summary>Position of the divider between the graph and sensor list 
         when sensors are positioned above or below the graph</summary>
         <description>Position of the divider between the graph window 
@@ -126,7 +128,7 @@
       <description>Width of the graph window.</description>
     </key>
     <key name="interface-window-h" type="i">
-      <default>200</default>
+      <default>600</default>
       <summary>Height of the graph window</summary>
       <description>Height of the graph window.</description>
     </key>
@@ -229,11 +231,6 @@
       hard disks information.</summary>
       <description>Whether the lm-sensors library is used to
       retrieved hard disks information.</description>
-    </key>
-    <key name="first-run" type="b">
-      <default>true</default>
-      <summary>First run flag</summary>
-      <description>Set to false after the application runs for the first time.</description>
     </key>
   </schema>
 </schemalist>
