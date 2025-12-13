@@ -54,7 +54,7 @@ msgid "Sensor Preferences"
 msgstr "Sensoru iestatījumi"
 
 #: src/glade/psensor.glade:99
-msgid "Psensor - Temperature Monitor"
+msgid "Psensor-fork - Temperature Monitor"
 msgstr "Psensor - temperatūras pārraugs"
 
 #: src/glade/psensor.glade:114

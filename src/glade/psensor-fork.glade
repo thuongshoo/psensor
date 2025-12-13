@@ -96,7 +96,7 @@
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Psensor - Temperature Monitor</property>
+    <property name="title" translatable="yes">Psensor-fork - Temperature Monitor</property>
     <property name="role">psensor</property>
     <child>
       <object class="GtkBox" id="main_box">

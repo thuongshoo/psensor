@@ -57,7 +57,7 @@ msgid "Sensor Preferences"
 msgstr "Параметры датчиков"
 
 #: src/glade/psensor.glade:99
-msgid "Psensor - Temperature Monitor"
+msgid "Psensor-fork - Temperature Monitor"
 msgstr "Psensor - монитор температуры"
 
 #: src/glade/psensor.glade:114
