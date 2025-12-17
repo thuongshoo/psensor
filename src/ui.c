@@ -52,7 +52,7 @@ static bool is_horizontal_layout(enum sensorlist_position sensorlist_pos)
 	return true;
 }
 
-bool is_sensorlist_first(enum sensorlist_position sensorlist_pos)
+static bool is_sensorlist_first(enum sensorlist_position sensorlist_pos)
 {
 	// Returns true if the sensorlist is on the left or on the top
 	// of the main window.
@@ -260,7 +260,7 @@ static void save_window_position_to_config(struct ui_psensor *ui)
 
 	if (visible == TRUE)
 	{
-		struct config *cfg = ui->config;
+		Pconfig *cfg = ui->config;
 
 		GtkWindow *win = GTK_WINDOW(ui->main_window);
 
@@ -302,7 +302,7 @@ on_delete_event_cb(GtkWidget *widget, GdkEvent *event, gpointer data)
 	return TRUE;
 }
 
-void ui_show_about_dialog(GtkWindow *parent)
+static void ui_show_about_dialog(GtkWindow *parent)
 {
 	static const char *const authors[] = {
 		"thuongshoo <yuyoonshoo@gmail.com> (Current Maintainer)",
@@ -428,18 +428,10 @@ static void slog_enabled_cbk(void *data)
 
 void ui_window_create(struct ui_psensor *ui)
 {
-	GtkWidget *window, *menu_bar;
-	GdkPixbuf *icon;
-	GtkIconTheme *icon_theme;
-	struct config *cfg;
-	guint ok;
-	GtkBuilder *builder;
-	GError *error;
-
 	log_functionname("ui=%p", ui);
 
-	builder = gtk_builder_new();
-	error = NULL;
+	GtkBuilder *builder = gtk_builder_new();
+	GError *error = NULL;
 	char *data_path = get_data_path();
 	
 	const char *str_format = "%s/psensor-fork.glade";
@@ -449,13 +441,8 @@ void ui_window_create(struct ui_psensor *ui)
 		log_printf(LOG_ERR, "Cannot load %s .Data path: %s", str_format, data_path);
 		return;
 	}
-	//log_printf(LOG_INFO, "Loading glade file: %s", glade_path);
 	
-	// Test translation
-	// log_printf(LOG_INFO, "Testing translation of 'About Psensor': %s", _("About Psensor"));
-	// log_printf(LOG_INFO, "Testing translation of 'Failed to load Psensor icon.': %s", _("Failed to load Psensor icon."));
-	
-	ok = gtk_builder_add_from_file(builder, glade_path, &error);
+	guint ok = gtk_builder_add_from_file(builder, glade_path, &error);
 	free(glade_path);
 	free(data_path);
 
@@ -466,9 +453,9 @@ void ui_window_create(struct ui_psensor *ui)
 		return;
 	}
 
-	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
 	gtk_builder_connect_signals(builder, ui);
-	cfg = ui->config;
+	const Pconfig *cfg = ui->config;
 	if (cfg->window_restore_enabled)
 		gtk_window_move(GTK_WINDOW(window),
 				cfg->window_x,
@@ -482,8 +469,8 @@ void ui_window_create(struct ui_psensor *ui)
 				    cfg->window_w,
 				    cfg->window_h);
 
-	icon_theme = gtk_icon_theme_get_default();
-	icon = gtk_icon_theme_load_icon(icon_theme, "psensor-fork", 48, 0, NULL);
+	GtkIconTheme *icon_theme = gtk_icon_theme_get_default();
+	GdkPixbuf *icon = gtk_icon_theme_load_icon(icon_theme, "psensor-fork", 48, 0, NULL);
 	if (icon)
 		gtk_window_set_icon(GTK_WINDOW(window), icon);
 	else
@@ -495,7 +482,7 @@ void ui_window_create(struct ui_psensor *ui)
 	set_decoration(GTK_WINDOW(window));
 	set_keep_below(GTK_WINDOW(window));
 
-	menu_bar = GTK_WIDGET(gtk_builder_get_object(builder, "menu_bar"));
+	GtkWidget *menu_bar = GTK_WIDGET(gtk_builder_get_object(builder, "menu_bar"));
 	w_main_box = GTK_CONTAINER(gtk_builder_get_object(builder, "main_box"));
 	ui->popup_menu = GTK_WIDGET(gtk_builder_get_object(builder,
 							   "popup_menu"));
@@ -539,14 +526,11 @@ void ui_window_show(struct ui_psensor *ui)
 
 static int cmp_sensors(const void *p1, const void *p2)
 {
-	const struct psensor *s1, *s2;
-	int pos1, pos2;
+	const Psensor *s1 = *(const Psensor **)p1;
+	const Psensor *s2 = *(const Psensor **)p2;
 
-	s1 = *(const void **)p1;
-	s2 = *(const void **)p2;
-
-	pos1 = config_get_sensor_position(s1->id);
-	pos2 = config_get_sensor_position(s2->id);
+	int pos1 = config_get_sensor_position(s1->id);
+	int pos2 = config_get_sensor_position(s2->id);
 
 	return pos1 - pos2;
 }
@@ -556,7 +540,7 @@ struct psensor **ui_get_sensors_ordered_by_position(struct psensor **sensors)
 	struct psensor **result;
 
 	result = psensor_list_copy(sensors);
-	qsort(result,
+	qsort((void*)result,
 	      psensor_list_size((const struct psensor **)result),
 	      sizeof(struct psensor *),
 	      cmp_sensors);

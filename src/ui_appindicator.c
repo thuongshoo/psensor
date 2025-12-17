@@ -182,10 +182,8 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	
 static const char* get_unit_format_string(unsigned int sensor_type)
 {
-	if (is_temp_type(sensor_type))
+	if (is_temp_type(sensor_type) || (sensor_type & SENSOR_TYPE_RPM))
 		return  "999UUU";
-	else if ( sensor_type & SENSOR_TYPE_RPM)
-		return "999UUU";
 	/* percent */
 	return "999%";
 }

@@ -132,7 +132,9 @@ static char *get_path(const char *url, const char *www_dir)
 {
     const char *p = "/index.html";
     
-    if (strlen(url) && strcmp(url, ".") && strcmp(url, "/"))
+    if (   0 < strlen(url) 
+	   && (0 != strcmp(url, "."))
+	   && (0 != strcmp(url, "/")))
         p = url;
     
     size_t www_len = strlen(www_dir);
@@ -324,7 +326,7 @@ static enum MHD_Result cbk_http_request(void *cls,
 	char *nurl;
 	unsigned int resp_code;
 
-	if (strcmp(method, "GET"))
+	if (0 != strcmp(method, "GET"))
 		return MHD_NO;
 
 	if (&dummy != *ptr) {

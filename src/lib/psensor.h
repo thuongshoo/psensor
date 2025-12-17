@@ -61,16 +61,14 @@ enum psensor_type {
 	SENSOR_TYPE_CPU_USAGE = (SENSOR_TYPE_CPU | SENSOR_TYPE_PERCENT)
 };
 
-struct psensor {
+typedef struct psensor {
 	/* Human readable name of the sensor.  It may not be uniq. */
 	char *name;
 	/* Uniq id of the sensor */
 	char *id;
 	/* Name of the chip. */
 	char *chip;
-	/* Whether an alarm is raised for this sensor */
-	bool alarm_raised;
-
+	
 	/* Maximum length of 'values' */
 	unsigned int values_max_length;
 	/* see psensor_type */
@@ -105,14 +103,17 @@ struct psensor {
 	size_t measures_size;            // Total size of array (values_max_length)
     size_t measures_count; // current number of items 
 	int measures_head;            // Index of newest measurement    
-    int measures_tail;      // oldest measurement  
+    int measures_tail;      // oldest measurement      
     
-    bool measures_full;
-};
+	bool measures_full;
+
+	/* Whether an alarm is raised for this sensor */
+	bool alarm_raised;
+} Psensor;
 
 // Iterator để vẽ từ OLDEST đến NEWEST
 struct measure_iterator {
-    const struct psensor *sensor;
+    const Psensor *sensor;
     int current_pos;
     int remaining;
 	int direction; // Thêm trường direction để xác định hướng iteration
@@ -133,7 +134,7 @@ struct psensor *psensor_create(char *id,
 			       unsigned int type,
 			       unsigned int values_max_length);
 
-void psensor_values_resize(struct psensor *s, unsigned int new_size);
+void psensor_values_resize(struct psensor *psensor, unsigned int new_size);
 
 void psensor_free(struct psensor *sensor);
 

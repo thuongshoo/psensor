@@ -114,7 +114,7 @@ char **dir_list(const char *dpath, int (*filter)(const char *))
 	struct dirent *ent;
 	while ((ent = readdir(dir)) != NULL)
 	{
-		char* name = ent->d_name;
+		const char* name = ent->d_name;
 
 		if (!strcmp(name, ".") || !strcmp(name, ".."))
 			continue;
@@ -328,7 +328,7 @@ void mkdirs(const char *dirs, mode_t mode)
 	size_t i = 0;
 	while (*c)
 	{
-		if ((*c == DIRSEP || *c == '\0') && c != dirs)
+		if ((*c == DIRSEP) && c != dirs)
 		{
 			strncpy(dir, dirs, i);
 			dir[i] = '\0';

@@ -33,7 +33,8 @@ void ui_appindicator_update(struct ui_psensor *ui, bool alert);
 void ui_appindicator_update_menu(struct ui_psensor *ui);
 void ui_appindicator_cleanup(void);
 void ui_appindicator_menu_show_cb(GtkMenuItem *, gpointer);
-
+void ui_appindicator_cb_preferences(GtkMenuItem *mi, gpointer data);
+void ui_appindicator_cb_sensor_preferences(GtkMenuItem *mi, gpointer data);
 #else
 
 static inline bool is_appindicator_supported(void) { return false; }
@@ -43,7 +44,8 @@ static inline void ui_appindicator_update(struct ui_psensor *ui, bool alert) {}
 static inline void ui_appindicator_update_menu(struct ui_psensor *ui) {}
 static inline void ui_appindicator_cleanup(void) {}
 static inline void ui_appindicator_menu_show_cb(GtkMenuItem *m, gpointer d) {}
-
+void ui_appindicator_cb_preferences(GtkMenuItem *mi, gpointer data) {}
+void ui_appindicator_cb_sensor_preferences(GtkMenuItem *mi, gpointer data) {}
 #endif
 
 #endif

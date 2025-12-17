@@ -43,7 +43,7 @@ void measures_free(struct measure *measures)
 	free(measures);
 }
 
-void measure_copy(struct measure *src, struct measure *dst)
+void measure_copy(const struct measure *src, struct measure *dst)
 {
 	memcpy(dst, src, sizeof(struct measure));
 }

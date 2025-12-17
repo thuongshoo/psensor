@@ -27,4 +27,8 @@ GdkRGBA color_to_GdkRGBA(const struct color *color);
 void ui_pref_decoration_toggled_cbk(GtkToggleButton *, gpointer);
 void ui_pref_keep_below_toggled_cbk(GtkToggleButton *, gpointer);
 
+void ui_pref_temperature_unit_changed_cbk(GtkComboBox *combo, gpointer data);
+void ui_pref_menu_toggled_cbk(GtkToggleButton *btn, gpointer data);
+void ui_pref_count_visible_toggled_cbk(GtkToggleButton *btn, gpointer data);
+void ui_pref_sensorlist_position_changed_cbk(GtkComboBox *combo, gpointer data);
 #endif

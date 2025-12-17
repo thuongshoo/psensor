@@ -102,25 +102,25 @@ unsigned int compute_values_max_length(const struct config *c)
     return n;
 }
 
-static struct psensor **list_filter_graph_enabled(const struct psensor **sensors)
+static const Psensor **list_filter_graph_enabled(const Psensor **sensors)
 {
 	if (!sensors)
 		return NULL;
 
 	const size_t n = psensor_list_size(sensors);
-	struct psensor **result = (struct psensor **)calloc((n + 1), sizeof(struct psensor *));
+	const Psensor **result = (const Psensor **)calloc((n + 1), sizeof(Psensor *));
 	if (result == NULL)
 		return NULL;
 
-	const struct psensor **cur = sensors;
+	const Psensor **cur = sensors;
 	size_t i = 0;
 	for (; i < n && *cur; cur++ )
 	{
-		const struct psensor *s = *cur;
+		const Psensor *s = *cur;
 		bool is_graph_enabled = config_is_sensor_graph_enabled(s->id);
 		if (is_graph_enabled)
 		{
-			result[i] = (struct psensor *)s;
+			result[i] = s;
 			++i;
 		}
 	}
@@ -491,83 +491,6 @@ static void display_no_graphs_warning(cairo_t *cr, int x, int y)
 	cairo_show_text(cr, msg);
 
 	free(msg);
-}
-
-typedef struct {
-    double width;
-    double height;
-} TextDimensions;
-
-typedef struct {
-    double time_labels_height;
-    double value_labels_width;
-} LabelMargins;
-
-static TextDimensions measure_labels(cairo_t *cr, const char *str_btime, const char *str_etime, const char *strmax, const char *strmin) 
-{
-    TextDimensions dims = {0};
-    cairo_text_extents_t ext;
-    
-    // Measure time labels (for bottom margin)
-    cairo_text_extents(cr, str_btime, &ext);
-    dims.height = ext.height;
-    
-    cairo_text_extents(cr, str_etime, &ext);
-    if (ext.height > dims.height) dims.height = ext.height;
-    
-    // Measure value labels (for left margin)  
-    cairo_text_extents(cr, strmax, &ext);
-    dims.width = ext.width;
-    
-    cairo_text_extents(cr, strmin, &ext);
-    if (ext.width > dims.width) dims.width = ext.width;
-    
-    return dims;
-}
-
-static LabelMargins calculate_margins(const TextDimensions *label_dims) 
-{
-    LabelMargins margins;
-    
-    // Bottom margin: time labels + padding
-    margins.time_labels_height = label_dims->height + (2 * GRAPH_V_PADDING);
-    
-    // Left margin: value labels + padding  
-    margins.value_labels_width = label_dims->width + (2 * GRAPH_H_PADDING);
-    
-    return margins;
-}
-
-void calculate_graph_layout_clean(const GtkAllocation *galloc, const char *str_btime, const char *str_etime, const char *strmax, const char *strmin, graph_info_st *graphInfo, cairo_t *cr)
-{
-    // Setup text rendering once
-    cairo_select_font_face(cr, "sans-serif", 
-                           CAIRO_FONT_SLANT_NORMAL, 
-                           CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size(cr, 10.0);
-    
-    // Step 1: Measure all text labels
-    TextDimensions label_dims = measure_labels(cr, str_btime, str_etime, strmax, strmin);
-    
-    // Step 2: Calculate required margins for labels
-    LabelMargins margins = calculate_margins(&label_dims);
-    
-    // Step 3: Set canvas dimensions
-    graphInfo->canvas_width = galloc->width;
-    graphInfo->canvas_height = galloc->height;
-    
-    // Step 4: Calculate plotting area (central chart region)
-    // Top padding only, bottom reserved for time labels
-    graphInfo->plot_y = GRAPH_V_PADDING;
-    graphInfo->plot_height = graphInfo->canvas_height 
-                           - GRAPH_V_PADDING           // top padding
-                           - margins.time_labels_height; // bottom labels + padding
-    
-    // Left side reserved for value labels, right side has padding
-    graphInfo->plot_x = margins.value_labels_width;
-    graphInfo->plot_width = graphInfo->canvas_width 
-                          - margins.value_labels_width  // left labels + padding
-                          - GRAPH_H_PADDING;            // right padding
 }
 
 /* ==================== TYPE DEFINITIONS ==================== */

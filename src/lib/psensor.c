@@ -83,7 +83,7 @@ psensor_measure_to_str(const struct measure *m,
 	return psensor_value_to_str(type, m->value, temperature_unit);
 }
 
-struct psensor *psensor_create(char *id,
+struct psensor __attribute((ownership_returns(malloc))) *psensor_create(char *id,
 							   char *name,
 							   char *chip,
 							   unsigned int type,
@@ -162,7 +162,7 @@ void psensor_values_resize(struct psensor *psensor, unsigned int new_size)
 	psensor->measures_full = false;
 }
 
-void psensor_free(struct psensor *s)
+void __attribute((ownership_takes(malloc, 1))) psensor_free(struct psensor *s)
 {
 	if (!s)
 		return;
@@ -244,7 +244,7 @@ static struct psensor **psensor_list_add(struct psensor **all_sensors,
 /// @brief append sensor to sensors list
 /// @param list_sensors
 /// @param new_sensor
-void psensor_list_append(struct psensor ***list_sensors, struct psensor *new_sensor)
+void __attribute((ownership_holds(malloc, 1))) psensor_list_append(struct psensor ***list_sensors, struct psensor *new_sensor)
 {
 	if (!new_sensor)
 		return;
@@ -282,7 +282,7 @@ bool is_temp_type(unsigned int type)
 	return false;
 }
 
-static void check_if_call_alamr(struct psensor *s, double v)
+static void check_if_call_alarm(struct psensor *s, double v)
 {
     if (v > s->alarm_high_threshold || v < s->alarm_low_threshold)
     {
@@ -333,7 +333,7 @@ void psensor_set_current_measure(struct psensor *s, double v, struct timeval tv)
     s->measures[s->measures_head].time = tv;
 	
     update_lowest_highest(s, v);
-	check_if_call_alamr(s, v);
+	check_if_call_alarm(s, v);
 }
 
 void psensor_set_current_value(struct psensor *sensor, double value)
@@ -346,19 +346,19 @@ void psensor_set_current_value(struct psensor *sensor, double value)
 	psensor_set_current_measure(sensor, value, tv);
 }
 
-void measure_iterator_init(struct measure_iterator *it, const struct psensor *s)
+void measure_iterator_init(struct measure_iterator *it, const struct psensor *sensor)
 {
-    it->sensor = (struct psensor *)s;
-    it->current_pos = s->measures_tail;  // 
-    it->remaining = s->measures_count;
+    it->sensor = (const Psensor *)sensor;
+    it->current_pos = sensor->measures_tail;  // 
+    it->remaining = sensor->measures_count;
 	it->direction = ITER_FORWARD; // 
 }
 
-void measure_iterator_init_reverse(struct measure_iterator *it, const struct psensor *s)
+void measure_iterator_init_reverse(struct measure_iterator *it, const struct psensor *sensor)
 {
-    it->sensor = (struct psensor *)s;
-    it->current_pos = s->measures_head;  // 
-    it->remaining = s->measures_count;
+    it->sensor = (const Psensor *)sensor;
+    it->current_pos = sensor->measures_head;  // 
+    it->remaining = sensor->measures_count;
     it->direction = ITER_REVERSE; // Reverse iteration
 }
 
@@ -396,7 +396,6 @@ bool measure_iterator_prev(struct measure_iterator *it, struct measure **result)
 
 double psensor_get_current_value(const struct psensor *sensor)
 {
-	//printf("psensor_get_current_value name=%s count=%d theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
     if (sensor->measures_count == 0) 
         return UNKNOWN_DOUBLE_VALUE;
     return sensor->measures[sensor->measures_head].value;
@@ -405,41 +404,6 @@ double psensor_get_current_value(const struct psensor *sensor)
 struct measure *psensor_get_current_measure(struct psensor *sensor)
 {
     return &sensor->measures[sensor->measures_head];
-}
-
-double get_min_value(const struct psensor **all_sensors, const unsigned int sensor_type_mask)
-{
-    double max_found_value = UNKNOWN_DOUBLE_VALUE;
-	double min_found_value = UNKNOWN_DOUBLE_VALUE;
-
-	if (all_sensors == NULL)
-		return min_found_value;
-    // Iterate through all sensors in the system (array ends with NULL)
-    for (int sensor_index = 0; all_sensors[sensor_index] != NULL; sensor_index++)
-    {
-        const struct psensor *current_sensor = all_sensors[sensor_index];
-
-        // Check if this sensor matches the requested type(s) using bitmask
-        if (current_sensor->type & sensor_type_mask)
-        {
-                // Update maximum value:
-                // - If this is the first valid value found, OR
-                // - If current value is greater than our current maximum
-                if (max_found_value < current_sensor->sess_highest || max_found_value == UNKNOWN_DOUBLE_VALUE)
-                {
-                    max_found_value = current_sensor->sess_highest;
-                }
-				 // Update min  
-            	if (min_found_value > current_sensor->sess_lowest || min_found_value == UNKNOWN_DOUBLE_VALUE )
-				{
-                	min_found_value = current_sensor->sess_lowest;
-	            }
-            //}
-
-        }
-    }
-
-    return min_found_value;
 }
 
 static void process_measure_values(const struct psensor *sensor, MINMAX *minmax)

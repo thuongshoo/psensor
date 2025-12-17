@@ -63,7 +63,7 @@ static char *get_product_name(int id, int type)
 						NV_CTRL_STRING_PRODUCT_NAME,
 						&name);
 	if (res == True) {
-		if (strcmp(name, "Unknown"))
+		if ( 0 != strcmp(name, "Unknown"))
 			return name;
 
 		log_err(_("%s: Unknown NVIDIA product name for GPU %d"),

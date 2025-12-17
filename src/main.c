@@ -138,7 +138,7 @@ update_psensor_values_size(struct psensor **sensors, const struct config *cfg)
 static void *update_measures(void *data)
 {
 	struct ui_psensor *ui = (struct ui_psensor *)data;
-	struct config *cfg = ui->config;
+	Pconfig *cfg = ui->config;
 
 	pthread_setname_np(pthread_self(), "update_measures");
 	while (1)
@@ -182,7 +182,7 @@ static void indicators_update(struct ui_psensor *ui)
 	struct psensor **ss = ui->sensors;
 	while (*ss)
 	{
-		struct psensor *s = *ss;
+		const Psensor *s = *ss;
 
 		if (s->alarm_raised && config_get_sensor_alarm_enabled(s->id))
 		{
@@ -228,9 +228,9 @@ static gboolean ui_refresh_thread(gpointer data)
 	pthread_setname_np(pthread_self(), "ui_refresh_thread");
 
 	gboolean ret = TRUE;
-	struct config *cfg = ui->config;
+	Pconfig *config = ui->config;
 
-	if (cfg->is_new_data == false)
+	if (config->is_new_data == false)
 	{
 		queue_another_execution(ui);
 		return false;
@@ -243,9 +243,9 @@ static gboolean ui_refresh_thread(gpointer data)
 
 	ui_unity_launcher_entry_update(ui->sensors);
 
-	if (ui->graph_update_interval != cfg->graph_update_interval)
+	if (ui->graph_update_interval != config->graph_update_interval)
 	{
-		ui->graph_update_interval = cfg->graph_update_interval;
+		ui->graph_update_interval = config->graph_update_interval;
 		ret = FALSE;
 	}
 	
@@ -316,24 +316,49 @@ associate_cb_alarm_raised(struct psensor **sensors, struct ui_psensor *ui)
 	}
 }
 
+/**
+ * @brief Associates user-defined names with sensor objects
+ * 
+ * This function iterates through an array of sensor pointers and replaces
+ * the default sensor names (from lmsensor) with user-defined names
+ * retrieved from the configuration system. If a user has configured a
+ * custom name for a sensor ID, that name will replace the original.
+ * 
+ * @param[in,out] sensors Double pointer to an array of psensor pointers.
+ *                        The array must be NULL-terminated. The function
+ *                        modifies the 'name' field of each sensor struct
+ *                        if a user-defined name exists in configuration.
+ * 
+ * @note The function takes ownership of the allocated name string from
+ *       config_get_sensor_name() and frees the original name. The sensor
+ *       array itself is not modified, only the name fields of individual
+ *       sensor structures.
+ * 
+ * @warning The original sensor names are freed when replaced. Ensure
+ *          the names were dynamically allocated.
+ */
 static void associate_preferences(struct psensor **sensors)
 {
-	struct psensor **sensor_cur = sensors;
+	struct psensor **sensor_cur = sensors;  /* Current position in sensor array */
 
+	/* Iterate through NULL-terminated array of sensor pointers */
 	while (*sensor_cur)
 	{
-		char *n;
-		struct psensor *s = *sensor_cur;
+		struct psensor *s = *sensor_cur;  /* Current sensor being processed */
 
-		n = config_get_sensor_name(s->id);
+		/* Retrieve user-defined name from configuration using sensor ID */
+		char *n = config_get_sensor_name(s->id);
 
+		/* If user has configured a custom name for this sensor */
 		if (n)
 		{
+			/* Free the original lmsensor-provided name */
 			free(s->name);
+			/* Replace with user-defined name */
 			s->name = n;
 		}
 
-		sensor_cur++;
+		sensor_cur++;  /* Move to next sensor in the array */
 	}
 }
 
@@ -620,7 +645,7 @@ int main(int argc, char **argv)
 					  &ui.sensors_mutex,
 					  config_get_slog_interval());
 
-	// ui_status_init(&ui);
+	// obsolete ui_status_init(&ui);
 	// ui_status_set_visible(1);
 
 	/* main window */

@@ -29,7 +29,7 @@ typedef enum temperature_unit {
 bool is_celsius(Temperature_Unit unit);
 
 double celsius_to_fahrenheit(double c);
-double fahrenheit_to_celsius(double c);
+double fahrenheit_to_celsius(double f);
 double kelvin_to_celsius(double k);
 
 #endif

@@ -57,16 +57,15 @@ void log_close(void)
 #define LOG_BUFFER 4096U
 static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 {
-	char buffer[1 + LOG_BUFFER];
-	const char *lvl_str;
-	FILE *stdf;
-
 	if (lvl > LOG_INFO && (!file || lvl > log_level))
 		return;
 
+	char buffer[1 + LOG_BUFFER];
 	vsnprintf(buffer, LOG_BUFFER, fmt, ap);
 	buffer[LOG_BUFFER] = '\0';
 
+	const char *lvl_str;
+	
 	switch (lvl)
 	{
 	case LOG_WARN:
@@ -107,6 +106,7 @@ static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 
 	if (lvl <= LOG_INFO)
 	{
+		FILE *stdf;
 		if (lvl == LOG_WARN || lvl == LOG_ERR)
 			stdf = stderr;
 		else

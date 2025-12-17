@@ -160,10 +160,6 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 	if (sensors_snprintf_chip_name(name, 200, chip) < 0)
 		return NULL;
 
-    // if (strcmp("spd5118-i2c-17-51", name)) {
-	// 	return NULL;
-	// }
-
 	sensors_subfeature_type fault_subfeature;
 	sensors_subfeature_type min_subfeature;
 	sensors_subfeature_type max_subfeature;
@@ -285,9 +281,9 @@ void lmsensor_psensor_list_append(struct psensor ***sensors, unsigned int values
 			if (feature->type == SENSORS_FEATURE_TEMP
 			    || feature->type == SENSORS_FEATURE_FAN) {
 
-				struct psensor *s = lmsensor_psensor_create(chip, feature, values_max_length);
-				if (s)
-					psensor_list_append(sensors, s);
+				Psensor *sensor = lmsensor_psensor_create(chip, feature, values_max_length);
+				if (sensor)
+					psensor_list_append(sensors, sensor);
 			}
 		}
 	}

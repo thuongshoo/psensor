@@ -32,15 +32,16 @@
 #endif
 
 #include "psensor.h"
+#include "cfg.h"
 
 #define PSENSOR_ICON "psensor-fork"
 
 struct ui_psensor {
-	struct psensor **sensors;
+	Psensor **sensors;
 	/* mutex which MUST be used for accessing sensors.*/
 	pthread_mutex_t sensors_mutex;
 
-	struct config *config;
+	Pconfig *config;
 
 	GtkWidget *main_window;
 	GtkWidget *popup_menu;
@@ -81,4 +82,6 @@ void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data);
 GtkWidget *ui_get_graph_widget(void);
 
 struct psensor **ui_get_sensors_ordered_by_position(struct psensor **);
+
+void ui_cb_about(GtkAction *a, gpointer data);
 #endif

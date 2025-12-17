@@ -36,12 +36,12 @@ const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
 typedef struct {
     cairo_surface_t *cache_surface;
-    gboolean cache_valid;
     int last_width;
     int last_height;
+	gboolean cache_valid;
 } MyWidgetData ;
 
-struct config {
+typedef struct config {
 	struct color *graph_bgcolor;
 	struct color *graph_fgcolor;
 	/* Last saved position of the window. */
@@ -66,7 +66,7 @@ struct config {
 	bool slog_enabled;
 	bool is_new_data;
 	bool hide_on_startup;
-};
+} Pconfig;
 
 /* Loads psensor configuration */
 struct config *config_load(void);

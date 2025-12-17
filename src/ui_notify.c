@@ -60,8 +60,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 	if (notify_is_initted() == TRUE) {
 		Temperature_Unit temperature_unit = config_get_temperature_unit();
 
-		//printf("ui_notify name=%s count=%lu theadID=%lu:%d \n", sensor->name, sensor->measures_count, pthread_self(), gettid());
-		struct measure *measure = psensor_get_current_measure(sensor);
+		const struct measure *measure = psensor_get_current_measure(sensor);
 		char *svalue;
 		svalue = psensor_measure_to_str
 			(measure,

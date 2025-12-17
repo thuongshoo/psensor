@@ -300,7 +300,7 @@ static void set_slog_enabled(bool enabled)
 	set_bool(KEY_SLOG_ENABLED, enabled);
 }
 
-static void slog_enabled_changed_cbk(GSettings *settings,
+static void slog_enabled_changed_cbk(GSettings *input_settings,
 				     gchar *key,
 				     gpointer data)
 {
@@ -672,9 +672,7 @@ static void sensor_set_bool(const char *sid, const char *att, bool enabled)
 
 static int sensor_get_int(const char *sid, const char *att)
 {
-	GKeyFile *kfile;
-
-	kfile = get_sensor_key_file();
+	GKeyFile *kfile = get_sensor_key_file();
 	return g_key_file_get_integer(kfile, sid, att, NULL);
 }
 
