@@ -78,14 +78,12 @@ static struct psensor *create_mem_free_sensor(unsigned int measures_len)
 static double get_usage(void)
 {
 	glibtop_cpu cpu;
-	unsigned long int used, dt;
-	double cpu_rate;
 
 	glibtop_get_cpu(&cpu);
 
-	used = cpu.user + cpu.nice + cpu.sys;
-
-	dt = cpu.total - last_total;
+	unsigned long int used = cpu.user + cpu.nice + cpu.sys;
+	unsigned long int dt = cpu.total - last_total;
+	double cpu_rate;
 
 	if (dt)
 		cpu_rate = 100.0 * (used - last_used) / dt;
@@ -101,10 +99,9 @@ static double get_usage(void)
 static double get_mem_free(void)
 {
 	glibtop_mem mem;
-	double v;
 
 	glibtop_get_mem(&mem);
-	v = ((double)mem.free) * 100.0 / mem.total;
+	double v = ((double)mem.free) * 100.0 / mem.total;
 
 	return v;
 }
