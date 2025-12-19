@@ -48,19 +48,20 @@ measure_to_json_object(struct measure *m)
 }
 
 static json_object *
-measures_to_json_object(struct psensor *s)
+measures_to_json_object(struct psensor *sensor)
 {
-	json_object *o;
-	int i;
+	json_object *o = json_object_new_array();
 
-	o = json_object_new_array();
-
-	for (i = 0; i < s->values_max_length; i++)
-		if (s->measures[i].time.tv_sec)
+	struct measure_iterator it;
+    measure_iterator_init(&it, sensor);
+    
+    struct measure *measure;
+    while (measure_iterator_next(&it, &measure)) {		
+		if (measure->time.tv_sec)
 			json_object_array_add
-				(o, measure_to_json_object(&s->measures[i]));
+				(o, measure_to_json_object(measure));
 
-
+	}
 	return o;
 }
 

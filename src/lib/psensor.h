@@ -26,7 +26,7 @@
 #include <plog.h>
 #include <temperature.h>
 
-enum psensor_type {
+typedef enum psensor_type {
 	/* type of sensor values */
 	SENSOR_TYPE_TEMP = 0x00001U,
 	SENSOR_TYPE_RPM = 0x00002U,
@@ -59,7 +59,7 @@ enum psensor_type {
 	/* Combinations */
 	SENSOR_TYPE_HDD_TEMP = (SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP),
 	SENSOR_TYPE_CPU_USAGE = (SENSOR_TYPE_CPU | SENSOR_TYPE_PERCENT)
-};
+} PsensorType;
 
 typedef struct psensor {
 	/* Human readable name of the sensor.  It may not be uniq. */
@@ -69,16 +69,14 @@ typedef struct psensor {
 	/* Name of the chip. */
 	char *chip;
 	
-	/* Maximum length of 'values' */
-	unsigned int values_max_length;
 	/* see psensor_type */
-	unsigned int type;
+	PsensorType type;
 	/*
 	 * Last registered measures of the sensor.  Index 0 for the
 	 * oldest measure.
 	 */
 	struct measure *measures;
-
+    // callback handler
 	void (*cb_alarm_raised)(struct psensor *, void *);
 	void *cb_alarm_raised_data;
 
@@ -89,9 +87,9 @@ typedef struct psensor {
 	int amd_id;
 	#endif
 
-	/* maximium value */
+	/* maximium value in duration */
 	double max;
-	/* minimium value */
+	/* minimium value in duration */
 	double min;
 	/* The highest value detected during this session. */
 	double sess_highest;
@@ -100,11 +98,10 @@ typedef struct psensor {
 	double alarm_high_threshold;
 	double alarm_low_threshold;
 
-	size_t measures_size;            // Total size of array (values_max_length)
+	size_t measures_size;  // Total size of array
     size_t measures_count; // current number of items 
-	int measures_head;            // Index of newest measurement    
-    int measures_tail;      // oldest measurement      
-    
+	int measures_head;     // Index of newest measurement    
+    int measures_tail;     // oldest measurement          
 	bool measures_full;
 
 	/* Whether an alarm is raised for this sensor */
@@ -116,7 +113,7 @@ struct measure_iterator {
     const Psensor *sensor;
     int current_pos;
     int remaining;
-	int direction; // Thêm trường direction để xác định hướng iteration
+	int direction;
 };
 
 // Định nghĩa hướng iteration
@@ -144,13 +141,7 @@ size_t psensor_list_size(const struct psensor **sensors);
 struct psensor *psensor_list_get_by_id(struct psensor **sensors,
 				       const char *id);
 
-bool is_temp_type(unsigned int type);
-
-double get_min_temp(const struct psensor **sensors);
-double get_max_temp(const struct psensor **sensors);
-
-double get_min_rpm(const struct psensor **sensors);
-double get_max_rpm(const struct psensor **sensors);
+bool is_temperature_type(unsigned int type);
 
 /*
  * Converts the value of a sensor to a string.
@@ -168,9 +159,6 @@ char *psensor_unit_to_str(unsigned int type,
 char *psensor_measure_to_str(const struct measure *m,
 			     unsigned int type,
 			     Temperature_Unit temperature_unit);
-
-// struct psensor **psensor_list_add(struct psensor **sensors,
-// 				  struct psensor *sensor);
 
 void psensor_list_append(struct psensor ***sensors, struct psensor *sensor);
 

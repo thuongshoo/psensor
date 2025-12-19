@@ -124,7 +124,7 @@ update_psensor_values_size(struct psensor **sensors, const struct config *cfg)
 		struct psensor *s = *cur;
 		// User can modify graph_monitoring_duration and sensor_update_interval in UI
 		// This triggers recalculation of sensor_values_max_length in configuration
-		if (s->values_max_length != cfg->sensor_values_max_length)
+		if (s->measures_size != cfg->sensor_values_max_length)
 			psensor_values_resize(s,
 								  cfg->sensor_values_max_length);
 		else

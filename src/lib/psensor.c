@@ -47,12 +47,37 @@ psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperatu
 	if (str == NULL)
 		return NULL;
 
-	if (is_temp_type(type) && !is_celsius(temperature_unit))
+	if (is_temperature_type(type) && !is_celsius(temperature_unit))
 		value = celsius_to_fahrenheit(value);
 
 	snprintf(str, MAX_STR_LEN, "%.0f", value);
 
 	return str;
+}
+
+const char* CELSIUS_STRING = "\302\260C";
+const char* FAHRENHEIT_STRING = "\302\260F";
+const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit temperature_unit)
+{
+	if (is_temperature_type(type))
+	{
+		if (temperature_unit == CELSIUS)
+			return CELSIUS_STRING;
+
+		return FAHRENHEIT_STRING;
+	}
+	
+	if (type & SENSOR_TYPE_RPM)
+	{
+		return _("RPM");
+	}
+	
+	if (type & SENSOR_TYPE_PERCENT)
+	{
+		return _("%");
+	}
+
+	return _("N/A");
 }
 
 char *
@@ -112,7 +137,6 @@ struct psensor __attribute((ownership_returns(malloc))) *psensor_create(char *id
 
 	psensor->type = type;
 
-	psensor->values_max_length = values_max_length;
 	psensor->measures = measures_double_create(values_max_length);
 
 	psensor->alarm_high_threshold = 0;
@@ -130,22 +154,19 @@ struct psensor __attribute((ownership_returns(malloc))) *psensor_create(char *id
     psensor->measures_count = 0;
 	psensor->measures_full = false;
     
-
 	return psensor;
 }
 
 void psensor_values_resize(struct psensor *psensor, unsigned int new_size)
 {
-	unsigned int cur_size = psensor->measures_size;
-
-	//printf("oldsize=%u newSize=%u \n", cur_size, new_size);
 	struct measure *cur_ms = psensor->measures;
 	struct measure *new_ms = measures_double_create(new_size);
 
 	if (cur_ms)
 	{
-		unsigned int i;
-
+		size_t cur_size = psensor->measures_size;
+		size_t i;
+        // copy the old circle buffer to the new one		
 		for (i = 0; i < new_size - 1 && i < cur_size - 1; i++)
 			measure_copy(&cur_ms[cur_size - i - 1],
 						 &new_ms[new_size - i - 1]);
@@ -153,7 +174,6 @@ void psensor_values_resize(struct psensor *psensor, unsigned int new_size)
 		measures_free(psensor->measures);
 	}
 
-	psensor->values_max_length = new_size;
 	psensor->measures = new_ms;
 
 	psensor->measures_size = new_size;
@@ -274,7 +294,7 @@ struct psensor *psensor_list_get_by_id(struct psensor **sensors, const char *id)
 	return NULL;
 }
 
-bool is_temp_type(unsigned int type)
+bool is_temperature_type(unsigned int type)
 {
 	if (type & SENSOR_TYPE_TEMP)
 		return true;
@@ -521,28 +541,7 @@ const char *psensor_type_to_str(unsigned int type)
 	return "N/A";
 }
 
-const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit temperature_unit)
-{
-	if (is_temp_type(type))
-	{
-		if (temperature_unit == CELSIUS)
-			return "\302\260C";
 
-		return "\302\260F";
-	}
-	
-	if (type & SENSOR_TYPE_RPM)
-	{
-		return _("RPM");
-	}
-	
-	if (type & SENSOR_TYPE_PERCENT)
-	{
-		return _("%");
-	}
-
-	return _("N/A");
-}
 
 void psensor_log_measures(struct psensor **sensors)
 {
