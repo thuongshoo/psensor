@@ -55,7 +55,7 @@ void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
 		return;
 
 	if (notify_is_initted() == FALSE)
-		notify_init("psensor-fork");
+		notify_init(PACKAGE_NAME);
 
 	if (notify_is_initted() == TRUE) {
 		Temperature_Unit temperature_unit = config_get_temperature_unit();

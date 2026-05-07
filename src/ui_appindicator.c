@@ -145,14 +145,14 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	log_functionname_enter();
 
 	builder = gtk_builder_new();
-	gtk_builder_set_translation_domain(builder, "psensor-fork");
+	gtk_builder_set_translation_domain(builder, PACKAGE_NAME);
 
 	error = NULL;
 	/* Build the glade file path at runtime so it matches get_data_path()
 	 * used elsewhere (handles PSENSOR_DATA_DIR overrides, relative paths, etc.) */
 	char *data_path = get_data_path();
-	gchar *glade_file = g_strdup_printf("%s%spsensor-fork-appindicator.glade",
-					    data_path, G_DIR_SEPARATOR_S);
+	gchar *glade_file = g_strdup_printf("%s%s%s-appindicator.glade",
+					    data_path, G_DIR_SEPARATOR_S, PACKAGE_NAME);
 	ok = gtk_builder_add_from_file(builder, glade_file, &error);
 
 	if (!ok) {
@@ -333,7 +333,7 @@ void ui_appindicator_init(struct ui_psensor *ui)
 	ui_psensor = ui;
 	log_debug("ui_appindicator_init()");
 	indicator = app_indicator_new
-		("psensor-fork",
+		(PACKAGE_NAME,
 		 ICON,
 		 APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 

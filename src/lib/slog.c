@@ -60,7 +60,7 @@ static char *get_default_path(void)
 	home = getenv("HOME");
 
 	if (home) {
-		int result = asprintf(&dir, "%s/%s", home, ".psensor");
+		int result = asprintf(&dir, "%s/%s", home, PACKAGE_USER_FOLDER);
 		if (result == -1 )
 			return NULL;
 		mkdir(dir, 0777);

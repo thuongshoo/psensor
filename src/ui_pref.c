@@ -109,11 +109,11 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
 	cfg = ui->config;
 
 	builder = gtk_builder_new();
-	gtk_builder_set_translation_domain(builder, "psensor-fork");
+	gtk_builder_set_translation_domain(builder, PACKAGE_NAME);
 
 	ok = gtk_builder_add_from_file
 		(builder,
-		 PACKAGE_DATA_DIR G_DIR_SEPARATOR_S "psensor-fork-pref.glade",
+		 PACKAGE_DATA_DIR G_DIR_SEPARATOR_S G_STRINGIFY(PACKAGE_NAME_WITHOUT_QUOTE) "-pref.glade",
 		 &error);
 
 	if (!ok) {

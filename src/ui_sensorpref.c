@@ -385,10 +385,11 @@ static GtkBuilder *load_ui(struct ui_psensor *ui)
 	error = NULL;
 
 	builder = gtk_builder_new();
-	gtk_builder_set_translation_domain(builder, "psensor-fork");
+	gtk_builder_set_translation_domain(builder, PACKAGE_NAME);
+
 	ok = gtk_builder_add_from_file
 		(builder,
-		 PACKAGE_DATA_DIR G_DIR_SEPARATOR_S "psensor-fork-edit.glade",
+		 PACKAGE_DATA_DIR G_DIR_SEPARATOR_S G_STRINGIFY(PACKAGE_NAME_WITHOUT_QUOTE) "-edit.glade",
 		 &error);
 
 	if (!ok) {

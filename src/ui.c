@@ -322,7 +322,7 @@ static void ui_show_about_dialog(GtkWindow *parent)
 #if GTK_CHECK_VERSION(3, 12, 0)
 		 "license-type", GTK_LICENSE_GPL_2_0,
 #endif
-		 "logo-icon-name", "psensor-fork",
+		 "logo-icon-name", PACKAGE_NAME,
 		 "program-name", "Psensor-Fork",
 		 "title", _("About Psensor-Fork"),
 		 "translator-credits", _("translator-credits"),
@@ -434,9 +434,9 @@ void ui_window_create(struct ui_psensor *ui)
 	GError *error = NULL;
 	char *data_path = get_data_path();
 	
-	const char *str_format = "%s/psensor-fork.glade";
+	const char *str_format = "%s/%s.glade";
 	char *glade_path;
-	if (-1 == asprintf(&glade_path, str_format, data_path) )
+	if (-1 == asprintf(&glade_path, str_format, data_path, PACKAGE_NAME) )
 	{
 		log_printf(LOG_ERR, "Cannot load %s .Data path: %s", str_format, data_path);
 		return;
@@ -470,7 +470,7 @@ void ui_window_create(struct ui_psensor *ui)
 				    cfg->window_h);
 
 	GtkIconTheme *icon_theme = gtk_icon_theme_get_default();
-	GdkPixbuf *icon = gtk_icon_theme_load_icon(icon_theme, "psensor-fork", 48, 0, NULL);
+	GdkPixbuf *icon = gtk_icon_theme_load_icon(icon_theme, PACKAGE_NAME, 48, 0, NULL);
 	if (icon)
 		gtk_window_set_icon(GTK_WINDOW(window), icon);
 	else

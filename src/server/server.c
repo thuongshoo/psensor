@@ -84,7 +84,7 @@ static int server_stop_requested;
 
 static void print_version(void)
 {
-	printf("psensor-fork-server %s\n", VERSION);
+	printf("%s %s\n", PSENSOR_FORK_SERVER_NAME, VERSION);
 	printf(_("Copyright (C) %s jeanfi@gmail.com\n"
 		"Copyright (C) %s thuongshoo <yuyoonshoo@gmail.com>\n" 
 		"License GPLv2: GNU GPL version 2 or later "

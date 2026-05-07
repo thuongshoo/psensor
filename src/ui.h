@@ -34,7 +34,7 @@
 #include "psensor.h"
 #include "cfg.h"
 
-#define PSENSOR_ICON "psensor-fork"
+#define PSENSOR_ICON PACKAGE_NAME
 
 struct ui_psensor {
 	Psensor **sensors;

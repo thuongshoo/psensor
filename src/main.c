@@ -60,7 +60,7 @@ static const char *program_name;
 
 static void print_version(void)
 {
-	printf("psensor-fork %s\n", VERSION);
+	printf("%s %s\n", PACKAGE_NAME, VERSION);
 	printf(_("Copyright (C) %s jeanfi@gmail.com\n"
 	         "Copyright (C) %s thuongshoo <yuyoonshoo@gmail.com>\n"
 			 "License GPLv2: GNU GPL version 2 or later "
@@ -602,7 +602,7 @@ int main(int argc, char **argv)
 
 	log_init();
 
-	GApplication *app = g_application_new("com.github.thuongshoo.psensor-fork", 0);
+	GApplication *app = g_application_new(PACKAGE_GSETTING, 0);
 
 	g_application_register(app, NULL, NULL);
 
