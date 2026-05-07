@@ -380,7 +380,7 @@ static void init(void)
 	log_functionname_enter();
 
 	if (!settings)
-		settings = g_settings_new("com.github.thuongshoo.psensor-fork");
+		settings = g_settings_new(PACKAGE_GSETTING);
 
 	log_functionname_exit();
 }
@@ -508,7 +508,7 @@ const char *get_psensor_user_dir(void)
 		if (!home)
 			return NULL;
 
-		user_dir = path_append(home, ".psensor-fork");
+		user_dir = path_append(home, PACKAGE_USER_FOLDER);
 
 		if (mkdir(user_dir, 0700) == -1 && errno != EEXIST) {
 			log_err(_("Failed to create the directory %s: %s"),
@@ -533,7 +533,7 @@ static const char *get_sensor_config_path(void)
 		dir = get_psensor_user_dir();
 
 		if (dir)
-			sensor_config_path = path_append(dir, "psensor-fork.cfg");
+			sensor_config_path = path_append(dir, PACKAGE_CONFIGURATION_FILENAME);
 	}
 
 	return sensor_config_path;
