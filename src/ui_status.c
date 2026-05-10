@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <config.h>
+#include <bool.h>
 #include <plog.h>
 #include "ui_status.h"
 
@@ -62,9 +64,9 @@ void ui_status_init(struct ui_psensor *ui)
 	// 		 ui);
 }
 
-int is_status_supported(void)
+bool is_status_supported(void)
 {
-	return 0;//status;// && gtk_status_icon_is_embedded(status);
+	return false;//status;// && gtk_status_icon_is_embedded(status);
 }
 
 void ui_status_cleanup(void)

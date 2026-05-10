@@ -16,7 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#include <locale.h>
+#include <nvidia.h>
+
+ #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
 
@@ -31,19 +33,19 @@
 #include <NVCtrl/NVCtrl.h>
 #include <NVCtrl/NVCtrlLib.h>
 
-#include <nvidia.h>
+
 #include <psensor.h>
 
 static Display *display;
 
 static const char *PROVIDER_NAME = "nvctrl";
 
-static void set_nvidia_id(struct psensor *s, unsigned int id)
+static void set_nvidia_id(Psensor *s, unsigned int id)
 {
 	*(unsigned int *)s->provider_data = id;
 }
 
-static int get_nvidia_id(struct psensor *s)
+static int get_nvidia_id(Psensor *s)
 {
 	return *(unsigned int *)s->provider_data;
 }
@@ -230,7 +232,7 @@ static double get_value(int id, unsigned int type)
 
 }
 
-static void update(struct psensor *sensor)
+static void update(Psensor *sensor)
 {
 	double v;
 	int id;
@@ -267,12 +269,12 @@ static char *unsigned2str(unsigned int i)
     return str;
 }
 
-static struct psensor *create_nvidia_sensor(unsigned int id, unsigned int subtype, unsigned int value_len)
+static Psensor *create_nvidia_sensor(unsigned int id, unsigned int subtype, unsigned int value_len)
 {
 	char *pname, *name, *strnid, *sid;
 	const char *stype;
 	unsigned int type;
-	struct psensor *new_sensor;
+	Psensor *new_sensor;
 	double v;
 
 	type = SENSOR_TYPE_NVCTRL | subtype;
@@ -352,9 +354,9 @@ static int init(void)
 	return 0;
 }
 
-void nvidia_psensor_list_update(struct psensor **sensors)
+void nvidia_psensor_list_update(Psensor **sensors)
 {
-	struct psensor *s;
+	Psensor *s;
 
 	while (*sensors) {
 		s = *sensors;
@@ -367,16 +369,16 @@ void nvidia_psensor_list_update(struct psensor **sensors)
 	}
 }
 
-static void add(struct psensor ***sensors, unsigned int id, unsigned int type, unsigned int values_len)
+static void add(Psensor ***sensors, unsigned int id, unsigned int type, unsigned int values_len)
 {
-	struct psensor *s;
+	Psensor *s;
 
 	s = create_nvidia_sensor(id, type, values_len);
 	if (s)
 		psensor_list_append(sensors, s);
 }
 
-void nvidia_psensor_list_append(struct psensor ***ss, unsigned int values_len)
+void nvidia_psensor_list_append(Psensor ***ss, unsigned int values_len)
 {
 	unsigned int i, n, utype;
 	Bool ret;

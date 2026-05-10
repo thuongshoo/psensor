@@ -19,12 +19,13 @@
 #ifndef PSENSOR_CONFIG_H
 #define PSENSOR_CONFIG_H
 
+#include <stdint.h>
+
 #include <gdk/gdk.h>
 
 #include <bool.h>
 #include <color.h>
 #include <temperature.h>
-
 
 enum sensorlist_position {
 	SENSORLIST_POSITION_RIGHT = 0,
@@ -35,11 +36,28 @@ enum sensorlist_position {
 const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
 typedef struct {
-    cairo_surface_t *cache_surface;
+    cairo_surface_t *graph_surface;      // Đường cong
+    cairo_surface_t *background_surface; // Nền + trục
+    int last_width, last_height;
+    gboolean cache_valid;
+    gboolean background_valid;
+    
+    // === MỚI: Cho dịch chuyển ===
+    int shift_count;                      // Số lần đã dịch
+    double *last_values;                 // Giá trị cuối của mỗi sensor
+    size_t last_sensors_count;              // Số lượng sensor đang theo dõi
+	gboolean last_values_initialized;
+} MyWidgetData;
+
+typedef struct {
+    cairo_surface_t *graph_surface;
+	cairo_surface_t *background_surface;  // surface cho nền + trục
     int last_width;
     int last_height;
 	gboolean cache_valid;
-} MyWidgetData ;
+	gboolean background_valid; 
+} MyWidgetData1 ;
+
 
 typedef struct config {
 	struct color *graph_bgcolor;
@@ -53,11 +71,11 @@ typedef struct config {
 	/* Last saved position of the window divider. */
 	int window_vertical_divider_pos;
 	int window_horizontal_divider_pos;	
-	int graph_update_interval;
-	int graph_monitoring_duration;
+	uint32_t graph_update_interval;
+	uint32_t graph_monitoring_duration;
 	unsigned int sensor_values_max_length;
-	int sensor_update_interval;
-	int slog_interval;
+	uint32_t sensor_update_interval;
+	uint32_t slog_interval;
 	double graph_bg_alpha;
 
 	MyWidgetData widget_data;
@@ -99,10 +117,16 @@ void config_set_appindicator_enabled(const char *, bool);
 bool config_is_appindicator_label_enabled(const char *);
 void config_set_appindicator_label_enabled(const char *, bool);
 
+gboolean bool_to_gboolean(bool b);
+char gboolean_to_char(gboolean b);
+bool gboolean_to_bool(gboolean b);
+enum sensorlist_position to_sensorlist_position(gint i);
+int sensorlist_position_to_int(enum sensorlist_position pos);
+
 bool is_slog_enabled(void);
 void config_set_slog_enabled_changed_cbk(void (*)(void *), void *);
 
-int config_get_slog_interval(void);
+unsigned int config_get_slog_interval(void);
 
 bool config_is_smooth_curves_enabled(void);
 void config_set_smooth_curves_enabled(bool);
@@ -160,7 +184,7 @@ void config_set_sensorlist_position(enum sensorlist_position pos);
 /*
  * Returns the user directory containing psensor data (configuration
  * and log).
- * Corresponds to $HOME/.psensor/
+ * Corresponds to $HOME/.psensor-fork/
  * Creates the directory if it does not exist;
  * Returns NULL if it cannot be determined.
  */

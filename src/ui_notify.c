@@ -38,7 +38,7 @@
 /* Time of the last notification. */
 static struct timeval last_notification_tv;
 
-void ui_notify(struct psensor *sensor, struct ui_psensor *ui)
+void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 {
 	log_debug("last_notification %d", last_notification_tv.tv_sec);
 

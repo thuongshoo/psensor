@@ -158,7 +158,7 @@ static void enable_gnome_autostart(const char *path)
 	}
 }
 
-void pxdg_set_autostart(unsigned int enable)
+void pxdg_set_autostart(gboolean enable)
 {
 	char *user_desktop, *dir;
 

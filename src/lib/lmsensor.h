@@ -19,6 +19,7 @@
 #ifndef PSENSOR_LMSENSOR_H
 #define PSENSOR_LMSENSOR_H
 
+#include <config.h>
 #include <bool.h>
 #include <psensor.h>
 
@@ -26,16 +27,16 @@
 
 static inline bool lmsensor_is_supported(void) { return true; }
 
-size_t lmsensor_psensor_list_update(struct psensor **);
-void lmsensor_psensor_list_append(struct psensor ***, unsigned int);
+size_t lmsensor_psensor_list_update(Psensor **);
+void lmsensor_psensor_list_append(Psensor ***, unsigned int);
 void lmsensor_cleanup(void);
 
 #else
 
 static inline bool lmsensor_is_supported(void) { return false; }
 
-static inline void lmsensor_psensor_list_update(struct psensor **s) {}
-static inline void lmsensor_psensor_list_append(struct psensor ***s, unsigned int n) {}
+static inline size_t lmsensor_psensor_list_update(Psensor **s) { return 0;}
+static inline void lmsensor_psensor_list_append(Psensor ***s, unsigned int n) {}
 static inline void lmsensor_cleanup(void) {}
 
 #endif

@@ -21,16 +21,27 @@
 
 #include "config.h"
 
-#if HAVE_STDBOOL_H == 1
+/* C23: bool là keyword, không cần include */
+#if __STDC_VERSION__ >= 202311L
+    /* bool đã có sẵn, không cần gì cả */
 
-#include <stdbool.h>
+#elifdef HAVE_STDBOOL_H
+    /* C99/C11: dùng stdbool.h */
+    #include <stdbool.h>
 
 #else
-
-#define bool char
-#define true 1
-#define false 0
-
+    /* C89: tự define */
+    #ifndef __cplusplus
+        #ifndef bool
+            #define bool _Bool
+        #endif
+    #endif
+    #ifndef true
+        #define true 1
+    #endif
+    #ifndef false
+        #define false 0
+    #endif
 #endif
 
-#endif
+#endif /* PSENSOR_BOOL_H */

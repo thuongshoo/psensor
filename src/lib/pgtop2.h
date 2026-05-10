@@ -26,21 +26,21 @@
 
 static inline bool gtop2_is_supported(void) { return true; }
 
-struct psensor *create_cpu_usage_sensor(unsigned int);
-void cpu_usage_sensor_update(struct psensor *);
+Psensor *create_cpu_usage_sensor(unsigned int);
+void cpu_usage_sensor_update(Psensor *);
 
-void gtop2_psensor_list_update(struct psensor **);
-void gtop2_psensor_list_append(struct psensor ***, unsigned int);
+void gtop2_psensor_list_update(Psensor **);
+void gtop2_psensor_list_append(Psensor ***, unsigned int);
 
 #else
 
 static inline bool gtop2_is_supported(void) { return false; }
 
-static inline struct psensor *create_cpu_usage_sensor(int n) { return NULL; }
-static inline void cpu_usage_sensor_update(struct psensor *s) {}
+static inline Psensor *create_cpu_usage_sensor(int n) { return NULL; }
+static inline void cpu_usage_sensor_update(Psensor *s) {}
 
-static inline void gtop2_psensor_list_update(struct psensor **s) {}
-static inline void gtop2_psensor_list_append(struct psensor ***s, unsigned int n) {}
+static inline void gtop2_psensor_list_update(Psensor **s) {}
+static inline void gtop2_psensor_list_append(Psensor ***s, unsigned int n) {}
 
 #endif
 

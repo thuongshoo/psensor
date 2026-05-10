@@ -19,14 +19,17 @@
 #ifndef PSENSOR_RSENSOR_H
 #define PSENSOR_RSENSOR_H
 
+#include <config.h>
+#include <bool.h>
+
 #include <psensor.h>
 
 #if defined(HAVE_REMOTE_SUPPORT) && HAVE_REMOTE_SUPPORT
 
 static inline bool rsensor_is_supported(void) { return true; }
 
-struct psensor **get_remote_sensors(const char *, int);
-void remote_psensor_list_update(struct psensor **);
+Psensor **get_remote_sensors(const char *, uint32_t);
+void remote_psensor_list_update(Psensor **);
 void rsensor_init(void);
 void rsensor_cleanup(void);
 
@@ -34,9 +37,9 @@ void rsensor_cleanup(void);
 
 static inline bool rsensor_is_supported(void) { return false; }
 
-static inline struct psensor **
-get_remote_sensors(const char *url, int n) { return NULL; }
-static inline void remote_psensor_list_update(struct psensor **s) {}
+static inline Psensor **
+get_remote_sensors(const char *url, uint32_t n) { return NULL; }
+static inline void remote_psensor_list_update(Psensor **s) {}
 static inline void rsensor_init(void) {}
 static inline void rsensor_cleanup(void) {}
 

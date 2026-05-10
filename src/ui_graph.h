@@ -24,5 +24,8 @@
 #include "ui.h"
 
 void ui_graph_create(struct ui_psensor *sensor_context);
+void ui_graph_cleanup(struct ui_psensor *ui_psensor);
+
 gboolean should_update_ui(struct ui_psensor *ui);
+gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer user_data);
 #endif

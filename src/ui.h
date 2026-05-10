@@ -49,7 +49,7 @@ struct ui_psensor {
 	GtkListStore *sensors_store;
 	GtkTreeView *sensors_tree;
 
-	int graph_update_interval;
+	uint32_t graph_update_interval;
 };
 
 /*
@@ -81,7 +81,7 @@ void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data);
 
 GtkWidget *ui_get_graph_widget(void);
 
-struct psensor **ui_get_sensors_ordered_by_position(struct psensor **);
+const Psensor **ui_get_sensors_ordered_by_position(const Psensor *const *sensors);
 
 void ui_cb_about(GtkAction *a, gpointer data);
 #endif

@@ -29,13 +29,13 @@
       <description>The color of the foreground of the graph canvas as
       a #rgb representation.</description>
     </key>
-    <key name="graph-monitoring-duration" type="i">
+    <key name="graph-monitoring-duration" type="u">
       <default>20</default>
       <summary>The monitoring duration of the graph</summary>
       <description>The monitoring duration of the graph as minutes. It
       must be greater than 1.</description>
     </key>
-    <key name="graph-update-interval" type="i">
+    <key name="graph-update-interval" type="u">
       <default>2</default>
       <summary>The interval between refreshs of the graph</summary>
       <description>The interval between refreshs of the graph as
@@ -157,13 +157,13 @@
       <description>Whether the logging sensors is
       enabled.</description>
     </key>
-    <key name="slog-interval" type="i">
+    <key name="slog-interval" type="u">
       <default>300</default>
       <summary>Interval of the logging of sensors.</summary>
       <description>Interval of the logging of sensors in
       seconds.</description>
     </key>
-    <key name="sensor-update-interval" type="i">
+    <key name="sensor-update-interval" type="u">
       <default>2</default>
       <summary>Update interface of the sensor values</summary>
       <description>Update interface of the sensor

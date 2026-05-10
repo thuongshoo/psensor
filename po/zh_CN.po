@@ -808,7 +808,7 @@ msgstr "Psensor 是一款 GTK+ 应用程序，可监测硬件传感器，包括�
 #: src/ui.c:327
 msgid ""
 "Copyright (C) 2010-2016 Jean-François Wauthy\n"
-"Copyright (C) 2024-2025 Le Hoai Thanh"
+"Copyright (C) 2024-2026 Lê Hoài Thanh"
 msgstr ""
 
 #: src/ui.c:334

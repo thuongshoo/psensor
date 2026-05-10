@@ -48,7 +48,7 @@ measure_to_json_object(struct measure *m)
 }
 
 static json_object *
-measures_to_json_object(struct psensor *sensor)
+measures_to_json_object(const Psensor *sensor)
 {
 	json_object *o = json_object_new_array();
 
@@ -65,7 +65,7 @@ measures_to_json_object(struct psensor *sensor)
 	return o;
 }
 
-static json_object *sensor_to_json(struct psensor *s)
+static json_object *sensor_to_json(const Psensor *s)
 {
 	json_object *mo, *obj;
 
@@ -101,7 +101,7 @@ static json_object *sensor_to_json(struct psensor *s)
 	return obj;
 }
 
-char *sensor_to_json_string(struct psensor *s)
+char *sensor_to_json_string(const Psensor *s)
 {
 	char *str;
 	json_object *obj = sensor_to_json(s);
@@ -113,9 +113,9 @@ char *sensor_to_json_string(struct psensor *s)
 	return str;
 }
 
-char *sensors_to_json_string(struct psensor **sensors)
+char *sensors_to_json_string(const Psensor *const *sensors)
 {
-    // struct psensor **sensors_cur; // Remove this pointer
+    // Psensor **sensors_cur; // Remove this pointer
 	char *str;
 	json_object *obj = json_object_new_array();
 
@@ -125,7 +125,7 @@ char *sensors_to_json_string(struct psensor **sensors)
 
         // Access via index
         while (sensors[i] != NULL) {
-            struct psensor *s = sensors[i];
+            const Psensor *s = sensors[i];
 
 			json_object_array_add(obj, sensor_to_json(s));
 
@@ -140,7 +140,7 @@ char *sensors_to_json_string(struct psensor **sensors)
 	return str;
 }
 
-struct psensor *psensor_new_from_json(json_object *o,
+Psensor *psensor_new_from_json(json_object *o,
 				      const char *sensors_url,
 				      unsigned int values_max_length)
 {
@@ -161,7 +161,7 @@ struct psensor *psensor_new_from_json(json_object *o,
 
 	char* id = strdup(url);
 	char* name = strdup(json_object_get_string(oname));
-	struct psensor *s = psensor_create(id,
+	Psensor *s = psensor_create(id,
 			   name,
 			   NULL,
 			   json_object_get_int(otype) | SENSOR_TYPE_REMOTE,

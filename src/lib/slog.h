@@ -23,7 +23,7 @@
 
 #include "psensor.h"
 
-bool slog_activate(const char *, struct psensor **, pthread_mutex_t *, unsigned int s);
+bool slog_activate(const char *, const Psensor *const *, pthread_mutex_t *, unsigned int s);
 void slog_close(void);
 
 #endif

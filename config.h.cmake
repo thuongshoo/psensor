@@ -14,6 +14,8 @@
 #cmakedefine HAVE_NVIDIA
 #cmakedefine HAVE_REMOTE_SUPPORT
 #cmakedefine HAVE_UNITY
+#cmakedefine STDC_HEADERS
+#cmakedefine HAVE_STDBOOL_H
 
 #define PACKAGE "@PROJECT_NAME@"
 #define PACKAGE_NAME "@PROJECT_NAME@"
@@ -24,8 +26,14 @@
 #define PACKAGE_VERSION "@PROJECT_VERSION@"
 #define PACKAGE_STRING "@PROJECT_NAME@ @PROJECT_VERSION@"
 #define PACKAGE_USER_FOLDER ".@PROJECT_NAME@"
-#define PACKAGE_BUGREPORT "yuyoonshoo@gmail.com"
-#define PACKAGE_URL "https://github.com/thuongshoo/psensor"
+#define PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
+
+#define PACKAGE_URL "@PACKAGE_URL@"
 #define VERSION "@PROJECT_VERSION@"
+
+#define ANALYZER_RETURNS_MALLOC
+#define ANALYZER_RETURNS_MALLOC_SIZE(idx)
+#define ANALYZER_TAKES_MALLOC(idx)
+#define ANALYZER_HOLDS_MALLOC(idx)
 
 #endif /* CONFIG_H */

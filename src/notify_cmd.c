@@ -24,7 +24,7 @@
 #include <notify_cmd.h>
 #include <cfg.h>
 
-void notify_cmd(struct psensor *s)
+void notify_cmd(Psensor *s)
 {
 	char *script, *v, *cmd;
 	int ret;

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <rsensor.h>
+
 #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
@@ -28,7 +30,7 @@
 #include <curl/curl.h>
 
 #include <psensor_json.h>
-#include <rsensor.h>
+
 #include <server/server.h>
 #include <url.h>
 
@@ -41,7 +43,7 @@ static CURL *curl;
 
 static const char *PROVIDER_NAME = "rsensor";
 
-static const char *get_url(struct psensor *s)
+static const char *get_url(Psensor *s)
 {
 	return (char *)s->provider_data;
 }
@@ -121,19 +123,19 @@ static json_object *get_json_object(const char *url)
 	return obj;
 }
 
-struct psensor **get_remote_sensors(const char *server_url,
-				    int values_max_length)
+Psensor **get_remote_sensors(const char *server_url,
+				    uint32_t values_max_length)
 {
-	struct psensor **sensors = NULL;
+	Psensor **sensors = NULL;
 	char *url = create_api_1_1_sensors_url(server_url);
 	json_object *obj = get_json_object(url);
 
 	if (obj) {
 		size_t n = json_object_array_length(obj);
-		sensors = calloc((n + 1), sizeof(struct psensor *));
+		sensors = (Psensor **)calloc((n + 1), sizeof(Psensor *));
 
 		for (size_t i = 0; i < n; i++) {
-			struct psensor *s = psensor_new_from_json
+			Psensor *s = psensor_new_from_json
 					(json_object_array_get_idx(obj, i),
 					url,
 					values_max_length);
@@ -150,14 +152,14 @@ struct psensor **get_remote_sensors(const char *server_url,
 
 	if (!sensors) {
 		/* Allocate a single NULL pointer to signify an empty list */
-		sensors = (struct psensor **)calloc(1, sizeof(struct psensor *));
+		sensors = (Psensor **)calloc(1, sizeof(Psensor *));
 		*sensors = NULL;
 	}
 
 	return sensors;
 }
 
-static void remote_psensor_update(struct psensor *s)
+static void remote_psensor_update(Psensor *s)
 {
 	json_object *obj;
 
@@ -189,13 +191,13 @@ static void remote_psensor_update(struct psensor *s)
 
 }
 
-void remote_psensor_list_update(struct psensor **sensors)
+void remote_psensor_list_update(Psensor **sensors)
 {
-	struct psensor **cur;
+	Psensor **cur;
 
 	cur = sensors;
 	while (*cur) {
-		struct psensor *s = *cur;
+		Psensor *s = *cur;
 
 		if (s->type & SENSOR_TYPE_REMOTE)
 			remote_psensor_update(s);

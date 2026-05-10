@@ -20,23 +20,39 @@
 
 double celsius_to_fahrenheit(double c)
 {
-	return c * (9.0/5.0) + 32;
+    return c * (9.0/5.0) + 32;
 }
 
 double fahrenheit_to_celsius(double f)
 {
-	return (f - 32) * (5.0/9.0);
+    return (f - 32) * (5.0/9.0);
 }
 
 double kelvin_to_celsius(double k)
 {
-	return k - 273.5;
+    return k - 273.5;
 }
 
 bool is_celsius(Temperature_Unit unit)
 {
-	if (unit == CELSIUS)
-		return true;
-
-	return false;
+    return (unit == CELSIUS);
 }
+
+Temperature_Unit to_Temperature_Unit(int i) {
+    switch (i)
+    {
+        case 0: return CELSIUS;
+        case 1: return FAHRENHEIT;
+        default: return CELSIUS;
+    }
+}
+
+int Temperature_Unit_to_int(Temperature_Unit t) {
+    switch (t)
+    {
+        case CELSIUS: return 0;
+        case FAHRENHEIT: return 1;
+        default: return 0;
+    }
+}
+

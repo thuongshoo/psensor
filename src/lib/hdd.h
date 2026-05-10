@@ -27,19 +27,19 @@
 
 static inline bool atasmart_is_supported(void) { return true; }
 
-void atasmart_psensor_list_append(struct psensor ***, unsigned int);
-void atasmart_psensor_list_update(struct psensor **);
+void atasmart_psensor_list_append(Psensor ***, unsigned int);
+void atasmart_psensor_list_update(Psensor **);
 
 #else
 
 static inline bool atasmart_is_supported(void) { return false; }
 
-static inline void atasmart_psensor_list_append(struct psensor ***s, unsigned int n) {}
-static inline void atasmart_psensor_list_update(struct psensor **s) {}
+static inline void atasmart_psensor_list_append(Psensor ***s, unsigned int n) {}
+static inline void atasmart_psensor_list_update(Psensor **s) {}
 
 #endif
 
-void hddtemp_psensor_list_append(struct psensor ***sensors, unsigned int values_length);
-void hddtemp_psensor_list_update(struct psensor **sensors);
+void hddtemp_psensor_list_append(Psensor ***sensors, unsigned int values_max_length);
+void hddtemp_psensor_list_update(Psensor **sensors);
 
 #endif
