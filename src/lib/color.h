@@ -8,7 +8,7 @@
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNUapt 
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -19,26 +19,35 @@
 #ifndef PSENSOR_COLOR_H
 #define PSENSOR_COLOR_H
 
-/* Represents a RGB color. */
+#include <config.h>
+#include <bool.h>
+
+#ifdef COLOR_USE_DOUBLE
+    typedef double color_channel_datatype_t;
+    #define NUMBER_ZERO 0.0
+    #define NUMBER_ZERO_POINT_FIVE 0.0
+    #define NUMBER_ONE 1.0
+    #define NUMBER_MAX_UINT_32 65535.0
+#else
+    typedef float color_channel_datatype_t;
+    #define NUMBER_ZERO 0.0f
+    #define NUMBER_ZERO_POINT_FIVE 0.0f
+    #define NUMBER_ONE 1.0f
+    #define NUMBER_MAX_UINT_32 65535.0f
+#endif
+/* Represents a RGB color with components in range [0.0, 1.0] */
 struct color {
-	/* rgb floating 0..1 */
-	double red;
-	double green;
-	double blue;
+    color_channel_datatype_t red;
+    color_channel_datatype_t green;
+    color_channel_datatype_t blue;
 };
 
-/** rgb 0..1 */
-struct color *color_new(double r, double g, double b);
+struct color *color_new(color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b);
+struct color *color_dup(const struct color *c);
+void color_set(struct color *c, color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b);
 
-struct color *color_dup(const struct color *);
-
-/** rgb 0..1 */
-void color_set(struct color *, double r, double g, double b);
-
-int is_color(const char *str);
-
+bool is_color(const char *str);
 struct color *str_to_color(const char *str);
-
 char *color_to_str(const struct color *color);
 
 #endif

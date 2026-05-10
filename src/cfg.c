@@ -147,6 +147,28 @@ static void set_string(const char *key, const char *str)
 	g_settings_set_string(settings, key, str);
 }
 
+gboolean bool_to_gboolean(bool b)
+{
+	if (b == true)
+		return TRUE;
+
+	return FALSE;
+}
+
+bool gboolean_to_bool(gboolean b)
+{
+	if (b)
+		return true;
+	return false;
+}
+
+char gboolean_to_char(gboolean b)
+{
+	if (b)
+		return 1;
+	return 0;
+}
+
 static void set_bool(const char *k, bool b)
 {
 	g_settings_set_boolean(settings, k, b);
@@ -164,6 +186,16 @@ static bool get_bool(const char *k)
 static void set_int(const char *k, int i)
 {
 	g_settings_set_int(settings, k, i);
+}
+
+static void set_uint(const char *k, unsigned int i)
+{
+	g_settings_set_uint(settings, k, i);
+}
+
+static unsigned int get_uint(const char *k)
+{
+	return g_settings_get_uint(settings, k);
 }
 
 static double get_double(const char *k)
@@ -186,7 +218,7 @@ char *config_get_notif_script(void)
 	char *str;
 
 	str =  get_string(KEY_NOTIFICATION_SCRIPT);
-	if (str && !strlen(str)) {
+	if (str && strlen(str) > 0) {
 		free(str);
 		str = NULL;
 	}
@@ -212,7 +244,7 @@ static struct color *get_background_color(void)
 	c = str_to_color(scolor);
 	free(scolor);
 
-	if (!c)
+	if (c == NULL)
 		return color_new(1, 1, 1);
 
 	return c;
@@ -228,7 +260,7 @@ static struct color *get_foreground_color(void)
 	c = str_to_color(scolor);
 	free(scolor);
 
-	if (!c)
+	if (c == NULL)
 		return color_new(0, 0, 0);
 
 	return c;
@@ -244,14 +276,41 @@ static void set_alpha_channeld_enabled(bool b)
 	set_bool(KEY_ALPHA_CHANNEL_ENABLED, b);
 }
 
+enum sensorlist_position to_sensorlist_position(gint i)
+{
+	switch (i) 
+	{
+		case 0: return SENSORLIST_POSITION_RIGHT;
+		case 1: return SENSORLIST_POSITION_LEFT;
+		case 2: return SENSORLIST_POSITION_TOP;
+		case 3: return SENSORLIST_POSITION_BOTTOM;
+		default: return SENSORLIST_POSITION_RIGHT;
+	}
+	
+}
+
+int sensorlist_position_to_int(enum sensorlist_position pos)
+{
+	switch (pos) 
+	{
+		case SENSORLIST_POSITION_RIGHT: return 0;
+		case SENSORLIST_POSITION_LEFT: return 1;
+		case SENSORLIST_POSITION_TOP: return 2;
+		case SENSORLIST_POSITION_BOTTOM: return 3;
+		default: return 0;
+	}
+}
 enum sensorlist_position config_get_sensorlist_position(void)
 {
-	return get_int(KEY_INTERFACE_SENSORLIST_POSITION);
+	return to_sensorlist_position(
+		get_int(KEY_INTERFACE_SENSORLIST_POSITION)
+	);
 }
 
 void config_set_sensorlist_position(enum sensorlist_position pos)
 {
-	set_int(KEY_INTERFACE_SENSORLIST_POSITION, pos);
+	set_int(KEY_INTERFACE_SENSORLIST_POSITION, 
+		sensorlist_position_to_int(pos));
 }
 
 static double get_graph_background_alpha(void)
@@ -269,7 +328,7 @@ static void set_background_color(const struct color *color)
 	char *scolor;
 
 	scolor = color_to_str(color);
-	if (!scolor)
+	if (scolor == NULL)
 		scolor = strdup(DEFAULT_GRAPH_BACKGROUND_COLOR);
 
 	set_string(KEY_GRAPH_BACKGROUND_COLOR, scolor);
@@ -282,7 +341,7 @@ static void set_foreground_color(const struct color *color)
 	char *str;
 
 	str = color_to_str(color);
-	if (!str)
+	if (NULL == str)
 		str = strdup(DEFAULT_GRAPH_FOREGROUND_COLOR);
 
 	set_string(KEY_GRAPH_FOREGROUND_COLOR, str);
@@ -322,22 +381,20 @@ void config_set_slog_enabled_changed_cbk(void (*cbk)(void *), void *data)
 	log_functionname_exit();
 }
 
-int config_get_slog_interval(void)
+unsigned int config_get_slog_interval(void)
 {
-	return get_int(KEY_SLOG_INTERVAL);
+	return get_uint(KEY_SLOG_INTERVAL);
 }
 
-static void set_slog_interval(int interval)
-{
-	if (interval <= 0)
-		interval = 300;
 
-	set_int(KEY_SLOG_INTERVAL, interval);
+static void set_slog_interval(unsigned int interval)
+{
+	set_uint(KEY_SLOG_INTERVAL, interval);
 }
 
 bool config_is_window_decoration_enabled(void)
 {
-	return !get_bool(KEY_INTERFACE_WINDOW_DECORATION_DISABLED);
+	return false == get_bool(KEY_INTERFACE_WINDOW_DECORATION_DISABLED);
 }
 
 bool config_is_window_keep_below_enabled(void)
@@ -379,7 +436,7 @@ static void init(void)
 {
 	log_functionname_enter();
 
-	if (!settings)
+	if (NULL == settings)
 		settings = g_settings_new(PACKAGE_GSETTING);
 
 	log_functionname_exit();
@@ -429,15 +486,15 @@ struct config *config_load(void)
 	c->slog_interval = config_get_slog_interval();
 
 	c->sensor_update_interval
-	    = get_int(KEY_SENSOR_UPDATE_INTERVAL);
+	    = get_uint(KEY_SENSOR_UPDATE_INTERVAL);
 	if (c->sensor_update_interval < 1)
 		c->sensor_update_interval = 1;
 
-	c->graph_update_interval = get_int(KEY_GRAPH_UPDATE_INTERVAL);
+	c->graph_update_interval = get_uint(KEY_GRAPH_UPDATE_INTERVAL);
 	if (c->graph_update_interval < 1)
 		c->graph_update_interval = 1;
 
-	c->graph_monitoring_duration = get_int(KEY_GRAPH_MONITORING_DURATION);
+	c->graph_monitoring_duration = get_uint(KEY_GRAPH_MONITORING_DURATION);
 
 	if (c->graph_monitoring_duration < 1)
 		c->graph_monitoring_duration = 10;
@@ -457,7 +514,7 @@ struct config *config_load(void)
 	// 	config_get_sensorlist_position_str(config_get_sensorlist_position()),
 	// 	c->window_vertical_divider_pos,
 	// 	c->window_horizontal_divider_pos);
-	if (!c->window_restore_enabled || !c->window_w || !c->window_h) {
+	if ( false == c->window_restore_enabled || c->window_w == 0 || c->window_h == 0) {
 		c->window_w = 800;
 		c->window_h = 200;
 	}
@@ -476,11 +533,11 @@ void config_save_to_g_file(const struct config *c)
 	set_slog_enabled(c->slog_enabled);
 	set_slog_interval(c->slog_interval);
 
-	set_int(KEY_GRAPH_UPDATE_INTERVAL, c->graph_update_interval);
+	set_uint(KEY_GRAPH_UPDATE_INTERVAL, c->graph_update_interval);
 
-	set_int(KEY_GRAPH_MONITORING_DURATION, c->graph_monitoring_duration);
+	set_uint(KEY_GRAPH_MONITORING_DURATION, c->graph_monitoring_duration);
 
-	set_int(KEY_SENSOR_UPDATE_INTERVAL, c->sensor_update_interval);
+	set_uint(KEY_SENSOR_UPDATE_INTERVAL, c->sensor_update_interval);
 
 	set_bool(KEY_INTERFACE_HIDE_ON_STARTUP, c->hide_on_startup);
 
@@ -502,10 +559,10 @@ const char *get_psensor_user_dir(void)
 
 	log_functionname_enter();
 
-	if (!user_dir) {
+	if (NULL == user_dir) {
 		home = getenv("HOME");
 
-		if (!home)
+		if (NULL == home)
 			return NULL;
 
 		user_dir = path_append(home, PACKAGE_USER_FOLDER);
@@ -529,7 +586,7 @@ static const char *get_sensor_config_path(void)
 {
 	const char *dir;
 
-	if (!sensor_config_path) {
+	if (NULL == sensor_config_path) {
 		dir = get_psensor_user_dir();
 
 		if (dir)
@@ -545,7 +602,7 @@ static GKeyFile *get_sensor_key_file(void)
 	GError *err;
 	const char *path;
 
-	if (!key_file) {
+	if (NULL == key_file) {
 		path = get_sensor_config_path();
 
 		key_file = g_key_file_new();
@@ -557,7 +614,7 @@ static GKeyFile *get_sensor_key_file(void)
 						| G_KEY_FILE_KEEP_TRANSLATIONS,
 						&err);
 
-		if (!ret) {
+		if (false == ret) {
 			log_warn(_("Failed to load configuration file %s: %s"),
 				 path,
 				 err->message);
@@ -647,7 +704,7 @@ static bool sensor_get_bool(const char *sid, const char *att, bool dft)
 	kfile = get_sensor_key_file();
 
 	err = NULL;
-	ret = g_key_file_get_boolean(kfile, sid, att, &err);
+	ret = gboolean_to_char(g_key_file_get_boolean(kfile, sid, att, &err));
 
 	if (err) {
 		if (err->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND)
@@ -936,17 +993,20 @@ void config_set_udisks2_enable(bool b)
 
 Temperature_Unit config_get_temperature_unit(void)
 {
-	return get_int(KEY_INTERFACE_TEMPERATURE_UNIT);
+	return to_Temperature_Unit(
+			get_int(KEY_INTERFACE_TEMPERATURE_UNIT)
+	);
 }
 
 void config_set_temperature_unit(Temperature_Unit u)
 {
-	set_int(KEY_INTERFACE_TEMPERATURE_UNIT, u);
+	set_int(KEY_INTERFACE_TEMPERATURE_UNIT, 
+		Temperature_Unit_to_int(u) );
 }
 
 bool config_is_menu_bar_enabled(void)
 {
-	return !get_bool(KEY_INTERFACE_MENU_BAR_DISABLED);
+	return false == get_bool(KEY_INTERFACE_MENU_BAR_DISABLED);
 }
 
 void config_set_menu_bar_enabled(bool enabled)
@@ -956,7 +1016,7 @@ void config_set_menu_bar_enabled(bool enabled)
 
 bool config_is_count_visible(void)
 {
-	return !get_bool(KEY_INTERFACE_UNITY_LAUNCHER_COUNT_DISABLED);
+	return false == get_bool(KEY_INTERFACE_UNITY_LAUNCHER_COUNT_DISABLED);
 }
 
 void config_set_count_visible(bool visible)

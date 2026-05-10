@@ -27,16 +27,16 @@
 
 static inline bool amd_is_supported(void) { return true; }
 
-void amd_psensor_list_update(struct psensor **s);
-void amd_psensor_list_append(struct psensor ***s, int n);
+void amd_psensor_list_update(Psensor **s);
+void amd_psensor_list_append(Psensor ***s, int n);
 void amd_cleanup(void);
 
 #else
 
 static inline bool amd_is_supported(void) { return false; }
 
-static inline void amd_psensor_list_update(struct psensor **s) {}
-static inline void amd_psensor_list_append(struct psensor ***s, unsigned int n) {}
+static inline void amd_psensor_list_update(Psensor **s) {}
+static inline void amd_psensor_list_append(Psensor ***s, unsigned int n) {}
 static inline void amd_cleanup(void) {}
 
 #endif

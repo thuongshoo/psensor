@@ -34,8 +34,8 @@
 #define URL_API_1_1_CPU_USAGE "/api/1.1/cpu/usage"
 
 struct server_data {
-	struct psensor *cpu_usage;
-	struct psensor **sensors;
+	Psensor *cpu_usage;
+	Psensor **sensors;
 #ifdef HAVE_GTOP
 	struct psysinfo psysinfo;
 #endif

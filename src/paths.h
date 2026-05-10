@@ -1,0 +1,93 @@
+#ifndef PSENSOR_PATHS_H
+#define PSENSOR_PATHS_H
+
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <slog.h>
+
+#define PACKAGE_DATA_DIR "/usr/share/psensor-fork"
+
+/*
+ * get_data_path attempts to find the installed data directory in this order:
+ * 1) PSENSOR_DATA_DIR environment variable (absolute path)
+ * 2) PACKAGE_DATA_DIR if it exists as given (absolute or relative path)
+ * 3) If PACKAGE_DATA_DIR is relative, try resolving it relative to the
+ *    executable directory
+ * 4) Default locations relative to the executable (../share/psensor, src/glade)
+ * 5) Fallback to PACKAGE_DATA_DIR as given
+ */
+static inline char *get_data_path(void) {
+    char *path;
+    char selfpath[1024];
+    ssize_t len;
+    const char *env_data_dir;
+
+    /* 1) Environment override */
+    env_data_dir = getenv("PSENSOR_DATA_DIR");
+    if (env_data_dir && access(env_data_dir, F_OK) == 0) {
+        return strdup(env_data_dir);
+    }
+
+    /* 2) Try PACKAGE_DATA_DIR as provided (may be absolute or relative) */
+    if (PACKAGE_DATA_DIR[0] != '\0') {
+        if (access(PACKAGE_DATA_DIR "/psensor-fork.glade", F_OK) == 0) {
+            return strdup(PACKAGE_DATA_DIR);
+        }
+    }
+
+    /* Get executable directory once for subsequent checks */
+    len = readlink("/proc/self/exe", selfpath, sizeof(selfpath) - 1);
+    if (len != -1) {
+        selfpath[len] = '\0';
+        char *last_slash = strrchr(selfpath, '/');
+        if (last_slash) {
+            *last_slash = '\0';
+
+            /* 3) If PACKAGE_DATA_DIR is relative, try <exe_dir>/<PACKAGE_DATA_DIR> */
+            if (PACKAGE_DATA_DIR[0] != '/' && PACKAGE_DATA_DIR[0] != '\0') {
+                size_t need = strlen(selfpath) + 1 + strlen(PACKAGE_DATA_DIR) + 1;
+                path = (char *)malloc(need);
+                if (!path) return NULL;
+                snprintf(path, need, "%s/%s", selfpath, PACKAGE_DATA_DIR);
+
+                /* build full glade path to test presence */
+                size_t glade_need = strlen(path) + sizeof("/psensor-fork.glade");
+                char *glade = (char *)malloc(glade_need);
+                if (glade) {
+                    snprintf(glade, glade_need, "%s/psensor-fork.glade", path);
+                    if (access(glade, F_OK) == 0) {
+                        free(glade);
+                        return path;
+                    }
+                    free(glade);
+                }
+                free(path);
+            }
+
+            /* 4) Try common locations relative to executable */
+            path = (char *)malloc(strlen(selfpath) + 32);
+            if (!path) return NULL;
+            snprintf(path, strlen(selfpath) + 32, "%s/share/psensor-fork", selfpath);
+            if (access(path, F_OK) == 0) {
+                return path;
+            }
+            free(path);
+
+            /* Try src/glade in source tree (useful for running from a source copy) */
+            path = (char *)malloc(strlen(selfpath) + 32);
+            if (!path) return NULL;
+            snprintf(path, strlen(selfpath) + 32, "%s/src/glade", selfpath);
+            if (access(path, F_OK) == 0) {
+                return path;
+            }
+            free(path);
+        }
+    }
+
+    /* 5) Fallback: return PACKAGE_DATA_DIR (may be absolute or relative) */
+    return strdup(PACKAGE_DATA_DIR);
+}
+
+#endif

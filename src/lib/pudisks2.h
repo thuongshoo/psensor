@@ -19,24 +19,26 @@
 #ifndef PSENSOR_UDISKS2_H
 #define PSENSOR_UDISKS2_H
 
+#include <config.h>
+#include <bool.h>
 #include <psensor.h>
 
 #if defined(HAVE_LIBUDISKS2) && HAVE_LIBUDISKS2
 
 static inline bool udisks2_is_supported(void) { return true; }
 
-void udisks2_psensor_list_append(struct psensor ***, unsigned int);
-void udisks2_psensor_list_update(struct psensor **);
+void udisks2_psensor_list_append(Psensor ***, unsigned int);
+void udisks2_psensor_list_update(Psensor **);
 
 #else
 
 static inline bool udisks2_is_supported(void) { return false; }
 
 static inline void
-udisks2_psensor_list_append(struct psensor ***s, unsigned int n) {}
+udisks2_psensor_list_append(Psensor ***s, unsigned int n) {}
 
 static inline void
-udisks2_psensor_list_update(struct psensor **s) {}
+udisks2_psensor_list_update(Psensor **s) {}
 
 #endif
 

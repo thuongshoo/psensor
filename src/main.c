@@ -55,21 +55,18 @@
 #include <ui_sensorlist.h>
 #include <ui_status.h>
 #include <ui_unity.h>
+#include "slog.h"
+#include "copyright.h"
 
+#define ONE_SECOND 1000U
 static const char *program_name;
 
 static void print_version(void)
 {
-	printf("%s %s\n", PACKAGE_NAME, VERSION);
-	printf(_("Copyright (C) %s jeanfi@gmail.com\n"
-	         "Copyright (C) %s thuongshoo <yuyoonshoo@gmail.com>\n"
-			 "License GPLv2: GNU GPL version 2 or later "
-			 "<http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
-			 "This is free software: you are free to change and"
-			 " redistribute it.\n"
-			 "There is NO WARRANTY, to the extent permitted by law.\n"),
-		   "2010-2016",
-		   "2024-2025");
+    printf("%s %s\n", PACKAGE_NAME, VERSION);
+    printf(_(PSENSOR_COPYRIGHT_CLI),
+           PSENSOR_ORIGINAL_YEARS, PSENSOR_ORIGINAL_EMAIL,
+           PSENSOR_CURRENT_YEARS, PSENSOR_CURRENT_EMAIL);
 }
 
 static void print_help(void)
@@ -117,11 +114,11 @@ static int update_measures_unlock(pthread_mutex_t *m)
  * configuration.
  */
 static void
-update_psensor_values_size(struct psensor **sensors, const struct config *cfg)
+update_psensor_values_size(Psensor **sensors, const struct config *cfg)
 {
-	for (struct psensor **cur = sensors; *cur; cur++)
+	for (Psensor **cur = sensors; *cur; cur++)
 	{
-		struct psensor *s = *cur;
+		Psensor *s = *cur;
 		// User can modify graph_monitoring_duration and sensor_update_interval in UI
 		// This triggers recalculation of sensor_values_max_length in configuration
 		if (s->measures_size != cfg->sensor_values_max_length)
@@ -145,7 +142,7 @@ static void *update_measures(void *data)
 	{
 		update_measures_lock(&ui->sensors_mutex);
 
-		struct psensor **sensors = ui->sensors;
+		Psensor **sensors = ui->sensors;
 		if (!sensors)
 			pthread_exit(NULL);
 
@@ -179,7 +176,7 @@ static void *update_measures(void *data)
 static void indicators_update(struct ui_psensor *ui)
 {
 	bool attention = false;
-	struct psensor **ss = ui->sensors;
+	Psensor **ss = ui->sensors;
 	while (*ss)
 	{
 		const Psensor *s = *ss;
@@ -203,7 +200,7 @@ static void indicators_update(struct ui_psensor *ui)
 static gboolean ui_refresh_thread(gpointer data);
 static void queue_another_execution(struct ui_psensor *ui)
 {
-	g_timeout_add(1000 * ui->graph_update_interval,
+	g_timeout_add(ONE_SECOND * ui->graph_update_interval,
 				  ui_refresh_thread, ui);
 }
 
@@ -228,17 +225,17 @@ static gboolean ui_refresh_thread(gpointer data)
 	pthread_setname_np(pthread_self(), "ui_refresh_thread");
 
 	gboolean ret = TRUE;
-	Pconfig *config = ui->config;
+	const Pconfig *config = ui->config;
 
 	if (config->is_new_data == false)
 	{
 		queue_another_execution(ui);
-		return false;
+		return FALSE;
 	}
     ////
 	ui_refresh_thread_lock(&ui->sensors_mutex);
 
-	if (is_appindicator_supported() || is_status_supported())
+	if (true == is_appindicator_supported() || true == is_status_supported())
 		indicators_update(ui);
 
 	ui_unity_launcher_entry_update(ui->sensors);
@@ -256,7 +253,7 @@ static gboolean ui_refresh_thread(gpointer data)
         return G_SOURCE_REMOVE;
     }
 
-	ui_sensorlist_update(ui, 0);
+	ui_sensorlist_update(ui, false);
 	// Instead of direct drawing, request a widget redraw
 	g_idle_add((GSourceFunc)queue_redraw_idle,
 			   ui_get_graph_widget());
@@ -267,7 +264,7 @@ static gboolean ui_refresh_thread(gpointer data)
 	return ret;
 }
 
-static void cb_alarm_raised(struct psensor *sensor, void *data)
+static void cb_alarm_raised(Psensor *sensor, void *data)
 {
 	if (config_get_sensor_alarm_enabled(sensor->id))
 	{
@@ -277,10 +274,10 @@ static void cb_alarm_raised(struct psensor *sensor, void *data)
 }
 
 static void
-associate_cb_alarm_raised(struct psensor **sensors, struct ui_psensor *ui)
+associate_cb_alarm_raised(Psensor **sensors, struct ui_psensor *ui)
 {
 	bool ret;
-	struct psensor *s;
+	Psensor *s;
 	double high_temp;
 
 	high_temp = config_get_default_high_threshold_temperature();
@@ -337,14 +334,14 @@ associate_cb_alarm_raised(struct psensor **sensors, struct ui_psensor *ui)
  * @warning The original sensor names are freed when replaced. Ensure
  *          the names were dynamically allocated.
  */
-static void associate_preferences(struct psensor **sensors)
+static void associate_preferences(Psensor **sensors)
 {
-	struct psensor **sensor_cur = sensors;  /* Current position in sensor array */
+	Psensor **sensor_cur = sensors;  /* Current position in sensor array */
 
 	/* Iterate through NULL-terminated array of sensor pointers */
 	while (*sensor_cur)
 	{
-		struct psensor *s = *sensor_cur;  /* Current sensor being processed */
+		Psensor *s = *sensor_cur;  /* Current sensor being processed */
 
 		/* Retrieve user-defined name from configuration using sensor ID */
 		char *n = config_get_sensor_name(s->id);
@@ -393,9 +390,9 @@ static gboolean initial_window_show(gpointer data)
 	log_debug("initial_window_show()");
 	ui = (struct ui_psensor *)data;
 
-	log_debug("is_status_supported: %d", is_status_supported());
-	log_debug("is_appindicator_supported: %d", is_appindicator_supported());
-	log_debug("hide_on_startup: %d", ui->config->hide_on_startup);
+	log_debug("is_status_supported: %d", (int)is_status_supported());
+	log_debug("is_appindicator_supported: %d", (int)is_appindicator_supported());
+	log_debug("hide_on_startup: %d", (int)ui->config->hide_on_startup);
 
 	if (!ui->config->hide_on_startup || (!is_appindicator_supported() && !is_status_supported()))
 		ui_window_show(ui);
@@ -453,6 +450,7 @@ static void cleanup(struct ui_psensor *ui)
 	ui_appindicator_cleanup();
 
 	ui_status_cleanup();
+	ui_graph_cleanup(ui);
 
 	cleanup_unlock(&ui->sensors_mutex);
 
@@ -470,16 +468,16 @@ static void cleanup(struct ui_psensor *ui)
  *
  * 'url': remote psensor server url, null for local monitoring.
  */
-static struct psensor **create_sensors_list(const char *url, const struct config *config)
+static Psensor **create_sensors_list(const char *url, const struct config *config)
 {
-	struct psensor **sensors;
+	Psensor **sensors;
 
 	if (url)
 	{
 		if (rsensor_is_supported())
 		{
 			rsensor_init();
-			const unsigned int measures_len = 600;
+			const uint32_t measures_len = 600;
 			sensors = get_remote_sensors(url, measures_len);
 		}
 		else
@@ -491,7 +489,7 @@ static struct psensor **create_sensors_list(const char *url, const struct config
 	}
 	else
 	{
-		sensors = (struct psensor **)calloc(1, sizeof(struct psensor *));
+		sensors = (Psensor **)calloc(1, sizeof(Psensor *));
 		if (sensors == NULL)
 			return NULL;
 
@@ -641,7 +639,7 @@ int main(int argc, char **argv)
 
 	if (ui.config->slog_enabled)
 		slog_activate(NULL,
-					  ui.sensors,
+					  (const Psensor*const *) ui.sensors,
 					  &ui.sensors_mutex,
 					  config_get_slog_interval());
 
@@ -660,7 +658,7 @@ int main(int argc, char **argv)
 
 	ui.graph_update_interval = ui.config->graph_update_interval;
 
-	g_timeout_add(1000 * ui.graph_update_interval, ui_refresh_thread, &ui);
+	g_timeout_add(ONE_SECOND * ui.graph_update_interval, ui_refresh_thread, &ui);
 
 	ui_appindicator_init(&ui);
 	ui_unity_init();
@@ -675,7 +673,7 @@ int main(int argc, char **argv)
 	//  */
 	if (ui.config->hide_on_startup)
 	{
-		g_timeout_add(1000, (GSourceFunc)initial_window_show, &ui);
+		g_timeout_add(ONE_SECOND, (GSourceFunc)initial_window_show, &ui);
 	}
 	else
 	{

@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
-project(psensor-fork VERSION 1.2.1 LANGUAGES C)
+project(psensor-fork VERSION 1.3.0 LANGUAGES C)
 
 set(PACKAGE_BUGREPORT "yuyoonshoo@gmail.com")
 set(PACKAGE_URL "https://github.com/thuongshoo/psensor")
-set(PACKAGE_VERSION "1.2.1")
 set(PACKAGE_NAME "psensor-fork")
 
 # enable compile commands database
@@ -48,7 +47,10 @@ option(WITH_NVIDIA "Build with NVIDIA support" ON)
 option(WITH_ATI "Build with ATI support" OFF)
 option(ENABLE_NLS "Enable Native Language Support" ON)
 option(ENABLE_CPPCHECK "Enable cppcheck analysis" ON)
-
+option(ENABLE_COLOR_USE_DOUBLE "Use double precision for color" ON)
+if(ENABLE_COLOR_USE_DOUBLE)
+    add_compile_definitions(COLOR_USE_DOUBLE)
+endif()
 # Find required tools
 find_program(HELP2MAN help2man)
 find_program(ASCIIDOC asciidoc)
@@ -206,6 +208,16 @@ if(ATASMART_LIBRARIES)
     add_compile_definitions(HAVE_ATASMART=1)
 endif()
 
+check_include_file("stdlib.h" HAVE_STDLIB_H)
+check_include_file("string.h" HAVE_STRING_H)
+
+if(HAVE_STDLIB_H AND HAVE_STRING_H)
+    set(STDC_HEADERS 1)
+endif()
+
+# Kiểm tra stdbool.h (cho HAVE_STDBOOL_H)
+check_include_file("stdbool.h" HAVE_STDBOOL_H)
+
 # Remote monitoring support (JSON + CURL)
 if(JSON_LIBRARIES AND CURL_LIBRARIES)
     add_compile_definitions(HAVE_REMOTE_SUPPORT=1)
@@ -261,14 +273,22 @@ endif()
 include(GNUInstallDirs)
 
 # Desktop file macro and data dir for source use
-add_compile_definitions(PSENSOR_DESKTOP_FILE=\"${PROJECT_NAME}.desktop\")
-add_compile_definitions(DATADIR=\"${CMAKE_INSTALL_FULL_DATADIR}\")
-add_compile_definitions(DEFAULT_WWW_DIR=\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}/www\")
+set(DESKTOP_FILE "\"${PROJECT_NAME}.desktop\"")
+add_compile_definitions(PSENSOR_DESKTOP_FILE=${DESKTOP_FILE})
+
+set(DATADIR_VAL "\"${CMAKE_INSTALL_FULL_DATADIR}\"")
+add_compile_definitions(DATADIR=${DATADIR_VAL})
+
+set(WWW_DIR_VAL "\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}/www\"")
+add_compile_definitions(DEFAULT_WWW_DIR=${WWW_DIR_VAL})
+
 # Set default PACKAGE_DATA_DIR but allow environment override
 if(NOT DEFINED ENV{PSENSOR_DATA_DIR})
-    add_compile_definitions(PACKAGE_DATA_DIR=\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}\")
+    set(PACKAGE_DATA_DIR1 "\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}\"" )
+    add_compile_definitions(PACKAGE_DATA_DIR=${PACKAGE_DATA_DIR1})
 else()
-    add_compile_definitions(PACKAGE_DATA_DIR=\"$ENV{PSENSOR_DATA_DIR}\")
+    set(PACKAGE_DATA_DIR2 "\"$ENV{PSENSOR_DATA_DIR}\"")
+    add_compile_definitions(PACKAGE_DATA_DIR="{PACKAGE_DATA_DIR2}")
 endif()
 
 message(STATUS "Installation prefix: ${CMAKE_INSTALL_PREFIX}")
@@ -314,7 +334,7 @@ install(DIRECTORY icons/ubuntu-mono-light/
 
 # Ensure icons are also installed into the per-size "apps/" subdirectories
 # so GTK/desktop environments can find the application icon via the
-# hicolor theme (e.g. icons/hicolor/48x48/apps/psensor.png).
+# hicolor theme (e.g. icons/hicolor/48x48/apps/psensor-fork.png).
 set(PROJECT_ICON_FILENAME psensor-fork)
 set(HICOLOR_SIZES 14x14 16x16 22x22 24x24 32x32 48x48 64x64)
 foreach(size IN LISTS HICOLOR_SIZES)

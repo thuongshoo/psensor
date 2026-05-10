@@ -16,7 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#define _LARGEFILE_SOURCE 1
+#ifndef _LARGEFILE_SOURCE
+	#define _LARGEFILE_SOURCE 1
+#endif
 #include "config.h"
 
 #include <locale.h>
@@ -44,41 +46,41 @@ static const char *PROVIDER_NAME = "atasmart";
 
 static int filter_sd(const char *p)
 {
-	return strlen(p) == 8 && !strncmp(p, "/dev/sd", 7);
+    return strlen(p) == 8 && !strncmp(p, "/dev/sd", 7);
 }
 
 static void provider_data_free(void *data)
 {
-	sk_disk_free((SkDisk *)data);
+    sk_disk_free((SkDisk *)data);
 }
 
-static SkDisk *get_disk(struct psensor *s)
+static SkDisk *get_disk(Psensor *s)
 {
-	return (SkDisk *)s->provider_data;
+    return (SkDisk *)s->provider_data;
 }
 
-static struct psensor *
+static Psensor *
 create_sensor(char *id, const char *name, SkDisk *disk, unsigned int values_max_length)
 {
-	unsigned int t = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP;
+    unsigned int t = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP;
 
-	char* chip = strdup(name);
-	char* new_name = strdup(_("Disk"));
-	struct psensor *s = psensor_create(id,
-			   chip,
-			   new_name,
-			   t,
-			   values_max_length);
-	if (s == NULL)
-	{
-		free(new_name);
-		free(chip);
-		return NULL;
-	}
-	s->provider_data = disk;
-	s->provider_data_free_fct = &provider_data_free;
+    char* chip = strdup(name);
+    char* new_name = strdup(_("Disk"));
+    Psensor *s = psensor_create(id,
+               chip,
+               new_name,
+               t,
+               values_max_length);
+    if (s == NULL)
+    {
+        free(new_name);
+        free(chip);
+        return NULL;
+    }
+    s->provider_data = disk;
+    s->provider_data_free_fct = &provider_data_free;
 
-	return s;
+    return s;
 }
 
 /*
@@ -86,128 +88,128 @@ create_sensor(char *id, const char *name, SkDisk *disk, unsigned int values_max_
  */
 static void analyze_disk(const char *dname)
 {
-	int f;
-	struct stat st;
-	uint64_t size;
+    int f;
+    struct stat st;
+    uint64_t size;
 
-	log_functionname("Analyze %s", dname);
+    log_functionname("Analyze %s", dname);
 
-	f = open(dname, O_RDONLY|O_NOCTTY|O_NONBLOCK|O_CLOEXEC);
+    f = open(dname, O_RDONLY|O_NOCTTY|O_NONBLOCK|O_CLOEXEC);
 
-	if (f < 0) {
-		log_functionname("Could not open file %s: %s", dname, strerror(errno));
-		goto fail;
-	}
+    if (f < 0) {
+        log_functionname("Could not open file %s: %s", dname, strerror(errno));
+        goto fail;
+    }
 
-	if (fstat(f, &st) < 0) {
-		log_functionname("fstat fails %s: %s", dname, strerror(errno));
-		goto fail;
-	}
+    if (fstat(f, &st) < 0) {
+        log_functionname("fstat fails %s: %s", dname, strerror(errno));
+        goto fail;
+    }
 
-	if (!S_ISBLK(st.st_mode)) {
-		log_functionname("!S_ISBLK fails %s", dname);
-		goto fail;
-	}
+    if (!S_ISBLK(st.st_mode)) {
+        log_functionname("!S_ISBLK fails %s", dname);
+        goto fail;
+    }
 
-	size = (uint64_t)-1;
-	/* So, it's a block device. Let's make sure the ioctls work */
-	if (ioctl(f, BLKGETSIZE64, &size) < 0) {
-		log_functionname("ioctl fails %s: %s", dname, strerror(errno));
-		goto fail;
-	}
+    size = (uint64_t)-1;
+    /* So, it's a block device. Let's make sure the ioctls work */
+    if (ioctl(f, BLKGETSIZE64, &size) < 0) {
+        log_functionname("ioctl fails %s: %s", dname, strerror(errno));
+        goto fail;
+    }
 
-	if (size <= 0 || size == (uint64_t) -1) {
-		log_functionname("ioctl wrong size %s: %ld", dname, size);
-		goto fail;
-	}
+    if (size == 0 || size == (uint64_t) -1) {
+        log_functionname("ioctl wrong size %s: %ld", dname, size);
+        goto fail;
+    }
 
  fail:
-	close(f);
+    close(f);
 }
 
 void
-atasmart_psensor_list_append(struct psensor ***sensors, unsigned int values_max_length)
+atasmart_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
 {
-	char **paths, **tmp, *id;
-	SkDisk *disk;
-	struct psensor *sensor;
+    char **paths, **tmp, *id;
+    SkDisk *disk;
+    Psensor *sensor;
 
-	log_functionname_enter();
+    log_functionname_enter();
 
-	paths = dir_list("/dev", filter_sd);
+    paths = dir_list("/dev", filter_sd);
 
-	tmp = paths;
-	while (*tmp) {
-		log_functionname("Open %s", *tmp);
+    tmp = paths;
+    while (*tmp) {
+        log_functionname("Open %s", *tmp);
 
-		if (!sk_disk_open(*tmp, &disk))
-		{
-			id = malloc(strlen(PROVIDER_NAME)
-				    + 1
-				    + strlen(*tmp)
-				    + 1);
-			sprintf(id, "%s %s", PROVIDER_NAME, *tmp);
+        if (!sk_disk_open(*tmp, &disk))
+        {
+            id = malloc(strlen(PROVIDER_NAME)
+                    + 1
+                    + strlen(*tmp)
+                    + 1);
+            sprintf(id, "%s %s", PROVIDER_NAME, *tmp);
 
-			sensor = create_sensor(id,
-					       *tmp,
-					       disk,
-					       values_max_length);
+            sensor = create_sensor(id,
+                           *tmp,
+                           disk,
+                           values_max_length);
             if (sensor != NULL)
-			{
-				psensor_list_append(sensors, sensor);
-			}
-			else
-			{
-				free(id);
-			}
-		}
-		else
-		{
-			log_err(_("%s: sk_disk_open() failure: %s."),
-				PROVIDER_NAME,
-				*tmp);
-			analyze_disk(*tmp);
-		}
+            {
+                psensor_list_append(sensors, sensor);
+            }
+            else
+            {
+                free(id);
+            }
+        }
+        else
+        {
+            log_err(_("%s: sk_disk_open() failure: %s."),
+                PROVIDER_NAME,
+                *tmp);
+            analyze_disk(*tmp);
+        }
 
-		tmp++;
-	}
+        tmp++;
+    }
 
-	paths_free(paths);
+    paths_free(paths);
 
-	log_functionname_exit();
+    log_functionname_exit();
 }
 
-void atasmart_psensor_list_update(struct psensor **sensors)
+void atasmart_psensor_list_update(Psensor **sensors)
 {
-	struct psensor **cur, *s;
-	uint64_t kelvin;
-	int ret;
-	SkDisk *disk;
+    Psensor **cur, *s;
+    uint64_t kelvin;
+    int ret;
+    SkDisk *disk;
 
-	if (!sensors)
-		return;
+    if (!sensors)
+        return;
 
-	cur = sensors;
-	while (*cur) {
-		s = *cur;
-		if (!(s->type & SENSOR_TYPE_REMOTE)
-		    && s->type & SENSOR_TYPE_ATASMART) {
-			disk = get_disk(s);
+    cur = sensors;
+    while (*cur) {
+        s = *cur;
+        if (!(s->type & SENSOR_TYPE_REMOTE)
+            && s->type & SENSOR_TYPE_ATASMART) {
+            disk = get_disk(s);
 
-			ret = sk_disk_smart_read_data(disk);
+            ret = sk_disk_smart_read_data(disk);
 
-			if (!ret) {
-				ret = sk_disk_smart_get_temperature(disk,
-								    &kelvin);
+            if (!ret) {
+                ret = sk_disk_smart_get_temperature(disk,
+                                    &kelvin);
 
-				if (!ret) {
-					double c = (kelvin - 273150) / 1000.0;
-					psensor_set_current_value(s, c);
-					log_functionname("%s %.2f", s->id, c);
-				}
-			}
-		}
+                if (!ret) {
+                    double c = (kelvin - 273150) / 1000.0;
+                    psensor_set_current_value(s, c);
+                    log_functionname("%s %.2f", s->id, c);
+                }
+            }
+        }
 
-		cur++;
-	}
+        cur++;
+    }
 }

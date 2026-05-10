@@ -26,6 +26,6 @@
  *  - -1 if it cannot be determined.
  */
 int pxdg_is_autostarted(void);
-void pxdg_set_autostart(unsigned int);
+void pxdg_set_autostart(gboolean);
 
 #endif

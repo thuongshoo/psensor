@@ -38,10 +38,10 @@ count_visible_changed_cbk(GSettings *settings, gchar *key, gpointer data)
 	}
 }
 
-static double get_max_current_value(struct psensor **sensors, unsigned int type)
+static double get_max_current_value(Psensor **sensors, unsigned int type)
 {
 	double m, v;
-	struct psensor *s;
+	Psensor *s;
 
 	m = UNKNOWN_DOUBLE_VALUE;
 	while (*sensors) {
@@ -60,7 +60,7 @@ static double get_max_current_value(struct psensor **sensors, unsigned int type)
 	return m;
 }
 
-void ui_unity_launcher_entry_update(struct psensor **sensors)
+void ui_unity_launcher_entry_update(Psensor **sensors)
 {
 	double v;
 

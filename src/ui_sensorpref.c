@@ -58,11 +58,11 @@ static GtkListStore *store;
  */
 static bool ignore_changes;
 
-static struct psensor *get_selected_sensor(void)
+static Psensor *get_selected_sensor(void)
 {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
-	struct psensor *s;
+	Psensor *s;
 	GtkTreeSelection *selection;
 
 	selection = gtk_tree_view_get_selection(w_sensors_list);
@@ -78,7 +78,7 @@ static void apply_config(struct ui_psensor *ui)
 {
 	config_sync();
 
-	ui_sensorlist_update(ui, 1);
+	ui_sensorlist_update(ui, true);
 	ui_appindicator_update_menu(ui);
 }
 
@@ -112,7 +112,7 @@ void ui_sensorpref_draw_toggled_cb(GtkToggleButton *btn, gpointer data)
 	if (!s)
 		return;
 
-	gboolean active = gtk_toggle_button_get_active(btn);
+	bool active = gtk_toggle_button_get_active(btn) == 1;
 	config_set_sensor_graph_enabled(s->id, active);
 
 	apply_config((struct ui_psensor *)data);
@@ -129,7 +129,7 @@ void ui_sensorpref_display_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_sensor_enabled(s->id, active);
+	config_set_sensor_enabled(s->id, gboolean_to_char(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -145,7 +145,7 @@ void ui_sensorpref_alarm_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_sensor_alarm_enabled(s->id, active);
+	config_set_sensor_alarm_enabled(s->id, gboolean_to_char(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -162,7 +162,7 @@ ui_sensorpref_appindicator_menu_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_appindicator_enabled(s->id, active);
+	config_set_appindicator_enabled(s->id, gboolean_to_char(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -179,7 +179,7 @@ ui_sensorpref_appindicator_label_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_appindicator_label_enabled(s->id, active);
+	config_set_appindicator_label_enabled(s->id, gboolean_to_char(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -215,7 +215,7 @@ ui_sensorpref_alarm_high_threshold_changed_cb(GtkSpinButton *btn, gpointer data)
 	if (config_get_temperature_unit() == FAHRENHEIT)
 		v = fahrenheit_to_celsius(v);
 
-	config_set_sensor_alarm_high_threshold(s->id, v);
+	config_set_sensor_alarm_high_threshold(s->id, (int)v);
 	s->alarm_high_threshold = v;
 
 	apply_config((struct ui_psensor *)data);
@@ -235,13 +235,13 @@ ui_sensorpref_alarm_low_threshold_changed_cb(GtkSpinButton *btn, gpointer data)
 	if (config_get_temperature_unit() == FAHRENHEIT)
 		v = fahrenheit_to_celsius(v);
 
-	config_set_sensor_alarm_low_threshold(s->id, v);
+	config_set_sensor_alarm_low_threshold(s->id, (int)v);
 	s->alarm_low_threshold = v;
 
 	apply_config((struct ui_psensor *)data);
 }
 
-static void update_pref(struct psensor *s)
+static void update_pref(Psensor *s)
 {
 	const char *chip;
 	char *smin, *smax;
@@ -312,7 +312,7 @@ static void update_pref(struct psensor *s)
 	gtk_toggle_button_set_active(w_sensor_alarm,
 				     config_get_sensor_alarm_enabled(s->id));
 
-	int threshold = s->alarm_high_threshold;
+	double threshold = s->alarm_high_threshold;
 	if (!is_celsius(temperature_unit))
 		threshold = celsius_to_fahrenheit(threshold);
 	gtk_spin_button_set_value(w_sensor_high_threshold, threshold);
@@ -338,9 +338,9 @@ ui_sensorpref_tree_selection_changed_cb(GtkTreeSelection *sel, gpointer data)
 	update_pref(get_selected_sensor());
 }
 
-static void select_sensor(struct psensor *s, struct psensor **sensors)
+static void select_sensor(Psensor *s, const Psensor **sensors)
 {
-	struct psensor **s_cur;
+	const Psensor **s_cur;
 	int i;
 	GtkTreePath *p;
 	GtkTreeSelection *sel;
@@ -450,14 +450,15 @@ static GtkBuilder *load_ui(struct ui_psensor *ui)
 	return builder;
 }
 
-static void populate(struct psensor *sensor, struct psensor **sensors)
+static void populate(Psensor *sensor, Psensor **sensors)
 {
 	GtkTreeIter iter;
-	struct psensor **s_cur, **ordered_sensors, *s;
+	const Psensor **s_cur;
+	const Psensor *s;
 
 	gtk_list_store_clear(store);
 
-	ordered_sensors = ui_get_sensors_ordered_by_position(sensors);
+	const Psensor ** ordered_sensors = ui_get_sensors_ordered_by_position((const Psensor *const *)sensors);
 	for (s_cur = ordered_sensors; *s_cur; s_cur++) {
 		s = *s_cur;
 		gtk_list_store_append(store, &iter);
@@ -473,7 +474,7 @@ static void populate(struct psensor *sensor, struct psensor **sensors)
 	free((void*)ordered_sensors);
 }
 
-void ui_sensorpref_dialog_run(struct psensor *sensor, struct ui_psensor *ui)
+void ui_sensorpref_dialog_run(Psensor *sensor, struct ui_psensor *ui)
 {
 	if (w_dialog == NULL) {
 		GtkBuilder *builder = load_ui(ui);

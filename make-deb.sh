@@ -70,7 +70,7 @@ set -euo pipefail
 # Source: https://github.com/thuongshoo/psensor
 
 # Files: *
-# Copyright: 2023-2025 thuongshoo <yuyoonshoo@gmail.com>
+# Copyright: 2023-2026 thuongshoo <yuyoonshoo@gmail.com>
 # License: GPL-2+
 #  This package is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ set -euo pipefail
 
 # # Create debian/changelog
 # cat > debian/changelog << 'EOF'
-# psensor (1.2.0-1) unstable; urgency=medium
+# psensor (1.2.2-1) unstable; urgency=medium
 
 #   * Initial release.
 
@@ -103,6 +103,6 @@ set -euo pipefail
 if [ -f ./debian ]; then
     rm -rf debian
 fi
-cp -r debian_data debian
+cp -r debian_data/. debian/
 # Build the package
 dpkg-buildpackage -b -us -uc

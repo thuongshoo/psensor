@@ -40,35 +40,6 @@ static const int GRAPH_V_PADDING = 8;
 
 bool is_smooth_curves_enabled;
 
-/* Graph rendering dimensions and offsets */
-typedef struct graph_info {
-	/* Plotting area position relative to canvas */
-	double plot_x;      /* X offset of plotting area */
-	double plot_y;      /* Y offset of plotting area */
-	
-	/* Plotting area dimensions */
-	double plot_width;  /* Width of data drawing area */
-	double plot_height; /* Height of data drawing area */
-	
-	/* Total canvas dimensions */
-	double canvas_width;  /* Total drawing area width */
-	double canvas_height; /* Total drawing area height */
-} graph_info_st;
-// ┌─────────────────────────────────────────┐
-// │ Canvas (width x height)                 │
-// │                                         │
-// │   ┌─────────────────────────────┐       │
-// │   │ Plotting area               │       │
-// │   │ (plot_width x plot_height)  │       │
-// │   │                             │       │
-// │   │   [Data curves drawn here]  │       │
-// │   │                             │       │
-// │   └─────────────────────────────┘       │
-// │    ↑plot_y                              │
-// │    └──→plot_x                           │
-// │                                         │
-// └─────────────────────────────────────────┘
-
 static GtkStyleContext *style;
 /* Foreground color of the current desktop theme */
 static GdkRGBA theme_fg_color;
@@ -93,7 +64,7 @@ unsigned int compute_values_max_length(const struct config *c)
         return 10;
     }
     
-    const unsigned int duration = c->graph_monitoring_duration * 60;
+    const unsigned int duration = c->graph_monitoring_duration * 60U;
     const unsigned int interval = c->sensor_update_interval;
     
     // ceil: (duration + interval/2) / interval
@@ -102,7 +73,7 @@ unsigned int compute_values_max_length(const struct config *c)
     return n;
 }
 
-static const Psensor **list_filter_graph_enabled(const Psensor **sensors)
+const Psensor **list_filter_graph_enabled(const Psensor * const * sensors)
 {
 	if (!sensors)
 		return NULL;
@@ -112,7 +83,7 @@ static const Psensor **list_filter_graph_enabled(const Psensor **sensors)
 	if (result == NULL)
 		return NULL;
 
-	const Psensor **cur = sensors;
+	const Psensor * const *cur = sensors;
 	size_t i = 0;
 	for (; i < n && *cur; cur++ )
 	{
@@ -130,12 +101,12 @@ static const Psensor **list_filter_graph_enabled(const Psensor **sensors)
 	return result;
 }
 
-static time_t get_graph_end_time_s(const struct psensor **all_sensors)
+static time_t get_graph_end_time_s(const Psensor *const *all_sensors)
 {
     time_t latest_time = 0;
 
     while (all_sensors && *all_sensors) {
-        const struct psensor *sensor = *all_sensors;
+        const Psensor *sensor = *all_sensors;
         
         if (sensor->measures_count == 0) {
             all_sensors++;
@@ -340,10 +311,10 @@ static void draw_background_lines(cairo_t *cr, const int min, const int max,
     cairo_set_dash(cr, NULL, 0, 0);
 }
 
-typedef void (*draw_sensor_curve_function_type) (const struct psensor *sensor, cairo_t *cr,const double min, const double max, const time_t begin_time, const time_t end_time, const struct graph_info *info);
+typedef void (*draw_sensor_curve_function_type) (const Psensor *sensor, cairo_t *cr,const double min, const double max, const time_t begin_time, const time_t end_time, const struct graph_info *info);
 
 /* ==================== SIMPLER VERSION: EVERY 4 POINTS BEZIER ==================== */
-static void draw_sensor_segmented_bezier(const struct psensor *sensor, cairo_t *cr, const double min, const double max, const time_t begin_time, const time_t end_time, const struct graph_info *info)
+static void draw_sensor_segmented_bezier(const Psensor *sensor, cairo_t *cr, const double min, const double max, const time_t begin_time, const time_t end_time, const struct graph_info *info)
 {
     /* This version draws Bezier curve for EVERY 4 points, ensuring all points are used */    
     if (!sensor || sensor->measures_count < 4 || begin_time >= end_time) {
@@ -421,12 +392,12 @@ static void draw_sensor_segmented_bezier(const struct psensor *sensor, cairo_t *
         }
     }
     
-    if (has_started || segment_idx > 1) {
+    if (true == has_started || (segment_idx > 1)) {
         cairo_stroke(cr);
     }
 }
 
-static void draw_sensor_curve(const struct psensor *s, cairo_t *cr, const double min, const double max, const time_t begin_time, const time_t ending_time, const struct graph_info *info)
+static void draw_sensor_curve(const Psensor *s, cairo_t *cr, const double min, const double max, const time_t begin_time, const time_t ending_time, const struct graph_info *info)
 {
     //cairo_new_path(cr);
 	// ... setup color ...
@@ -450,7 +421,7 @@ static void draw_sensor_curve(const struct psensor *s, cairo_t *cr, const double
             
         time_t vdt = m->time.tv_sec - begin_time;        
         //
-        double normalized_x = (double)vdt / time_range;
+        double normalized_x = (double)vdt / (double)time_range;
         if (normalized_x < 0.0) normalized_x = 0.0;
         if (normalized_x > 1.0) normalized_x = 1.0;
         
@@ -494,17 +465,6 @@ static void display_no_graphs_warning(cairo_t *cr, int x, int y)
 }
 
 /* ==================== TYPE DEFINITIONS ==================== */
-typedef struct {
-    graph_info_st layout;
-    char *str_min;
-    char *str_max;
-    char *str_unit;
-    char *str_btime;
-    char *str_etime;
-    time_t begin_time;
-    time_t end_time;
-	ALL_MINMAX all_minmax;
-} GraphDrawingContext;
 
 /* ==================== HELPER FUNCTIONS ==================== */
 static void calculate_plotting_area(const cairo_text_extents_t *extents_btime, const cairo_text_extents_t *extents_etime, const cairo_text_extents_t *extents_max, const cairo_text_extents_t *extents_min, graph_info_st *info)
@@ -539,7 +499,8 @@ static void calculate_graph_layout(GtkWidget *w_graph, const char *str_btime, co
     info->canvas_height = allocation.height;
     
     /* Setup text rendering for measurements */
-    cairo_t *cr = cairo_create(cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1));
+    cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
+    cairo_t *cr = cairo_create(surface);
     cairo_select_font_face(cr, "sans-serif", 
                            CAIRO_FONT_SLANT_NORMAL, 
                            CAIRO_FONT_WEIGHT_NORMAL);
@@ -553,13 +514,13 @@ static void calculate_graph_layout(GtkWidget *w_graph, const char *str_btime, co
     cairo_text_extents(cr, str_min, &extents_min);
     
     cairo_destroy(cr);
-    
+    cairo_surface_destroy(surface);
     /* Calculate plotting area position and size */
     calculate_plotting_area(&extents_btime, &extents_etime,
                            &extents_max, &extents_min, info);
 }
 
-static GraphDrawingContext* create_graph_context(const struct psensor **enabled_sensors, const struct config *config, GtkWidget *w_graph)
+static GraphDrawingContext* create_graph_context(const Psensor *const *enabled_sensors, const struct config *config, GtkWidget *w_graph)
 {
     GraphDrawingContext *ctx = calloc(1, sizeof(GraphDrawingContext));
     if (!ctx) return NULL;
@@ -660,7 +621,7 @@ static void draw_value_labels(cairo_t *cr, const GraphDrawingContext *ctx)
     cairo_show_text(cr, ctx->str_unit);
 }
 
-static void draw_sensor_curves(cairo_t *cr, const struct psensor **enabled_sensors,const GraphDrawingContext *ctx, const struct config *config)
+static void draw_sensor_curves(cairo_t *cr, const Psensor *const *enabled_sensors,const GraphDrawingContext *ctx, const struct config *config)
 {
     if (ctx->begin_time == 0 || ctx->end_time == 0) {
         return;
@@ -680,11 +641,11 @@ static void draw_sensor_curves(cairo_t *cr, const struct psensor **enabled_senso
     
     /* Draw each sensor */
     bool has_graphs = false;
-    const struct psensor **sensor = enabled_sensors;
+    const Psensor *const *sensor = enabled_sensors;
     
     while (*sensor) {
         has_graphs = true;
-        const struct psensor *s = *sensor;
+        const Psensor *s = *sensor;
         
         /* Determine value range for this sensor type */
         double min_val, max_val;
@@ -710,14 +671,14 @@ static void draw_sensor_curves(cairo_t *cr, const struct psensor **enabled_senso
     /* Show warning if no graphs were drawn */
     if (!has_graphs) {
         display_no_graphs_warning(cr,
-                                  ctx->layout.plot_x + 12,
-                                  ctx->layout.plot_height / 2);
+                                  12 + (int)ctx->layout.plot_x,
+                                  (int) (ctx->layout.plot_height / 2));
     }
 }
 
 /* ==================== MAIN FUNCTION ==================== */
 
-void redraw_graph(cairo_surface_t *graph_surface, cairo_t *cr, const struct psensor **sensors, GtkWidget *w_graph, const struct config *config, GtkWidget *window)
+void redraw_graph(cairo_surface_t *graph_surface, cairo_t *cr, const Psensor * const *sensors, GtkWidget *w_graph, const struct config *config, GtkWidget *window)
 {
     /* Early exit if widget not drawable */
     if (!gtk_widget_is_drawable(w_graph)) {
@@ -730,8 +691,7 @@ void redraw_graph(cairo_surface_t *graph_surface, cairo_t *cr, const struct psen
     }
     
     /* Get only enabled sensors */
-    const struct psensor **enabled_sensors = 
-        (const struct psensor **)list_filter_graph_enabled(sensors);
+    const Psensor **enabled_sensors = list_filter_graph_enabled(sensors);
     
     /* Create drawing context with all needed data */
     GraphDrawingContext *ctx = create_graph_context(enabled_sensors, config, w_graph);
@@ -748,6 +708,198 @@ void redraw_graph(cairo_surface_t *graph_surface, cairo_t *cr, const struct psen
     draw_sensor_curves(cr, enabled_sensors, ctx, config);
     
     /* Cleanup */
+    free_graph_context(ctx);
+    free((void*)enabled_sensors);
+}
+
+// Hàm chỉ vẽ background + trục + nhãn (không vẽ đường cong)
+void redraw_background_only(cairo_surface_t *surface, cairo_t *cr, 
+                            const Psensor *const *sensors, 
+                            GtkWidget *w_graph, 
+                            const struct config *config, 
+                            GtkWidget *window)
+{
+    if (!gtk_widget_is_drawable(w_graph)) return;
+    
+    if (!style) update_theme(window);
+    
+    const Psensor **enabled_sensors = list_filter_graph_enabled(sensors);
+    
+    GraphDrawingContext *ctx = create_graph_context(enabled_sensors, config, w_graph);
+    if (!ctx) {
+        free((void*)enabled_sensors);
+        return;
+    }
+    
+    // Chỉ vẽ background, không vẽ curves
+    draw_graph_background_and_labels(cr, config, ctx);
+    draw_value_labels(cr, ctx);
+    
+    free_graph_context(ctx);
+    free((void*)enabled_sensors);
+}
+
+// Hàm chỉ vẽ đường cong (giả sử background đã có)
+void redraw_curves_only(cairo_surface_t *surface, cairo_t *cr,
+                        const Psensor *const *sensors,
+                        GtkWidget *w_graph,
+                        const struct config *config,
+                        GtkWidget *window)
+{
+    if (!gtk_widget_is_drawable(w_graph))
+        return;
+    
+    if (!style)
+        update_theme(window);
+    
+    const Psensor **enabled_sensors = list_filter_graph_enabled(sensors);
+    
+    GraphDrawingContext *ctx = create_graph_context(enabled_sensors, config, w_graph);
+    if (!ctx) {
+        free((void*)enabled_sensors);
+        return;
+    }
+    
+    // Chỉ vẽ curves
+    draw_sensor_curves(cr, enabled_sensors, ctx, config);
+    
+    free_graph_context(ctx);
+    free((void*)enabled_sensors);
+}
+
+//////////////////////////////////////////////
+/* ===== HÀM MỚI: Dịch curves và vẽ thêm điểm ===== */
+void graph_shift_and_append(cairo_surface_t *graph_surface,
+                            const Psensor *const *sensors,
+                            GtkWidget *w_graph,
+                            const struct config *config,
+                            GtkWidget *window,
+                            double *last_values_buffer,  // Buffer lưu giá trị cũ
+                            size_t buffer_size)            // Kích thước buffer
+{
+    if (!graph_surface || !sensors || !w_graph)
+        return;
+    
+    // Lấy kích thước
+    int width = cairo_image_surface_get_width(graph_surface);
+    int height = cairo_image_surface_get_height(graph_surface);
+    if (width <= 1 || height <= 1)
+        return;
+    
+    // Lấy danh sách enabled sensors
+    const Psensor **enabled_sensors = list_filter_graph_enabled(sensors);
+    if (!enabled_sensors || !enabled_sensors[0]) {
+        free((void*)enabled_sensors);
+        return;
+    }
+    
+    // Tạo context để lấy layout
+    GraphDrawingContext *ctx = create_graph_context(enabled_sensors, config, w_graph);
+    if (!ctx) {
+        free((void*)enabled_sensors);
+        return;
+    }
+    
+    // === BƯỚC 1: Dịch toàn bộ surface sang trái 1 pixel ===
+    cairo_surface_t *temp_surface = cairo_surface_create_similar(
+        graph_surface,
+        CAIRO_CONTENT_COLOR_ALPHA,
+        width, height
+    );
+    
+    cairo_t *temp_cr = cairo_create(temp_surface);
+    
+    // Copy và dịch
+    cairo_set_source_surface(temp_cr, graph_surface, -1, 0);
+    cairo_paint(temp_cr);
+    
+    // Xóa cột cuối bên phải
+    cairo_set_operator(temp_cr, CAIRO_OPERATOR_CLEAR);
+    cairo_rectangle(temp_cr, width - 1, 0, 1, height);
+    cairo_fill(temp_cr);
+    cairo_set_operator(temp_cr, CAIRO_OPERATOR_OVER);
+    
+    // === BƯỚC 2: Vẽ điểm mới ===
+    cairo_set_line_width(temp_cr, 1.0);
+    
+    size_t sensor_idx = 0;
+    const Psensor **sensor_ptr = enabled_sensors;
+    
+    while (*sensor_ptr && sensor_idx < buffer_size) {
+        const Psensor *s = *sensor_ptr;
+        
+        if (s->measures_count > 0) {
+            const struct measure *last_measure = &s->measures[s->measures_count - 1];
+            double current_value = last_measure->value;
+            
+            // Lọc giá trị 0 không hợp lệ (nếu là nhiệt độ)
+            gboolean is_temperature = (s->type & SENSOR_TYPE_TEMP) != 0;
+            if (is_temperature && current_value <= 0.1) {
+                // Bỏ qua, không vẽ
+                sensor_ptr++;
+                sensor_idx++;
+                continue;
+            }
+            
+            if (current_value != UNKNOWN_DOUBLE_VALUE) {
+                // Xác định min/max
+                double min_val, max_val;
+                if (s->type & SENSOR_TYPE_RPM) {
+                    min_val = ctx->all_minmax.rpm.min;
+                    max_val = ctx->all_minmax.rpm.max;
+                } else if (s->type & SENSOR_TYPE_PERCENT) {
+                    min_val = 0;
+                    max_val = ctx->all_minmax.percent.max;
+                } else {
+                    min_val = ctx->all_minmax.temp.min;
+                    max_val = ctx->all_minmax.temp.max;
+                }
+                
+                // Tính Y mới
+                double new_y = compute_y(current_value, min_val, max_val,
+                                        ctx->layout.plot_height, ctx->layout.plot_y);
+                
+                // Đặt màu
+                GdkRGBA *color = config_get_sensor_color(s->id);
+                cairo_set_source_rgb(temp_cr, color->red, color->green, color->blue);
+                gdk_rgba_free(color);
+                
+                // Vẽ điểm mới
+                cairo_arc(temp_cr, width - 1, new_y, 1.5, 0, 2 * M_PI);
+                cairo_fill(temp_cr);
+                
+                // Nối với điểm cũ nếu có
+                if (last_values_buffer[sensor_idx] != UNKNOWN_DOUBLE_VALUE) {
+                    double old_y = compute_y(last_values_buffer[sensor_idx], min_val, max_val,
+                                            ctx->layout.plot_height, ctx->layout.plot_y);
+                    
+                    // Vẽ đường nối
+                    cairo_move_to(temp_cr, width - 2, old_y);
+                    cairo_line_to(temp_cr, width - 1, new_y);
+                    cairo_stroke(temp_cr);
+                }
+                
+                // Lưu giá trị mới
+                last_values_buffer[sensor_idx] = current_value;
+            }
+        }
+        
+        sensor_ptr++;
+        sensor_idx++;
+    }
+    
+    cairo_destroy(temp_cr);
+    
+    // Copy ngược lại
+    cairo_t *cr = cairo_create(graph_surface);
+    cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
+    cairo_paint(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+    cairo_set_source_surface(cr, temp_surface, 0, 0);
+    cairo_paint(cr);
+    cairo_destroy(cr);
+    
+    cairo_surface_destroy(temp_surface);
     free_graph_context(ctx);
     free((void*)enabled_sensors);
 }

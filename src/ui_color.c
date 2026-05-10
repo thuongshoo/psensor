@@ -46,3 +46,4 @@ bool ui_change_color(const char *title, GdkRGBA *color, GtkWindow *win)
 
 	return res == GTK_RESPONSE_OK;
 }
+

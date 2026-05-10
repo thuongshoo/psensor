@@ -26,7 +26,7 @@
 
 static inline bool ui_unity_is_supported(void) { return true; }
 
-void ui_unity_launcher_entry_update(struct psensor **);
+void ui_unity_launcher_entry_update(Psensor **);
 
 void ui_unity_init(void);
 
@@ -35,7 +35,7 @@ void ui_unity_init(void);
 static inline bool ui_unity_is_supported(void) { return false; }
 
 static inline void
-ui_unity_launcher_entry_update(struct psensor **s) {}
+ui_unity_launcher_entry_update(Psensor **s) {}
 
 static inline void ui_unity_init(void) {}
 

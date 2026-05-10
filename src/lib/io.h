@@ -20,60 +20,57 @@
 #ifndef PSENSOR_IO_H
 #define PSENSOR_IO_H
 
+#include <config.h>
+#include <bool.h>
+
 #define P_IO_VER 6
 
-/* Returns '1' if a given 'path' denotates a directory else returns
- * 0
- */
-int is_dir(const char *path);
+#include <sys/types.h>
+#include <sys/stat.h>
 
-/* Returns '1' if a given 'path' denotates a file else returns
- * 0
- */
-int is_file(const char *path);
+/* Returns true if a given 'path' denotes a directory, false otherwise */
+bool is_dir(const char *path);
 
-/* Returns a normalized path */
+/* Returns true if a given 'path' denotes a regular file, false otherwise */
+bool is_file(const char *path);
+
+/* Returns a normalized path (must be freed with free()) */
 char *path_normalize(const char *dpath);
 
-/* Returns the null-terminated entries of a directory */
-char **dir_list(const char *dpath, int (*filter) (const char *path));
+/* Returns NULL-terminated array of directory entries matching filter.
+ * NULL filter means all entries. Free with paths_free().
+ */
+char **dir_list(const char *dpath, int (*filter)(const char *path));
 void paths_free(char **paths);
 
+/* Join directory and path (must be freed with free()) */
 char *path_append(const char *dir, const char *path);
 
-/*
- * Returns the size of a file.
- * Returns '-1' if the size cannot be retrieved or not a file.
- */
+/* Returns size of file, or -1 on error */
 long file_get_size(const char *path);
 
-/*
- * Returns the content of a file.
- * Returns 'NULL' if the file cannot be read or failed to allocate
- * enough memory.
- * Returns an empty string if the file exists but is empty.
- */
+/* Returns file content (must be freed with free()), or NULL on error */
 char *file_get_content(const char *path);
 
 enum file_copy_error {
-	FILE_COPY_ERROR_OPEN_SRC = 1,
-	FILE_COPY_ERROR_OPEN_DST,
-	FILE_COPY_ERROR_READ,
-	FILE_COPY_ERROR_WRITE,
-	FILE_COPY_ERROR_ALLOC_BUFFER
+    FILE_COPY_ERROR_NONE = 0,
+    FILE_COPY_ERROR_OPEN_SRC = 1,
+    FILE_COPY_ERROR_OPEN_DST,
+    FILE_COPY_ERROR_READ,
+    FILE_COPY_ERROR_WRITE,
+    FILE_COPY_ERROR_ALLOC_BUFFER
 };
 
+/* Print human-readable error for file_copy */
 void file_copy_print_error(int code, const char *src, const char *dst);
 
-/*
- * Copy a file.
- *
- * Returns '0' if sucessfull, otherwise return the error code.
- */
+/* Copy file. Returns 0 on success, error code otherwise */
 int file_copy(const char *src, const char *dst);
 
-int dir_rcopy(const char *, const char *);
+/* Recursively copy directory */
+int dir_rcopy(const char *src, const char *dst);
 
+/* Create directories recursively */
 void mkdirs(const char *dirs, mode_t mode);
 
 #endif

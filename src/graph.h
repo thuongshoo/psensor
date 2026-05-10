@@ -26,19 +26,82 @@
 
 extern bool is_smooth_curves_enabled;
 
-void graph_update(struct psensor **sensors,
+/* Graph rendering dimensions and offsets */
+typedef struct graph_info {
+	/* Plotting area position relative to canvas */
+	double plot_x;      /* X offset of plotting area */
+	double plot_y;      /* Y offset of plotting area */
+	
+	/* Plotting area dimensions */
+	double plot_width;  /* Width of data drawing area */
+	double plot_height; /* Height of data drawing area */
+	
+	/* Total canvas dimensions */
+	double canvas_width;  /* Total drawing area width */
+	double canvas_height; /* Total drawing area height */
+} graph_info_st;
+// ┌─────────────────────────────────────────┐
+// │ Canvas (width x height)                 │
+// │                                         │
+// │   ┌─────────────────────────────┐       │
+// │   │ Plotting area               │       │
+// │   │ (plot_width x plot_height)  │       │
+// │   │                             │       │
+// │   │   [Data curves drawn here]  │       │
+// │   │                             │       │
+// │   └─────────────────────────────┘       │
+// │    ↑plot_y                              │
+// │    └──→plot_x                           │
+// │                                         │
+// └─────────────────────────────────────────┘
+
+typedef struct {
+    graph_info_st layout;
+    char *str_min;
+    char *str_max;
+    char *str_unit;
+    char *str_btime;
+    char *str_etime;
+    time_t begin_time;
+    time_t end_time;
+	ALL_MINMAX all_minmax;
+} GraphDrawingContext;
+
+
+void graph_update(Psensor **sensors,
 		  GtkWidget *w_graph,
 		  struct config *config,
 		  GtkWidget *window);
 
-		  void
+void
 redraw_graph(cairo_surface_t *graph_surface,
 	         cairo_t *cr,
-	         const struct psensor **sensors,
+	         const Psensor *const *sensors,
 	         GtkWidget *w_graph,
 	         const struct config *config,
 	         GtkWidget *window);
+
+/* chỉ vẽ background (nền, trục, nhãn) */
+void redraw_background_only(cairo_surface_t *surface, cairo_t *cr,
+                            const Psensor *const *sensors, GtkWidget *w_graph,
+                            const struct config *config, GtkWidget *window);
+
+/* chỉ vẽ curves (từ đầu) */
+void redraw_curves_only(cairo_surface_t *surface, cairo_t *cr,
+                        const Psensor *const *sensors, GtkWidget *w_graph,
+                        const struct config *config, GtkWidget *window);
+
 /* Compute the number of measures which must be kept. */
 unsigned int compute_values_max_length(const struct config *);
 
+/* dịch chuyển */
+void graph_shift_and_append(cairo_surface_t *graph_surface,
+                            const Psensor * const *sensors,
+                            GtkWidget *w_graph,
+                            const struct config *config,
+                            GtkWidget *window,
+                            double *last_values_buffer,
+                            size_t buffer_size);
+                            
+const Psensor **list_filter_graph_enabled(const Psensor * const *sensors);
 #endif

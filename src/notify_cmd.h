@@ -21,6 +21,6 @@
 
 #include "psensor.h"
 
-void notify_cmd(struct psensor *);
+void notify_cmd(Psensor *);
 
 #endif

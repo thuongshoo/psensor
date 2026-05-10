@@ -29,14 +29,14 @@
 
 #include "psensor.h"
 
-char *sensor_to_json_string(struct psensor *s);
-char *sensors_to_json_string(struct psensor **sensors);
+char *sensor_to_json_string(const Psensor *s);
+char *sensors_to_json_string(const Psensor *const *sensors);
 
 /*
  * Creates a new allocated psensor corresponding to a given json
  * representation.
  */
-struct psensor *psensor_new_from_json(json_object *o,
+Psensor *psensor_new_from_json(json_object *o,
 				      const char *sensors_url,
 				      unsigned int values_max_length);
 #endif

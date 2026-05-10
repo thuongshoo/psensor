@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#define _LARGEFILE_SOURCE 1
+#ifndef _LARGEFILE_SOURCE
+	#define _LARGEFILE_SOURCE 1
+#endif
 #include "config.h"
 
 #include <locale.h>

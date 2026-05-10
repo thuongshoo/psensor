@@ -27,19 +27,19 @@
 
 #include <pgtop2.h>
 
-static float last_used;
-static float last_total;
+static unsigned long int  last_used;
+static unsigned long int last_total;
 
 static const char *PROVIDER_NAME = "gtop2";
 
-struct psensor *create_cpu_usage_sensor(unsigned int measures_len)
+Psensor *create_cpu_usage_sensor(unsigned int measures_len)
 {
 	char* id = g_strdup_printf("%s cpu usage", PROVIDER_NAME);
 	char* label = strdup(_("CPU usage"));
 	unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_CPU_USAGE;
 
 	char* chip = strdup(_("CPU"));
-	struct psensor *psensor = psensor_create(id,
+	Psensor *psensor = psensor_create(id,
 				 label,
 				 chip,
 				 type,
@@ -54,13 +54,13 @@ struct psensor *create_cpu_usage_sensor(unsigned int measures_len)
 	return psensor;
 }
 
-static struct psensor *create_mem_free_sensor(unsigned int measures_len)
+static Psensor *create_mem_free_sensor(unsigned int measures_len)
 {
 	char* id = g_strdup_printf("%s mem free", PROVIDER_NAME);
 	char* name = strdup(_("free memory"));
 	char* chip = strdup(_("memory"));
 	unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_MEMORY | SENSOR_TYPE_PERCENT;
-	struct psensor* tmp = psensor_create(id,
+	Psensor* tmp = psensor_create(id,
 			      name,
 			      chip,
 			      type,
@@ -106,13 +106,13 @@ static double get_mem_free(void)
 	return v;
 }
 
-void gtop2_psensor_list_append(struct psensor ***sensors, unsigned int measures_len)
+void gtop2_psensor_list_append(Psensor ***sensors, unsigned int measures_len)
 {
 	psensor_list_append(sensors, create_cpu_usage_sensor(measures_len));
 	psensor_list_append(sensors, create_mem_free_sensor(measures_len));
 }
 
-void cpu_usage_sensor_update(struct psensor *s)
+void cpu_usage_sensor_update(Psensor *s)
 {
 	double v;
 
@@ -122,7 +122,7 @@ void cpu_usage_sensor_update(struct psensor *s)
 		psensor_set_current_value(s, v);
 }
 
-static void mem_free_sensor_update(struct psensor *s)
+static void mem_free_sensor_update(Psensor *s)
 {
 	double v;
 
@@ -132,9 +132,9 @@ static void mem_free_sensor_update(struct psensor *s)
 		psensor_set_current_value(s, v);
 }
 
-void gtop2_psensor_list_update(struct psensor **sensors)
+void gtop2_psensor_list_update(Psensor **sensors)
 {
-	struct psensor *s;
+	Psensor *s;
 
 	while (*sensors) {
 		s = *sensors;

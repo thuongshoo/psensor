@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <pudisks2.h>
+
 #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
@@ -26,7 +28,7 @@
 
 #include <udisks/udisks.h>
 
-#include <pudisks2.h>
+
 #include <temperature.h>
 
 static const char *PROVIDER_NAME = "udisks2";
@@ -47,7 +49,7 @@ static void udisks_data_free(void *data)
 	free(u);
 }
 
-static void smart_update(struct psensor *s, UDisksDriveAta *ata)
+static void smart_update(Psensor *s, UDisksDriveAta *ata)
 {
 	struct udisks_data *data = s->provider_data;
 	struct timeval t;
@@ -80,10 +82,10 @@ static void smart_update(struct psensor *s, UDisksDriveAta *ata)
 	data->last_smart_update = t;
 }
 
-void udisks2_psensor_list_update(struct psensor **sensors)
+void udisks2_psensor_list_update(Psensor **sensors)
 {
 	for (; *sensors; sensors++) {
-		struct psensor *s = *sensors;
+		Psensor *s = *sensors;
 
 		if (s->type & SENSOR_TYPE_REMOTE)
 			continue;
@@ -112,7 +114,7 @@ void udisks2_psensor_list_update(struct psensor **sensors)
 	}
 }
 
-void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_length)
+void udisks2_psensor_list_append(Psensor ***sensors, unsigned int values_length)
 {
 	log_functionname_enter();
 
@@ -179,7 +181,7 @@ void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_
 
 		unsigned int type = SENSOR_TYPE_TEMP | SENSOR_TYPE_UDISKS2 | SENSOR_TYPE_HDD;
 
-		struct psensor *s = psensor_create(id, name, chip, type, values_length);
+		Psensor *s = psensor_create(id, name, chip, type, values_length);
 		if (s == NULL) {
 			free(chip);
 			free(name);
@@ -188,9 +190,6 @@ void udisks2_psensor_list_append(struct psensor ***sensors, unsigned int values_
 		}
 		struct udisks_data *data = malloc(sizeof(struct udisks_data));
 		if (data == NULL) {
-			free(chip);
-			free(name);
-			free(id);
 			psensor_free(s);
 			continue;
 		}

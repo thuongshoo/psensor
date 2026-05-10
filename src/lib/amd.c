@@ -70,7 +70,7 @@ static void *getprocaddress(void *plibrary, const char *name)
 }
 
 /* Returns the temperature (Celsius) of an AMD/ATI GPU. */
-static double get_temp(struct psensor *sensor)
+static double get_temp(Psensor *sensor)
 {
 	ADLTemperature v;
 
@@ -83,7 +83,7 @@ static double get_temp(struct psensor *sensor)
 	return UNKNOWN_DOUBLE_VALUE;
 }
 
-static double get_fanspeed(struct psensor *sensor)
+static double get_fanspeed(Psensor *sensor)
 {
 	ADLFanSpeedValue v;
 
@@ -97,7 +97,7 @@ static double get_fanspeed(struct psensor *sensor)
 	return UNKNOWN_DOUBLE_VALUE;
 }
 
-static double get_usage(struct psensor *sensor)
+static double get_usage(Psensor *sensor)
 {
 	ADLPMActivity v;
 
@@ -109,12 +109,12 @@ static double get_usage(struct psensor *sensor)
 	return UNKNOWN_DOUBLE_VALUE;
 }
 
-static struct psensor *create_sensor(int id, int type, unsigned int values_len)
+static Psensor *create_sensor(int id, int type, unsigned int values_len)
 {
 	char name[200];
 	char *sid;
 	int sensor_type;
-	struct psensor *s;
+	Psensor *s;
 
 	sensor_type = SENSOR_TYPE_ATIADL;
 	switch (type) {
@@ -269,9 +269,9 @@ static int init(void)
 }
 
 /* Called regularly to update sensors values */
-void amd_psensor_list_update(struct psensor **sensors)
+void amd_psensor_list_update(Psensor **sensors)
 {
-	struct psensor **ss, *s;
+	Psensor **ss, *s;
 
 	ss = sensors;
 	while (*ss) {
@@ -291,10 +291,10 @@ void amd_psensor_list_update(struct psensor **sensors)
 }
 
 /* Entry point for AMD sensors */
-void amd_psensor_list_append(struct psensor ***sensors, int values_len)
+void amd_psensor_list_append(Psensor ***sensors, int values_len)
 {
 	int i, j, n;
-	struct psensor *s;
+	Psensor *s;
 
 	n = init();
 

@@ -16,7 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#define _LARGEFILE_SOURCE 1
+#ifndef _LARGEFILE_SOURCE
+	#define _LARGEFILE_SOURCE 1
+#endif
 #include "config.h"
 
 #include <locale.h>
@@ -51,6 +53,7 @@
 #include "url.h"
 #include "server.h"
 #include "slog.h"
+#include "copyright.h"
 
 static const char *DEFAULT_LOG_FILE = "/var/log/psensor-server.log";
 
@@ -84,15 +87,14 @@ static int server_stop_requested;
 
 static void print_version(void)
 {
-	printf("%s %s\n", PSENSOR_FORK_SERVER_NAME, VERSION);
-	printf(_("Copyright (C) %s jeanfi@gmail.com\n"
-		"Copyright (C) %s thuongshoo <yuyoonshoo@gmail.com>\n" 
-		"License GPLv2: GNU GPL version 2 or later "
-		"<http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>\n"
-		"This is free software: you are free to change and redistribute it.\n"
-		"There is NO WARRANTY, to the extent permitted by law.\n"),
-	    "2010-2012",
-		"2024-2025");
+    printf("%s %s\n", PSENSOR_FORK_SERVER_NAME, VERSION);
+    /* 
+     * gettext() nhận toàn bộ format string
+     * printf nhận 4 tham số: năm cũ, email cũ, năm mới, email mới
+     */
+    printf(_(PSENSOR_COPYRIGHT_CLI),
+           PSENSOR_ORIGINAL_YEARS, PSENSOR_ORIGINAL_EMAIL,
+           PSENSOR_CURRENT_YEARS, PSENSOR_CURRENT_EMAIL);
 }
 
 static void print_help(void)
@@ -170,11 +172,11 @@ static struct MHD_Response *
 create_response_api(const char *nurl, const char *method, unsigned int *rp_code)
 {
 	struct MHD_Response *resp;
-	struct psensor *s;
+	const Psensor *s;
 	char *page = NULL;
 
 	if (!strcmp(nurl, URL_BASE_API_1_1_SENSORS))  {
-		page = sensors_to_json_string(server_data.sensors);
+		page = sensors_to_json_string((const Psensor*const *)server_data.sensors);
 #ifdef HAVE_GTOP
 	} else if (!strcmp(nurl, URL_API_1_1_SYSINFO)) {
 		page = sysinfo_to_json_string(&server_data.psysinfo);
@@ -187,7 +189,7 @@ create_response_api(const char *nurl, const char *method, unsigned int *rp_code)
 
 		const char *sid = nurl + strlen(URL_BASE_API_1_1_SENSORS) + 1;
 
-		s = psensor_list_get_by_id(server_data.sensors, sid);
+		s = psensor_list_get_by_id((const Psensor*const*)server_data.sensors, sid);
 
 		if (s)
 			page = sensor_to_json_string(s);
@@ -459,7 +461,7 @@ int main(int argc, char *argv[])
 
 	d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION,
 			     port,
-			     NULL, NULL, &cbk_http_request, server_data.sensors,
+			     NULL, NULL, (void*)&cbk_http_request, server_data.sensors,
 			     MHD_OPTION_END);
 	if (!d) {
 		log_err(_("Failed to create Web server."));
@@ -474,7 +476,7 @@ int main(int argc, char *argv[])
 		if (slog_interval <= 0)
 			slog_interval = 300;
 		ret = slog_activate(slog_file,
-				    server_data.sensors,
+				    (const Psensor**) server_data.sensors,
 				    &mutex,
 				    slog_interval);
 		if (!ret)

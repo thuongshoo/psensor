@@ -41,7 +41,7 @@ enum {
 
 struct cb_data {
     struct ui_psensor *ui;
-    struct psensor *sensor;
+    Psensor *sensor;
 };
 
 static int col_index_to_col(int idx)
@@ -57,13 +57,13 @@ static int col_index_to_col(int idx)
 
 static void populate(struct ui_psensor *ui)
 {
-	struct psensor **ordered_sensors = ui_get_sensors_ordered_by_position(ui->sensors);
+	const Psensor **ordered_sensors = ui_get_sensors_ordered_by_position( (const Psensor *const *) ui->sensors);
 	GtkListStore *store = ui->sensors_store;
 
     gtk_list_store_clear(store);
 
-	for (struct psensor **s_cur = ordered_sensors; *s_cur; s_cur++) {
-        struct psensor *s = *s_cur;
+	for (const Psensor **s_cur = ordered_sensors; *s_cur; s_cur++) {
+        const Psensor *s = *s_cur;
 
         GtkTreeIter iter;
         gtk_list_store_append(store, &iter);
@@ -102,7 +102,7 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
     GtkTreeIter iter;
     gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
     while (valid) {
-        struct psensor *s;
+        Psensor *s;
 
         gtk_tree_model_get(model, &iter, COL_SENSOR, &s, -1);
 
@@ -135,13 +135,13 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
  *
  * <null> if none.
  */
-static struct psensor *
+static Psensor *
 get_sensor_at_pos(GtkTreeView *view, int x, int y, struct ui_psensor *ui)
 {
     GtkTreePath *path;
     GtkTreeModel *model;
     GtkTreeIter iter;
-    struct psensor *s;
+    Psensor *s;
 
     gtk_tree_view_get_path_at_pos(view, x, y, &path, NULL, NULL, NULL);
     model = gtk_tree_view_get_model(ui->sensors_tree);
@@ -197,7 +197,7 @@ static void preferences_activated_cbk(GtkWidget *menu_item, gpointer data)
 
 static void hide_activated_cbk(GtkWidget *menu_item, gpointer data)
 {
-    struct psensor *s, *s2;
+    Psensor *s, *s2;
     GtkTreeModel *model, *fmodel;
     GtkTreeIter iter;
     struct cb_data *cb_data;
@@ -231,7 +231,7 @@ static void hide_activated_cbk(GtkWidget *menu_item, gpointer data)
 }
 
 static GtkWidget *
-create_sensor_popup(struct ui_psensor *ui, struct psensor *sensor)
+create_sensor_popup(struct ui_psensor *ui, Psensor *sensor)
 {
     GtkWidget *menu, *item, *separator;
     struct cb_data *data;
@@ -285,7 +285,7 @@ static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
 	struct ui_psensor *ui;
 	GtkTreeView *view;
-	struct psensor *s;
+	Psensor *s;
 	GdkRGBA *color;
 
 	ui = (struct ui_psensor *)data;
@@ -294,7 +294,7 @@ static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
 	s = get_sensor_at_pos(view, (int)event->x, (int)event->y, ui);
 
 	if (s) {
-		int coli = col_index_to_col(get_col_index_at_pos(view, event->x));
+		int coli = col_index_to_col(get_col_index_at_pos(view, (int)event->x));
 
 		if (coli == COL_COLOR) {
 			color = config_get_sensor_color(s->id);
@@ -337,7 +337,7 @@ void ui_sensorlist_cb_graph_toggled(GtkCellRendererToggle *cell,
     
     gtk_tree_model_get_iter(fmodel, &iter, path);
 
-    struct psensor *fmodel_sensor;
+    Psensor *fmodel_sensor;
     gtk_tree_model_get(fmodel, &iter, COL_SENSOR, &fmodel_sensor, -1);
 
     bool b = config_is_sensor_graph_enabled(fmodel_sensor->id) ^ 1;
@@ -350,7 +350,7 @@ void ui_sensorlist_cb_graph_toggled(GtkCellRendererToggle *cell,
     GtkTreeModel *model = gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(fmodel));
 	gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
 	while (valid) {
-         struct psensor *filtered_model_sensor;
+         Psensor *filtered_model_sensor;
 		gtk_tree_model_get(model, &iter, COL_SENSOR, &filtered_model_sensor, -1);
 
 		if (fmodel_sensor == filtered_model_sensor)
@@ -379,7 +379,7 @@ void ui_sensorlist_create(struct ui_psensor *ui)
     g_signal_connect(ui->sensors_tree,
              "button-press-event", (GCallback)clicked_cbk, ui);
 
-    ui_sensorlist_update(ui, 1);
+    ui_sensorlist_update(ui, true);
 
     log_functionname_exit();
 }

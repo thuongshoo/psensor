@@ -19,6 +19,7 @@
 #ifndef PSENSOR_NVIDIA_H
 #define PSENSOR_NVIDIA_H
 
+#include <config.h>
 #include <bool.h>
 #include <psensor.h>
 
@@ -27,16 +28,16 @@
 
 static inline bool nvidia_is_supported(void) { return true; }
 
-void nvidia_psensor_list_update(struct psensor **);
-void nvidia_psensor_list_append(struct psensor ***, unsigned int);
+void nvidia_psensor_list_update(Psensor **);
+void nvidia_psensor_list_append(Psensor ***, unsigned int);
 void nvidia_cleanup(void);
 
 #else
 
 static inline bool nvidia_is_supported(void) { return false; }
 
-static inline void nvidia_psensor_list_update(struct psensor **s) {}
-static inline void nvidia_psensor_list_append(struct psensor ***s, unsigned int n) {}
+static inline void nvidia_psensor_list_update(Psensor **s) {}
+static inline void nvidia_psensor_list_append(Psensor ***s, unsigned int n) {}
 static inline void nvidia_cleanup(void) {}
 
 #endif

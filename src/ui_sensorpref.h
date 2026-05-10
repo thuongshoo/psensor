@@ -21,7 +21,7 @@
 
 #include <ui.h>
 
-void ui_sensorpref_dialog_run(struct psensor *sensor, struct ui_psensor *ui);
+void ui_sensorpref_dialog_run(Psensor *sensor, struct ui_psensor *ui);
 
 void ui_sensorpref_name_changed_cb(GtkEntry *, gpointer);
 void ui_sensorpref_draw_toggled_cb(GtkToggleButton *, gpointer);

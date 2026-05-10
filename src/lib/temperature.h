@@ -32,4 +32,8 @@ double celsius_to_fahrenheit(double c);
 double fahrenheit_to_celsius(double f);
 double kelvin_to_celsius(double k);
 
+Temperature_Unit to_Temperature_Unit(int i);
+
+int Temperature_Unit_to_int(Temperature_Unit t);
+
 #endif
