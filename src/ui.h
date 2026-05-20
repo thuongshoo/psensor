@@ -19,7 +19,6 @@
 #ifndef PSENSOR_UI_H
 #define PSENSOR_UI_H
 
-#include <config.h>
 #include <paths.h>
 
 #include <pthread.h>
@@ -36,7 +35,8 @@
 
 #define PSENSOR_ICON PACKAGE_NAME
 
-struct ui_psensor {
+struct ui_psensor
+{
 	Psensor **sensors;
 	/* mutex which MUST be used for accessing sensors.*/
 	pthread_mutex_t sensors_mutex;

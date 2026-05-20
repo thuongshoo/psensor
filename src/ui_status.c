@@ -16,10 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#include <config.h>
-#include <bool.h>
-#include <plog.h>
+
 #include "ui_status.h"
+#include <plog.h>
 
 //static const char *ICON = "psensor-fork_normal";
 //static const char *ATTENTION_ICON = "psensor-fork_hot";
@@ -56,7 +55,7 @@ void ui_status_init(struct ui_psensor *ui)
 	// g_signal_connect(G_OBJECT(status),
 	// 		 "popup-menu",
 	// 		 G_CALLBACK(cb_popup_menu),
-	// 		 NULL);
+	// 		 nullptr);
 
 	// g_signal_connect(G_OBJECT(status),
 	// 		 "activate",
@@ -75,7 +74,7 @@ void ui_status_cleanup(void)
 
 	if (status) {
 		g_object_unref(G_OBJECT(status));
-		status = NULL;
+		status = nullptr;
 	}
 }
 

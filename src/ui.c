@@ -16,12 +16,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <ui.h>
+
 #include <stdlib.h>
 
 #include <cfg.h>
 #include <paths.h>
 #include <slog.h>
-#include <ui.h>
+
 #include <ui_appindicator.h>
 #include <ui_graph.h>
 #include <ui_pref.h>
@@ -328,7 +330,7 @@ static void ui_show_about_dialog(GtkWindow *parent)
          "version", VERSION,
          "website", "https://github.com/thuongshoo/psensor",
          "website-label", _("Project Page & Issue Tracker"),
-         NULL);
+         nullptr);
 }
 
 void ui_cb_about(GtkAction *a, gpointer data)
@@ -343,7 +345,7 @@ void ui_cb_about(GtkAction *a, gpointer data)
     if (ui)
         parent = ui->main_window;
     else
-        parent = NULL;
+        parent = nullptr;
 
     ui_show_about_dialog(GTK_WINDOW(parent));
 }
@@ -387,7 +389,7 @@ void ui_enable_alpha_channel(struct ui_psensor *ui)
 
     log_debug("Config alpha channel enabled: %d",
           cfg->alpha_channel_enabled);
-    if (true == cfg->alpha_channel_enabled && gdk_screen_is_composited(screen))
+    if (cfg->alpha_channel_enabled && gdk_screen_is_composited(screen))
     {
         log_debug("Screen is composited");
         visual = gdk_screen_get_rgba_visual(screen);
@@ -397,13 +399,13 @@ void ui_enable_alpha_channel(struct ui_psensor *ui)
         }
         else
         {
-            cfg->alpha_channel_enabled = 0;
+            cfg->alpha_channel_enabled = false;
             log_err("Enable alpha channel has failed");
         }
     }
     else
     {
-        cfg->alpha_channel_enabled = 0;
+        cfg->alpha_channel_enabled = false;
     }
 }
 
@@ -420,7 +422,7 @@ static void slog_enabled_cbk(void *data)
     log_debug("slog_enabled_cbk");
 
     if (is_slog_enabled())
-        slog_activate(NULL, (const Psensor*const*)sensors, mutex, config_get_slog_interval());
+        slog_activate(nullptr, (const Psensor*const*)sensors, mutex, config_get_slog_interval());
     else
         slog_close();
 }
@@ -430,7 +432,7 @@ void ui_window_create(struct ui_psensor *ui)
     log_functionname("ui=%p", ui);
 
     GtkBuilder *builder = gtk_builder_new();
-    GError *error = NULL;
+    GError *error = nullptr;
     char *data_path = get_data_path();
     
     const char *str_format = "%s/%s.glade";
@@ -469,7 +471,7 @@ void ui_window_create(struct ui_psensor *ui)
                     cfg->window_h);
 
     GtkIconTheme *icon_theme = gtk_icon_theme_get_default();
-    GdkPixbuf *icon = gtk_icon_theme_load_icon(icon_theme, PACKAGE_NAME, 48, GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
+    GdkPixbuf *icon = gtk_icon_theme_load_icon(icon_theme, PACKAGE_NAME, 48, GTK_ICON_LOOKUP_FORCE_SIZE, nullptr);
     if (icon)
         gtk_window_set_icon(GTK_WINDOW(window), icon);
     else

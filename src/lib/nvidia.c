@@ -280,7 +280,7 @@ static Psensor *create_nvidia_sensor(unsigned int id, unsigned int subtype, unsi
 	type = SENSOR_TYPE_NVCTRL | subtype;
 
 	if (!check_sensor(id, type))
-		return NULL;
+		return nullptr;
 
 	pname = get_product_name(id, type);
 	strnid = unsigned2str(id);
@@ -291,7 +291,7 @@ static Psensor *create_nvidia_sensor(unsigned int id, unsigned int subtype, unsi
 	{
 		free(strnid);
 		free(pname);
-		return NULL;
+		return nullptr;
 	}
 
 	result = asprintf(&sid, "%s %s", PROVIDER_NAME, name);
@@ -299,25 +299,25 @@ static Psensor *create_nvidia_sensor(unsigned int id, unsigned int subtype, unsi
 		free(strnid);
 		free(pname);
 		free(name);
-		return NULL;
+		return nullptr;
 	}
 
 	new_sensor = psensor_create(sid, name, pname, type, value_len);
-	if (new_sensor == NULL)
+	if (new_sensor == nullptr)
 	{
 		free(sid);
 		free(strnid);
 		free(pname);
 		free(name);
-		return NULL;
+		return nullptr;
 	}
 	new_sensor->provider_data = malloc(sizeof(unsigned int));
-	if (new_sensor->provider_data == NULL)
+	if (new_sensor->provider_data == nullptr)
 	{
 		psensor_free(new_sensor);
 		free(strnid);
 		
-		return NULL;
+		return nullptr;
 	}
 	set_nvidia_id(new_sensor, id);
 
@@ -337,7 +337,7 @@ static int init(void)
 {
 	int evt, err;
 
-	display = XOpenDisplay(NULL);
+	display = XOpenDisplay(nullptr);
 
 	if (!display) {
 		log_err(_("%s: Cannot open connection to X11 server."),
@@ -428,6 +428,6 @@ void nvidia_cleanup(void)
 {
 	if (display) {
 		XCloseDisplay(display);
-		display = NULL;
+		display = nullptr;
 	}
 }

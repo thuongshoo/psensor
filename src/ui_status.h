@@ -20,6 +20,8 @@
 #ifndef PSENSOR_UI_STATUS_H
 #define PSENSOR_UI_STATUS_H
 
+#include <bool.h>
+
 #include <gtk/gtk.h>
 #include <ui.h>
 

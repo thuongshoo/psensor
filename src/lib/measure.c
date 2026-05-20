@@ -27,7 +27,7 @@ struct measure *measures_double_create(size_t size)
 	size_t i;
 	struct measure *result = (struct measure *)malloc(size * sizeof(struct measure));
 
-    if (result != NULL)
+    if (result != nullptr)
     {
     	for (i = 0; i < size; i++) {
 	    	result[i].value = UNKNOWN_DOUBLE_VALUE;

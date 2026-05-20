@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <ui_pref.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <pmutex.h>
@@ -31,7 +33,7 @@
 #include <pxdg.h>
 #include <ui.h>
 #include <ui_color.h>
-#include <ui_pref.h>
+
 #include <ui_unity.h>
 
 void ui_pref_decoration_toggled_cbk(GtkToggleButton *btn, gpointer data)
@@ -119,12 +121,12 @@ static const ProviderConfig providers[] = {
         {"gtop2", gtop2_is_supported, config_is_gtop2_enabled, config_set_gtop2_enable},
         {"libatasmart", atasmart_is_supported, config_is_libatasmart_enabled, config_set_libatasmart_enable},
         {"udisks2", udisks2_is_supported, config_is_udisks2_enabled, config_set_udisks2_enable},
-        {NULL, NULL, NULL, NULL}
+        {nullptr, nullptr, nullptr, nullptr}
     };
 // === HELPER: Setup toggle button với support check ===
 static void setup_provider_toggle(GtkBuilder *builder, const ProviderConfig *p) {
     GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, p->widget_name));
-    gtk_toggle_button_set_active(toggle, (gboolean)p->is_enabled());
+    gtk_toggle_button_set_active(toggle, bool_to_gboolean(p->is_enabled()));
     
     if (p->is_supported()) {
         gtk_widget_set_has_tooltip(GTK_WIDGET(toggle), FALSE);
@@ -216,19 +218,20 @@ static void setup_pref_dialog_widgets(GtkBuilder *builder, const struct config *
 
     // Simple toggles
     setup_toggle(builder, "autostart", pxdg_is_autostarted());
-    setup_toggle(builder, "enable_menu", config_is_menu_bar_enabled());
-    setup_toggle(builder, "graph_smooth_curves", config_is_smooth_curves_enabled());
-    setup_toggle(builder, "enable_slog", cfg->slog_enabled);
-    setup_toggle(builder, "hide_on_startup", cfg->hide_on_startup);
-    setup_toggle(builder, "restore_window", cfg->window_restore_enabled);
+    setup_toggle(builder, "enable_menu", bool_to_gboolean(config_is_menu_bar_enabled()));
+    setup_toggle(builder, "graph_smooth_curves", bool_to_gboolean( config_is_smooth_curves_enabled() ) );
+    setup_toggle(builder, "enable_slog", bool_to_gboolean(cfg->slog_enabled));
+    setup_toggle(builder, "hide_on_startup", bool_to_gboolean(cfg->hide_on_startup));
+    setup_toggle(builder, "restore_window", bool_to_gboolean(cfg->window_restore_enabled));
     setup_toggle(builder, "hide_window_decoration", !config_is_window_decoration_enabled());
-    setup_toggle(builder, "keep_window_below", config_is_window_keep_below_enabled());
-    setup_toggle(builder, "hddtemp", config_is_hddtemp_enabled());
+    setup_toggle(builder, "keep_window_below", bool_to_gboolean(config_is_window_keep_below_enabled()));
+    setup_toggle(builder, "hddtemp", bool_to_gboolean(config_is_hddtemp_enabled()));
 
     // Unity-specific toggle
     GtkToggleButton *w_enable_launcher_counter = GTK_TOGGLE_BUTTON(
         gtk_builder_get_object(builder, "enable_launcher_counter"));
-    gtk_toggle_button_set_active(w_enable_launcher_counter, config_is_count_visible());
+    gtk_toggle_button_set_active(w_enable_launcher_counter, 
+       bool_to_gboolean( config_is_count_visible() ));
     
     if (ui_unity_is_supported()) {
         gtk_widget_set_has_tooltip(GTK_WIDGET(w_enable_launcher_counter), FALSE);
@@ -262,7 +265,7 @@ static void save_pref_dialog_settings(GtkBuilder *builder, struct config *cfg,
     GtkScale *w_bg_opacity = GTK_SCALE(gtk_builder_get_object(builder, "bg_opacity"));
     value = gtk_range_get_value(GTK_RANGE(w_bg_opacity));
     cfg->graph_bg_alpha = value;
-    cfg->alpha_channel_enabled = (value == 1.0) ? 0 : 1;
+    cfg->alpha_channel_enabled = (value == 1.0) ? false : true;
 
     // Spin buttons with validation
     gint sensor_update_interval = save_spin_button_value(builder, "sensor_update_interval", 0);
@@ -318,7 +321,7 @@ static void save_pref_dialog_settings(GtkBuilder *builder, struct config *cfg,
 void ui_pref_dialog_run(struct ui_psensor *ui)
 {
     GtkBuilder *builder;
-    GError *error = NULL;
+    GError *error = nullptr;
     struct config *cfg = ui->config;
 
     // Build dialog
@@ -339,7 +342,7 @@ void ui_pref_dialog_run(struct ui_psensor *ui)
     setup_pref_dialog_widgets(builder, cfg);
 
     // Run dialog
-    gtk_builder_connect_signals(builder, NULL);
+    gtk_builder_connect_signals(builder, nullptr);
     gint result = gtk_dialog_run(diag);
 
     // Save if accepted

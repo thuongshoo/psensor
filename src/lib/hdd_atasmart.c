@@ -19,7 +19,7 @@
 #ifndef _LARGEFILE_SOURCE
 	#define _LARGEFILE_SOURCE 1
 #endif
-#include "config.h"
+#include "bool.h"
 
 #include <locale.h>
 #include <libintl.h>
@@ -71,11 +71,11 @@ create_sensor(char *id, const char *name, SkDisk *disk, unsigned int values_max_
                new_name,
                t,
                values_max_length);
-    if (s == NULL)
+    if (s == nullptr)
     {
         free(new_name);
         free(chip);
-        return NULL;
+        return nullptr;
     }
     s->provider_data = disk;
     s->provider_data_free_fct = &provider_data_free;
@@ -154,7 +154,7 @@ atasmart_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
                            *tmp,
                            disk,
                            values_max_length);
-            if (sensor != NULL)
+            if (sensor != nullptr)
             {
                 psensor_list_append(sensors, sensor);
             }

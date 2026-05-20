@@ -19,6 +19,7 @@
 #ifndef PSENSOR_TIME_H
 #define PSENSOR_TIME_H
 
+#include <bool.h>
 #include <time.h>
 
 extern const int P_TIME_VER;

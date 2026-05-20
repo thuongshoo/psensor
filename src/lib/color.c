@@ -33,8 +33,8 @@ void color_set(struct color *c, color_channel_datatype_t r, color_channel_dataty
 struct color *color_new(color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b)
 {
 	struct color *color = malloc(sizeof(struct color));
-	if (color == NULL)
-		return NULL;
+	if (color == nullptr)
+		return nullptr;
 
 	color_set(color, r, g, b);
 	return color;
@@ -47,7 +47,7 @@ struct color *color_dup(const struct color *color)
 
 bool is_color(const char *str)
 {
-	if (str == NULL)
+	if (str == nullptr)
 		return false;
 
 	size_t n = strlen(str);
@@ -66,7 +66,7 @@ bool is_color(const char *str)
 struct color *str_to_color(const char *str)
 {
 	if (!is_color(str))
-		return NULL;
+		return nullptr;
 
 	/* Parse RRGGBB components directly without strncpy/strtol */
 	unsigned int red, green, blue;
@@ -81,15 +81,15 @@ struct color *str_to_color(const char *str)
 	
 	red = (unsigned int)strtoul(r_str, &endptr, 16);
 	if (errno != 0 || *endptr != '\0')
-		return NULL;
+		return nullptr;
 	
 	green = (unsigned int)strtoul(g_str, &endptr, 16);
 	if (errno != 0 || *endptr != '\0')
-		return NULL;
+		return nullptr;
 	
 	blue = (unsigned int)strtoul(b_str, &endptr, 16);
 	if (errno != 0 || *endptr != '\0')
-		return NULL;
+		return nullptr;
 
 	return color_new((color_channel_datatype_t)red / NUMBER_MAX_UINT_32,
 	                 (color_channel_datatype_t)green / NUMBER_MAX_UINT_32,
@@ -107,10 +107,10 @@ static inline color_channel_datatype_t clamp_color_channel_datatype_t(color_chan
 
 char *color_to_str(const struct color *color)
 {
-	if (color == NULL)
-		return NULL;
+	if (color == nullptr)
+		return nullptr;
 
-	char *str = NULL;
+	char *str = nullptr;
 	
 	/* Clamp values to [0.0, 1.0] */
 	color_channel_datatype_t r = clamp_color_channel_datatype_t(color->red, NUMBER_ZERO, NUMBER_ONE);
@@ -118,12 +118,12 @@ char *color_to_str(const struct color *color)
 	color_channel_datatype_t b = clamp_color_channel_datatype_t(color->blue, NUMBER_ZERO, NUMBER_ONE);
 	
 	int result = asprintf(&str, "#%04x%04x%04x",
-		(unsigned int)(NUMBER_MAX_UINT_32 * r + NUMBER_ZERO_POINT_FIVE),
-		(unsigned int)(NUMBER_MAX_UINT_32 * g + NUMBER_ZERO_POINT_FIVE),
-		(unsigned int)(NUMBER_MAX_UINT_32 * b + NUMBER_ZERO_POINT_FIVE));
+		(unsigned int)( (NUMBER_MAX_UINT_32 * r) + NUMBER_ZERO_POINT_FIVE),
+		(unsigned int)( (NUMBER_MAX_UINT_32 * g) + NUMBER_ZERO_POINT_FIVE),
+		(unsigned int)( (NUMBER_MAX_UINT_32 * b) + NUMBER_ZERO_POINT_FIVE));
 	
 	if (result == -1) {
-		return NULL;
+		return nullptr;
 	}
 	
 	return str;

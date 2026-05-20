@@ -16,11 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <ui_unity.h>
 #include <unity.h>
 
 #include <cfg.h>
 #include <temperature.h>
-#include <ui_unity.h>
+
 
 static UnityLauncherEntry *psensor_entry;
 static bool count_visible;
@@ -94,5 +95,5 @@ void ui_unity_init(void)
 	g_signal_connect_after(config_get_GSettings(),
 			       "changed::interface-unity-launcher-count-disabled",
 			       G_CALLBACK(count_visible_changed_cbk),
-			       NULL);
+			       nullptr);
 }

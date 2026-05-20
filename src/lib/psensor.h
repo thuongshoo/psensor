@@ -19,17 +19,16 @@
 #ifndef PSENSOR_PSENSOR_H
 #define PSENSOR_PSENSOR_H
 
-#include "config.h"
 #include <bool.h>
 
 #include <sensors/sensors.h>
-
 
 #include <measure.h>
 #include <plog.h>
 #include <temperature.h>
 
-typedef enum psensor_type {
+typedef enum psensor_type
+{
     /* type of sensor values */
     SENSOR_TYPE_TEMP = 0x00001U,
     SENSOR_TYPE_RPM = 0x00002U,
@@ -40,7 +39,7 @@ typedef enum psensor_type {
 
     /* Libraries used for retrieving sensor information */
     SENSOR_TYPE_LMSENSOR = 0x00100U,
-    
+
     SENSOR_TYPE_NVCTRL = 0x00200U,
     SENSOR_TYPE_GTOP = 0x00400U,
     SENSOR_TYPE_ATIADL = 0x00800U,
@@ -77,7 +76,7 @@ typedef enum psensor_type {
 
     SENSOR_TYPE_HDD_HDDTEMP_TEMP = SENSOR_TYPE_HDD | SENSOR_TYPE_HDDTEMP | SENSOR_TYPE_TEMP,
     SENSOR_TYPE_GTOP_MEMORY_PERCENT = SENSOR_TYPE_GTOP | SENSOR_TYPE_MEMORY | SENSOR_TYPE_PERCENT,
-    SENSOR_TYPE_ATASMART_HDD_TEMP =  SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP,
+    SENSOR_TYPE_ATASMART_HDD_TEMP = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP,
     SENSOR_TYPE_HDD_UDISKS2_TEMP = SENSOR_TYPE_TEMP | SENSOR_TYPE_UDISKS2 | SENSOR_TYPE_HDD,
 
     SENSOR_TYPE_GTOP_CPU_USAGE = SENSOR_TYPE_GTOP | SENSOR_TYPE_CPU_USAGE
@@ -85,14 +84,15 @@ typedef enum psensor_type {
 
 // Forward declaration
 typedef struct psensor Psensor;
-typedef struct psensor {
+typedef struct psensor
+{
     /* Human readable name of the sensor.  It may not be uniq. */
     char *name;
     /* Uniq id of the sensor */
     char *id;
     /* Name of the chip. */
     char *chip;
-    
+
     /* see psensor_type */
     PsensorType type;
     /*
@@ -106,10 +106,10 @@ typedef struct psensor {
 
     void *provider_data;
     void (*provider_data_free_fct)(void *);
-    #ifdef HAVE_LIBATIADL
+#ifdef HAVE_LIBATIADL
     /* AMD id for the aticonfig */
     int amd_id;
-    #endif
+#endif
 
     /* maximium value in duration */
     double max;
@@ -123,20 +123,27 @@ typedef struct psensor {
     double alarm_low_threshold;
 
     size_t measures_size;  // Total size of array
-    size_t measures_count; // current number of items 
-    size_t measures_head;     // Index of newest measurement    
-    size_t measures_tail;     // oldest measurement          
+    size_t measures_count; // current number of items
+    size_t measures_head;  // Index of newest measurement
+    size_t measures_tail;  // oldest measurement
     bool measures_full;
 
     /* Whether an alarm is raised for this sensor */
     bool alarm_raised;
 } Psensor;
 
+typedef struct
+{
+    Psensor **sensors;
+    size_t length;
+} PsensorList;
+
 // Iterator để vẽ từ OLDEST đến NEWEST
-struct measure_iterator {
+struct measure_iterator
+{
     const Psensor *sensor;
     size_t current_pos;
-    int remaining;
+    size_t remaining;
     int direction;
 };
 
@@ -150,20 +157,20 @@ bool measure_iterator_next(struct measure_iterator *it, struct measure **result)
 bool measure_iterator_prev(struct measure_iterator *it, struct measure **result);
 
 Psensor *psensor_create(char *id,
-                   char *name,
-                   char *chip,
-                   unsigned int type,
-                   unsigned int values_max_length);
+                        char *name,
+                        char *chip,
+                        unsigned int type,
+                        unsigned int values_max_length);
 
 void psensor_values_resize(Psensor *psensor, unsigned int new_size);
 
 void psensor_free(Psensor *sensor);
 
 void psensor_list_free(Psensor **sensors);
-size_t psensor_list_size(const Psensor * const *sensors);
+size_t psensor_list_size(const Psensor *const *sensors);
 
 const Psensor *psensor_list_get_by_id(const Psensor *const *sensors,
-                       const char *id);
+                                      const char *id);
 
 bool is_temperature_type(unsigned int type);
 bool is_rpm_type(unsigned int type);
@@ -175,23 +182,23 @@ bool is_rpm_type(unsigned int type);
  * or SENSOR_TYPE_LMSENSOR_FAN
  */
 char *psensor_value_to_str(unsigned int type,
-               double value,
-               Temperature_Unit temperature_unit);
+                           double value,
+                           Temperature_Unit temperature_unit);
 
 char *psensor_unit_to_str(unsigned int type,
-               Temperature_Unit temperature_unit);
+                          Temperature_Unit temperature_unit);
 
 char *psensor_measure_to_str(const struct measure *m,
-                 unsigned int type,
-                 Temperature_Unit temperature_unit);
+                             unsigned int type,
+                             Temperature_Unit temperature_unit);
 
 void psensor_list_append(Psensor ***sensors, Psensor *sensor);
 
-const Psensor **psensor_list_copy(const Psensor * const *);
+const Psensor **psensor_list_copy(const Psensor *const *);
 
 void psensor_set_current_value(Psensor *sensor, double value);
 void psensor_set_current_measure(Psensor *sensor, double value,
-                 struct timeval tv);
+                                 struct timeval tv);
 
 double psensor_get_current_value(const Psensor *);
 
@@ -202,18 +209,19 @@ const char *psensor_type_to_str(unsigned int type);
 
 const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit temperature_unit);
 
-typedef struct minmax_st {
+typedef struct minmax_st
+{
     double min;
     double max;
 } MINMAX;
 
-typedef struct all_minmax_st {
+typedef struct all_minmax_st
+{
     MINMAX temp;
     MINMAX rpm;
     MINMAX percent;
     time_t end_time;
 } ALL_MINMAX;
-
 
 ALL_MINMAX get_all_minmax_value(const Psensor *const *all_sensors);
 

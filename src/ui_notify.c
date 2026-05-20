@@ -43,7 +43,7 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 	log_debug("last_notification %d", last_notification_tv.tv_sec);
 
 	struct timeval time;
-	if (gettimeofday(&time, NULL) != 0) {
+	if (gettimeofday(&time, nullptr) != 0) {
 		log_err(_("gettimeofday failed."));
 		return;
 	}
@@ -98,7 +98,7 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 #endif
 		log_debug("notif_notification_new %s", body);
 
-		notify_notification_show(notif, NULL);
+		notify_notification_show(notif, nullptr);
 
 		free(body);
 		g_object_unref(notif);

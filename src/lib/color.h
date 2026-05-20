@@ -19,7 +19,6 @@
 #ifndef PSENSOR_COLOR_H
 #define PSENSOR_COLOR_H
 
-#include <config.h>
 #include <bool.h>
 
 #ifdef COLOR_USE_DOUBLE

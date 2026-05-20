@@ -19,71 +19,170 @@
 #ifndef PSENSOR_CONFIG_H
 #define PSENSOR_CONFIG_H
 
-#include <stdint.h>
+#include <color.h>
 
+#include <stdint.h>
 #include <gdk/gdk.h>
 
-#include <bool.h>
-#include <color.h>
 #include <temperature.h>
 
-enum sensorlist_position {
-	SENSORLIST_POSITION_RIGHT = 0,
-	SENSORLIST_POSITION_LEFT = 1,
-	SENSORLIST_POSITION_TOP = 2,
-	SENSORLIST_POSITION_BOTTOM = 3
+enum sensorlist_position
+{
+    SENSORLIST_POSITION_RIGHT = 0,
+    SENSORLIST_POSITION_LEFT = 1,
+    SENSORLIST_POSITION_TOP = 2,
+    SENSORLIST_POSITION_BOTTOM = 3
 };
 const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
-typedef struct {
-    cairo_surface_t *graph_surface;      // Đường cong
-    cairo_surface_t *background_surface; // Nền + trục
+/*
+ * Font metrics đã được cache, chỉ đo 1 lần.
+ */
+typedef struct
+{
+    double font_height;
+    double digit_width;
+    double colon_width;
+    double degree_width;
+    gboolean measured;
+} FontMetrics;
+
+typedef struct
+{
+    // Canvas lớn (chứa toàn bộ đồ thị)
+    cairo_surface_t *canvas;
+    cairo_surface_t *background;
+
+    // Các surface chính
+    cairo_surface_t *graph_surface;
+    cairo_surface_t *plot_bg_surface;
+    cairo_surface_t *left_labels_surface;
+    cairo_surface_t *btm_labels_surface;
+
+    // Viewport
+    double viewport_x;
+    double viewport_width;
+    double viewport_height;
+
+    // Kích thước canvas
+    double canvas_width;
+    double canvas_height;
+
+    // Dự phòng cho min/max
+    double global_min;
+    double global_max;
+    double min_temp_range;
+
+    // Fixed min/max cho trục đứng
+    double fixed_plot_min;
+    double fixed_plot_max;
+    gboolean plot_range_initialized;
+
+    // Các field hiện có
     int last_width, last_height;
     gboolean cache_valid;
     gboolean background_valid;
-    
-    // === MỚI: Cho dịch chuyển ===
-    int shift_count;                      // Số lần đã dịch
-    double *last_values;                 // Giá trị cuối của mỗi sensor
-    size_t last_sensors_count;              // Số lượng sensor đang theo dõi
-	gboolean last_values_initialized;
+
+    int shift_count;
+    double *last_values;
+    size_t last_sensors_count;
+    gboolean last_values_initialized;
+    size_t skipped_redraws;
+    time_t last_shift_time;
+    time_t last_drawn_timestamp;
+
+    // Shift và pixels
+    double pixels_per_point;
+    double min_shift_pixels;
+
+    // Cache labels
+    char *cached_str_min;
+    char *cached_str_max;
+    char *cached_str_unit;
+    char *cached_str_btime;
+    char *cached_str_etime;
+    gboolean labels_valid;
+
+    // Font metrics cache
+    FontMetrics font_metrics;
 } MyWidgetData;
 
-typedef struct {
-    cairo_surface_t *graph_surface;
-	cairo_surface_t *background_surface;  // surface cho nền + trục
-    int last_width;
-    int last_height;
-	gboolean cache_valid;
-	gboolean background_valid; 
-} MyWidgetData1 ;
+typedef struct
+{
+    // Canvas lớn (chứa toàn bộ đồ thị)
+    cairo_surface_t *canvas;     // Canvas lớn hơn viewport
+    cairo_surface_t *background; // Background cố định
 
+    cairo_surface_t *graph_surface;      // Đường cong
+    cairo_surface_t *background_surface; // Nền + trục
 
-typedef struct config {
-	struct color *graph_bgcolor;
-	struct color *graph_fgcolor;
-	/* Last saved position of the window. */
-	int window_x;
-	int window_y;
-	/* Last saved size of the window. */
-	int window_w;
-	int window_h;
-	/* Last saved position of the window divider. */
-	int window_vertical_divider_pos;
-	int window_horizontal_divider_pos;	
-	uint32_t graph_update_interval;
-	uint32_t graph_monitoring_duration;
-	unsigned int sensor_values_max_length;
-	uint32_t sensor_update_interval;
-	uint32_t slog_interval;
-	double graph_bg_alpha;
+    // Viewport (phần hiển thị ra màn hình)
+    double viewport_x;      // Vị trí x của viewport trên canvas
+    double viewport_width;  // Chiều rộng viewport (bằng plot_width)
+    double viewport_height; // Chiều cao viewport (bằng plot_height)
 
-	MyWidgetData widget_data;
-	bool alpha_channel_enabled;
-	bool window_restore_enabled;
-	bool slog_enabled;
-	bool is_new_data;
-	bool hide_on_startup;
+    // Kích thước canvas
+    double canvas_width;  // = viewport_width * 2 (hoặc lớn hơn)
+    double canvas_height; // = viewport_height + margin_top + margin_bottom
+
+    // Dự phòng cho min/max
+    double global_min;     // Min tuyệt đối (có dự phòng)
+    double global_max;     // Max tuyệt đối (có dự phòng)
+    double min_temp_range; // Biên độ tối thiểu (mặc định 20 độ)
+
+    // Fixed min/max cho trục đứng (có dự phòng)
+    double fixed_min;
+    double fixed_max;
+    gboolean minmax_initialized;
+
+    // Các field hiện có
+    int last_width, last_height;
+    gboolean cache_valid;
+    gboolean background_valid;
+
+    int shift_count;
+    double *last_values;
+    size_t last_sensors_count;
+    gboolean last_values_initialized;
+    size_t skipped_redraws;
+    time_t last_shift_time;
+    time_t last_drawn_timestamp;
+    double pixel_per_point;
+    int total_points;
+
+    double pixels_per_point; // Số pixel cho mỗi data point
+    double min_shift_pixels; // Ngưỡng dịch tối thiểu (từ mm)
+} MyWidgetData1;
+
+typedef struct config
+{
+    struct color *graph_bgcolor;
+    struct color *graph_fgcolor;
+    /* Last saved position of the window. */
+    int window_x;
+    int window_y;
+    /* Last saved size of the window. */
+    int window_w;
+    int window_h;
+    /* Last saved position of the window divider. */
+    int window_vertical_divider_pos;
+    int window_horizontal_divider_pos;
+    uint32_t graph_update_interval;
+    uint32_t graph_monitoring_duration;
+    unsigned int sensor_values_max_length;
+    uint32_t sensor_update_interval;
+    uint32_t slog_interval;
+    double graph_bg_alpha;
+
+    MyWidgetData widget_data;
+    bool alpha_channel_enabled;
+    bool window_restore_enabled;
+    bool slog_enabled;
+    bool is_new_data;
+    bool hide_on_startup;
+
+    pthread_mutex_t graph_enabled_mutex;
+
 } Pconfig;
 
 /* Loads psensor configuration */

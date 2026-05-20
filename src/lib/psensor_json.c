@@ -124,7 +124,7 @@ char *sensors_to_json_string(const Psensor *const *sensors)
         size_t i = 0; // Use an index
 
         // Access via index
-        while (sensors[i] != NULL) {
+        while (sensors[i] != nullptr) {
             const Psensor *s = sensors[i];
 
 			json_object_array_add(obj, sensor_to_json(s));
@@ -156,22 +156,22 @@ Psensor *psensor_new_from_json(json_object *o,
 	int result = asprintf(&url, "%s/%s", sensors_url, eid);
 	if (result == -1) {
 		free(eid);
-		return NULL;
+		return nullptr;
 	}
 
 	char* id = strdup(url);
 	char* name = strdup(json_object_get_string(oname));
 	Psensor *s = psensor_create(id,
 			   name,
-			   NULL,
+			   nullptr,
 			   json_object_get_int(otype) | SENSOR_TYPE_REMOTE,
 			   values_max_length);
-	if(s == NULL)
+	if(s == nullptr)
 	{
 		free(name);
 		free(id);
 		free(eid);
-		return NULL;
+		return nullptr;
 	}
 	s->provider_data = url;
 

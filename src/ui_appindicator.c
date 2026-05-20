@@ -16,17 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <ui_appindicator.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <gtk/gtk.h>
 
 #include "appindicator_compat.h"
 #include <cfg.h>
 #include <psensor.h>
 #include <ui.h>
-#include <ui_appindicator.h>
+
 #include <ui_sensorpref.h>
 #include <ui_status.h>
 #include <ui_pref.h>
@@ -99,11 +100,11 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 	size_t n = psensor_list_size((const Psensor *const*)sorted_sensors);
 	
 	menu_items = (GtkMenuItem **)malloc((n + 1) * sizeof(GtkMenuItem *));
-	if (menu_items == NULL)
+	if (menu_items == nullptr)
 		return;
 
 	sensors = (const Psensor **)calloc((n + 1), sizeof(Psensor *));
-	if (sensors == NULL)
+	if (sensors == nullptr)
 	{
 		free((void*)menu_items);
 		return;
@@ -129,8 +130,8 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
 		}
 	}
 
-	sensors[j] = NULL;
-	menu_items[j] = NULL;
+	sensors[j] = nullptr;
+	menu_items[j] = nullptr;
 	//only free the list, not the items
 	free((void*)sorted_sensors);
 }
@@ -147,7 +148,7 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	builder = gtk_builder_new();
 	gtk_builder_set_translation_domain(builder, PACKAGE_NAME);
 
-	error = NULL;
+	error = nullptr;
 	/* Build the glade file path at runtime so it matches get_data_path()
 	 * used elsewhere (handles PSENSOR_DATA_DIR overrides, relative paths, etc.) */
 	char *data_path = get_data_path();
@@ -162,7 +163,7 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 		g_error_free(error);
 		g_free(glade_file);
 		free(data_path);
-		return NULL;
+		return nullptr;
 	}
 
 	g_free(glade_file);
@@ -182,7 +183,7 @@ static GtkMenu *load_menu(struct ui_psensor *ui)
 	
 static const char* get_unit_format_string(unsigned int sensor_type)
 {
-	if (true == is_temperature_type(sensor_type) || (true == is_rpm_type(sensor_type)))
+	if (is_temperature_type(sensor_type) || (is_rpm_type(sensor_type)))
 		return  "999UUU";
 	/* percent */
 	return "999%";
@@ -192,8 +193,8 @@ static int append_sensor_to_strings(char **label, char **guide,
                                      const char *value_string,
                                      const char *unit_format)
 {
-    char *new_label = NULL;
-    char *new_guide = NULL;
+    char *new_label = nullptr;
+    char *new_guide = nullptr;
     
     // Cập nhật label
     if (*label) {
@@ -232,8 +233,8 @@ static void update_label(const struct ui_psensor *ui)
     const Psensor **sensorList = ui_get_sensors_ordered_by_position((const Psensor *const *)ui->sensors);
     const Psensor **original_sensors = sensorList;
     
-    char *label = NULL;
-    char *guide = NULL;
+    char *label = nullptr;
+    char *guide = nullptr;
     Temperature_Unit temperature_unit = config_get_temperature_unit();
 
     for (; *sensorList; sensorList++) {
@@ -267,7 +268,7 @@ static void update_label(const struct ui_psensor *ui)
     free((void*)original_sensors);
 }
 
-void ui_appindicator_update(const struct ui_psensor *ui, bool attention)
+void ui_appindicator_update(const struct ui_psensor *ui, bool is_attention)
 {
 	AppIndicatorStatus status;
 
@@ -278,11 +279,11 @@ void ui_appindicator_update(const struct ui_psensor *ui, bool attention)
 
 	status = app_indicator_get_status(indicator);
 
-	if (false == attention && status == APP_INDICATOR_STATUS_ATTENTION)
+	if (!is_attention && status == APP_INDICATOR_STATUS_ATTENTION)
 		app_indicator_set_status(indicator,
 					 APP_INDICATOR_STATUS_ACTIVE);
 
-	if (true == attention && status == APP_INDICATOR_STATUS_ACTIVE)
+	if (is_attention && status == APP_INDICATOR_STATUS_ACTIVE)
 		app_indicator_set_status(indicator,
 		APP_INDICATOR_STATUS_ATTENTION);
 
