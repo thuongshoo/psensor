@@ -19,7 +19,7 @@
 #ifndef _LARGEFILE_SOURCE
 	#define _LARGEFILE_SOURCE 1
 #endif
-#include "config.h"
+#include <io.h>
 
 #include <dirent.h>
 #include <stdio.h>
@@ -31,7 +31,7 @@
 
 
 #include <plog.h>
-#include <io.h>
+
 
 /* Directory separator */
 #if defined(__MINGW32__)
@@ -71,12 +71,12 @@ bool is_file(const char *path)
  * ================================================================ */
 static char *dir_normalize(const char *dpath)
 {
-	if (dpath == NULL || dpath[0] == '\0')
-		return NULL;
+	if (dpath == nullptr || dpath[0] == '\0')
+		return nullptr;
 
 	char *npath = strdup(dpath);
-	if (npath == NULL)
-		return NULL;
+	if (npath == nullptr)
+		return nullptr;
 
 	size_t n = strlen(npath);
 	if (n > 1 && npath[n - 1] == '/')
@@ -98,25 +98,25 @@ char *path_append(const char *dir, const char *path)
 {
 	char *ndir = dir_normalize(dir);
 
-	/* Both NULL or empty? */
-	if (ndir == NULL && (path == NULL || path[0] == '\0')) {
-		return NULL;
+	/* Both nullptr or empty? */
+	if (ndir == nullptr && (path == nullptr || path[0] == '\0')) {
+		return nullptr;
 	}
 
 	/* Only path? */
-	if (ndir == NULL)
+	if (ndir == nullptr)
 		return strdup(path);
 
 	/* Only dir? */
-	if (path == NULL || path[0] == '\0')
+	if (path == nullptr || path[0] == '\0')
 		return ndir;
 
 	/* Join dir + '/' + path */
 	size_t len = strlen(ndir) + 1 + strlen(path) + 1;
 	char *ret = (char *)malloc(len);
-	if (ret == NULL) {
+	if (ret == nullptr) {
 		free(ndir);
-		return NULL;
+		return nullptr;
 	}
 
 	snprintf(ret, len, "%s/%s", ndir, path);
@@ -133,9 +133,9 @@ static char **paths_add(char **paths, size_t n, char *path)
 {
 	size_t new_size = (n + 1) * sizeof(char *);
 	char **result = (char **)realloc((void*)paths, new_size);
-	if (result == NULL) {
+	if (result == nullptr) {
 		free(path);
-		return NULL;
+		return nullptr;
 	}
 
 	/* Shift existing entries right, insert new path at front */
@@ -148,20 +148,20 @@ static char **paths_add(char **paths, size_t n, char *path)
 char **dir_list(const char *dpath, int (*filter)(const char *))
 {
 	DIR *dir = opendir(dpath);
-	if (dir == NULL)
-		return NULL;
+	if (dir == nullptr)
+		return nullptr;
 
-	/* Allocate sentinel NULL */
+	/* Allocate sentinel nullptr */
 	char **paths = (char **)calloc(1, sizeof(char *));
-	if (paths == NULL) {
+	if (paths == nullptr) {
 		closedir(dir);
-		return NULL;
+		return nullptr;
 	}
 
 	size_t n = 0;
 	struct dirent *ent;
 
-	while ((ent = readdir(dir)) != NULL) {
+	while ((ent = readdir(dir)) != nullptr) {
 		const char *name = ent->d_name;
 
 		/* Skip . and .. */
@@ -170,16 +170,16 @@ char **dir_list(const char *dpath, int (*filter)(const char *))
 			continue;
 
 		char *path = path_append(dpath, name);
-		if (path == NULL)
+		if (path == nullptr)
 			continue;
 
-		if (filter == NULL || filter(path)) {
+		if (filter == nullptr || filter(path)) {
 			char **tmp = paths_add(paths, n, path);
-			if (tmp == NULL) {
+			if (tmp == nullptr) {
 				/* Memory error: free all and bail */
 				closedir(dir);
 				paths_free(paths);
-				return NULL;
+				return nullptr;
 			}
 			paths = tmp;
 			n++;
@@ -194,10 +194,10 @@ char **dir_list(const char *dpath, int (*filter)(const char *))
 
 void paths_free(char **paths)
 {
-	if (paths == NULL)
+	if (paths == nullptr)
 		return;
 
-	for (char **p = paths; *p != NULL; p++)
+	for (char **p = paths; *p != nullptr; p++)
 		free(*p);
 
 	free((void*)paths);
@@ -213,7 +213,7 @@ long file_get_size(const char *path)
 		return -1;
 
 	FILE *fp = fopen(path, "rb");
-	if (fp == NULL)
+	if (fp == nullptr)
 		return -1;
 
 	long size = -1;
@@ -233,24 +233,24 @@ char *file_get_content(const char *fpath)
 	long size = file_get_size(fpath);
 	
 	if (size < 0)
-		return NULL;
+		return nullptr;
 
 	/* Empty file */
 	if (size == 0) {
 		char *page = (char *)malloc(1);
-		if (page != NULL)
+		if (page != nullptr)
 			*page = '\0';
 		return page;
 	}
 
 	FILE *fp = fopen(fpath, "rb");
-	if (fp == NULL)
-		return NULL;
+	if (fp == nullptr)
+		return nullptr;
 
 	char *page = (char *)malloc((size_t)size + 1);
-	if (page == NULL) {
+	if (page == nullptr) {
 		fclose(fp);
-		return NULL;
+		return nullptr;
 	}
 
 	size_t bytes_read = fread(page, 1, (size_t)size, fp);
@@ -258,7 +258,7 @@ char *file_get_content(const char *fpath)
 
 	if (bytes_read != (size_t)size) {
 		free(page);
-		return NULL;
+		return nullptr;
 	}
 
 	page[size] = '\0';
@@ -271,24 +271,31 @@ char *file_get_content(const char *fpath)
 
 static int FILE_copy(FILE *src, FILE *dst)
 {
-	char *buf = (char *)malloc(FCOPY_BUF_SZ);
-	if (buf == NULL)
+	int ret = 0;
+	char *buf = malloc(FCOPY_BUF_SZ);
+
+	if (nullptr == buf)
 		return FILE_COPY_ERROR_ALLOC_BUFFER;
 
-	int ret = FILE_COPY_ERROR_NONE;
-	size_t n;
-
-	while ((n = fread(buf, 1, FCOPY_BUF_SZ, src)) > 0) {
-		if (fwrite(buf, 1, n, dst) != n) {
-			ret = FILE_COPY_ERROR_WRITE;
-			break;
+	while (0 == ret)
+	{
+		size_t n = fread(buf, 1, FCOPY_BUF_SZ, src);
+		if (n == FCOPY_BUF_SZ)
+		{
+			if (fwrite(buf, 1, n, dst) != n)
+				ret = FILE_COPY_ERROR_WRITE;
+		}
+		else
+		{
+			if (!feof(src) || ferror(src))
+				ret = FILE_COPY_ERROR_READ;
+			else
+				break;
 		}
 	}
 
-	if (ret == FILE_COPY_ERROR_NONE && ferror(src))
-		ret = FILE_COPY_ERROR_READ;
-
 	free(buf);
+
 	return ret;
 }
 
@@ -297,11 +304,11 @@ int file_copy(const char *src, const char *dst)
 	log_functionname("copy %s to %s", src, dst);
 
 	FILE *fsrc = fopen(src, "rb");
-	if (fsrc == NULL)
+	if (fsrc == nullptr)
 		return FILE_COPY_ERROR_OPEN_SRC;
 
 	FILE *fdst = fopen(dst, "wb");
-	if (fdst == NULL) {
+	if (fdst == nullptr) {
 		fclose(fsrc);
 		return FILE_COPY_ERROR_OPEN_DST;
 	}
@@ -348,11 +355,11 @@ void mkdirs(const char *dirs, mode_t mode)
 {
 	log_functionname("mkdirs %s", dirs);
 
-	if (dirs == NULL || dirs[0] == '\0')
+	if (dirs == nullptr || dirs[0] == '\0')
 		return;
 
 	char *dir = strdup(dirs);
-	if (dir == NULL)
+	if (dir == nullptr)
 		return;
 
 	size_t len = strlen(dir);

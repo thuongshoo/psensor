@@ -20,7 +20,7 @@
 #ifndef _LARGEFILE_SOURCE
 	#define _LARGEFILE_SOURCE 1
 #endif
-#include "config.h"
+#include "bool.h"
 
 #include <locale.h>
 #include <libintl.h>
@@ -53,7 +53,7 @@ void log_close(void)
 
 	fclose(file);
 
-	file = NULL;
+	file = nullptr;
 }
 
 #define LOG_BUFFER 4096U
@@ -103,7 +103,7 @@ static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 	}
 	else
 	{
-		t = NULL;
+		t = nullptr;
 	}
 
 	if (lvl <= LOG_INFO)
@@ -129,7 +129,7 @@ void log_printf(int lvl, const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	vlogf(lvl, NULL, fmt, ap);
+	vlogf(lvl, nullptr, fmt, ap);
 	va_end(ap);
 }
 
@@ -141,7 +141,7 @@ void log_debug(const char *fmt, ...)
 		return;
 
 	va_start(ap, fmt);
-	vlogf(LOG_DEBUG, NULL, fmt, ap);
+	vlogf(LOG_DEBUG, nullptr, fmt, ap);
 	va_end(ap);
 }
 
@@ -150,7 +150,7 @@ void log_err(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	vlogf(LOG_ERR, NULL, fmt, ap);
+	vlogf(LOG_ERR, nullptr, fmt, ap);
 	va_end(ap);
 }
 
@@ -159,7 +159,7 @@ void log_warn(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	vlogf(LOG_WARN, NULL, fmt, ap);
+	vlogf(LOG_WARN, nullptr, fmt, ap);
 	va_end(ap);
 }
 
@@ -168,7 +168,7 @@ void log_info(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	vlogf(LOG_INFO, NULL, fmt, ap);
+	vlogf(LOG_INFO, nullptr, fmt, ap);
 	va_end(ap);
 }
 

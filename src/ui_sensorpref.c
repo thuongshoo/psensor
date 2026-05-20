@@ -16,9 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#include <stdlib.h>
+#include <ui_sensorpref.h>
 
-#include <gtk/gtk.h>
+#include <stdlib.h>
 
 #include <cfg.h>
 #include <temperature.h>
@@ -26,7 +26,6 @@
 #include <ui_color.h>
 #include <ui_pref.h>
 #include <ui_sensorlist.h>
-#include <ui_sensorpref.h>
 
 enum {
 	COL_NAME = 0,
@@ -67,7 +66,7 @@ static Psensor *get_selected_sensor(void)
 
 	selection = gtk_tree_view_get_selection(w_sensors_list);
 
-	s = NULL;
+	s = nullptr;
 	if (gtk_tree_selection_get_selected(selection, &model, &iter))
 		gtk_tree_model_get(model, &iter, COL_SENSOR_PREF, &s, -1);
 
@@ -129,7 +128,7 @@ void ui_sensorpref_display_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_sensor_enabled(s->id, gboolean_to_char(active));
+	config_set_sensor_enabled(s->id, gboolean_to_bool(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -145,7 +144,7 @@ void ui_sensorpref_alarm_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_sensor_alarm_enabled(s->id, gboolean_to_char(active));
+	config_set_sensor_alarm_enabled(s->id, gboolean_to_bool(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -162,7 +161,7 @@ ui_sensorpref_appindicator_menu_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_appindicator_enabled(s->id, gboolean_to_char(active));
+	config_set_appindicator_enabled(s->id, gboolean_to_bool(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -179,7 +178,7 @@ ui_sensorpref_appindicator_label_toggled_cb(GtkToggleButton *btn, gpointer data)
 		return;
 
 	gboolean active = gtk_toggle_button_get_active(btn);
-	config_set_appindicator_label_enabled(s->id, gboolean_to_char(active));
+	config_set_appindicator_label_enabled(s->id, gboolean_to_bool(active));
 
 	apply_config((struct ui_psensor *)data);
 }
@@ -279,10 +278,10 @@ static void update_pref(Psensor *s)
 	free(smax);
 
 	gtk_toggle_button_set_active(w_sensor_draw,
-				     config_is_sensor_graph_enabled(s->id));
+		bool_to_gboolean( config_is_sensor_graph_enabled(s->id)));
 
 	gtk_toggle_button_set_active(w_sensor_display,
-				     config_is_sensor_enabled(s->id));
+		bool_to_gboolean( config_is_sensor_enabled(s->id)));
 
 	GdkRGBA *color = config_get_sensor_color(s->id);
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(w_sensor_color), color);
@@ -310,7 +309,7 @@ static void update_pref(Psensor *s)
 	}
 
 	gtk_toggle_button_set_active(w_sensor_alarm,
-				     config_get_sensor_alarm_enabled(s->id));
+		bool_to_gboolean( config_get_sensor_alarm_enabled(s->id) ) );
 
 	double threshold = s->alarm_high_threshold;
 	if (!is_celsius(temperature_unit))
@@ -323,11 +322,11 @@ static void update_pref(Psensor *s)
 	gtk_spin_button_set_value(w_sensor_low_threshold, threshold);
 
 	gtk_toggle_button_set_active(w_appindicator_enabled,
-				     config_is_appindicator_enabled(s->id));
+		bool_to_gboolean( config_is_appindicator_enabled(s->id) ) );
 
 	gtk_toggle_button_set_active
 		(w_appindicator_label_enabled,
-		 config_is_appindicator_label_enabled(s->id));
+		bool_to_gboolean( config_is_appindicator_label_enabled(s->id) ) );
 
 	ignore_changes = false;
 }
@@ -361,7 +360,7 @@ static void select_sensor(Psensor *s, const Psensor **sensors)
 static void quit(void)
 {
 	gtk_widget_destroy(GTK_WIDGET(w_dialog));
-	w_dialog = NULL;
+	w_dialog = nullptr;
 }
 
 static gboolean
@@ -382,7 +381,7 @@ static GtkBuilder *load_ui(struct ui_psensor *ui)
 	GError *error;
 	guint ok;
 
-	error = NULL;
+	error = nullptr;
 
 	builder = gtk_builder_new();
 	gtk_builder_set_translation_domain(builder, PACKAGE_NAME);
@@ -395,7 +394,7 @@ static GtkBuilder *load_ui(struct ui_psensor *ui)
 	if (!ok) {
 		log_printf(LOG_ERR, error->message);
 		g_error_free(error);
-		return NULL;
+		return nullptr;
 	}
 
 	w_sensors_list = GTK_TREE_VIEW
@@ -476,7 +475,7 @@ static void populate(Psensor *sensor, Psensor **sensors)
 
 void ui_sensorpref_dialog_run(Psensor *sensor, struct ui_psensor *ui)
 {
-	if (w_dialog == NULL) {
+	if (w_dialog == nullptr) {
 		GtkBuilder *builder = load_ui(ui);
 
 		if (!builder)

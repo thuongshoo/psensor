@@ -23,6 +23,8 @@
 #define LINUX 1
 #endif
 
+#include <amd.h>
+
 #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
@@ -33,7 +35,6 @@
 #include <string.h>
 
 #include <adl_sdk.h>
-
 #include <psensor.h>
 
 typedef int (*ADL_MAIN_CONTROL_CREATE)(ADL_MAIN_MALLOC_CALLBACK, int);
@@ -138,8 +139,8 @@ static Psensor *create_sensor(int id, int type, unsigned int values_len)
 	}
 
 	sid = malloc(strlen("amd") + 1 + strlen(name) + 1);
-	if (sid == NULL)
-		return NULL;
+	if (sid == nullptr)
+		return nullptr;
 	
 	sprintf(sid, "amd %s", name);
 
@@ -150,12 +151,12 @@ static Psensor *create_sensor(int id, int type, unsigned int values_len)
 			   new_chip,
 			   sensor_type,
 			   values_len);
-	if (s == NULL)
+	if (s == nullptr)
 	{
 		free(new_chip);
 		free(new_name);
 		free(sid);
-		return NULL;
+		return nullptr;
 	}
 	s->amd_id = active_adapters[id];
 
@@ -174,8 +175,8 @@ static int init(void)
 
 	adl_main_control_done = 0;
 	inumberadaptersactive = 0;
-	active_adapters = NULL;
-	lpadapterinfo = NULL;
+	active_adapters = nullptr;
+	lpadapterinfo = nullptr;
 
 	hdll = dlopen("libatiadlxx.so", RTLD_LAZY|RTLD_GLOBAL);
 	if (!hdll) {
@@ -316,6 +317,6 @@ void amd_cleanup(void)
 
 	if (active_adapters) {
 		free(active_adapters);
-		active_adapters = NULL;
+		active_adapters = nullptr;
 	}
 }

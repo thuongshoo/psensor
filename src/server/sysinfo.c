@@ -32,8 +32,8 @@
 #include "sysinfo.h"
 
 static glibtop_cpu *cpu;
-static float last_used;
-static float last_total;
+static unsigned long int last_used;
+static unsigned long int last_total;
 
 void sysinfo_update(struct psysinfo *info)
 {
@@ -52,7 +52,7 @@ void sysinfo_update(struct psysinfo *info)
 	dt = cpu->total - last_total;
 
 	if (dt)
-		info->cpu_rate = (used - last_used) / dt;
+		info->cpu_rate = (float) ((used - last_used) / dt);
 
 	last_used = used;
 	last_total = cpu->total;

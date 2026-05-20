@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
+#include <pgtop2.h>
+
 #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
@@ -25,7 +27,6 @@
 #include <glibtop/cpu.h>
 #include <glibtop/mem.h>
 
-#include <pgtop2.h>
 
 static unsigned long int  last_used;
 static unsigned long int last_total;
@@ -44,12 +45,12 @@ Psensor *create_cpu_usage_sensor(unsigned int measures_len)
 				 chip,
 				 type,
 				 measures_len);
-	if (psensor == NULL)
+	if (psensor == nullptr)
 	{
 		free(chip);
 		free(label);
 		free(id);
-		return NULL;
+		return nullptr;
 	}
 	return psensor;
 }
@@ -65,12 +66,12 @@ static Psensor *create_mem_free_sensor(unsigned int measures_len)
 			      chip,
 			      type,
 			      measures_len);
-	if (tmp == NULL)
+	if (tmp == nullptr)
 	{
 		free(chip);
 		free(name);
 		free(id);
-		return NULL;
+		return nullptr;
 	}
 	return tmp;
 }

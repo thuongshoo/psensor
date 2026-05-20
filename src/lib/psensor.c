@@ -17,10 +17,10 @@
  * 02110-1301 USA
  */
 #define _GNU_SOURCE
-#include "config.h"
+#include <psensor.h>
+
 #include <stdlib.h>
 #include <string.h>
-
 #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
@@ -28,14 +28,10 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
-
 #include <unistd.h>
 
-
 #include <hdd.h>
-#include <psensor.h>
 #include <temperature.h>
-
 
 char *
 psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperature_unit)
@@ -46,10 +42,12 @@ psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperatu
      */
     const int MAX_STR_LEN = 16;
     char *str = malloc(MAX_STR_LEN);
-    if (str == NULL)
-        return NULL;
+    if (str == nullptr)
+        return nullptr;
 
-    if (is_temperature_type(type) && is_celsius(temperature_unit) == false)
+    bool is_temperature = is_temperature_type(type);
+    bool is_celsius_degree = is_celsius(temperature_unit);
+    if ( is_temperature && (!is_celsius_degree) )
         value = celsius_to_fahrenheit(value);
 
     snprintf(str, MAX_STR_LEN, "%.0f", value);
@@ -92,8 +90,8 @@ psensor_unit_to_str(unsigned int type, Temperature_Unit temperature_unit)
     const int MAX_STR_LEN = 4;
 
     char *str = malloc(MAX_STR_LEN);
-    if(str == NULL)
-        return NULL;
+    if(str == nullptr)
+        return nullptr;
 
     const char *unit = psensor_type_to_unit_str(type, temperature_unit);
 
@@ -111,19 +109,19 @@ psensor_measure_to_str(const struct measure *m,
 }
 
 Psensor*
-ANALYZER_RETURNS_MALLOC
-ANALYZER_HOLDS_MALLOC(1)
-ANALYZER_HOLDS_MALLOC(2)
-ANALYZER_HOLDS_MALLOC(3)
+// ANALYZER_RETURNS_MALLOC
+// ANALYZER_HOLDS_MALLOC(1)
+// ANALYZER_HOLDS_MALLOC(2)
+// ANALYZER_HOLDS_MALLOC(3)
 psensor_create(char *id,
-                               char *name,
-                               char *chip,
-                               unsigned int type,
-                               unsigned int values_max_length)
+                char *name,
+                char *chip,
+                unsigned int type,
+                unsigned int values_max_length)
 {
     Psensor *psensor = (Psensor *)malloc(sizeof(Psensor));
-    if (psensor == NULL)
-        return NULL;
+    if (psensor == nullptr)
+        return nullptr;
 
     psensor->id = id;
     psensor->name = name;
@@ -149,11 +147,11 @@ psensor_create(char *id,
     psensor->alarm_high_threshold = 0;
     psensor->alarm_low_threshold = 0;
 
-    psensor->cb_alarm_raised = NULL;
-    psensor->cb_alarm_raised_data = NULL;
+    psensor->cb_alarm_raised = nullptr;
+    psensor->cb_alarm_raised_data = nullptr;
     psensor->alarm_raised = false;
 
-    psensor->provider_data = NULL;
+    psensor->provider_data = nullptr;
     psensor->provider_data_free_fct = &free;
 
     psensor->measures_size = values_max_length;
@@ -190,7 +188,7 @@ void psensor_values_resize(Psensor *psensor, unsigned int new_size)
 }
 
 void 
-ANALYZER_TAKES_MALLOC(1)
+//ANALYZER_TAKES_MALLOC(1)
 psensor_free(Psensor *s)
 {
     if (!s)
@@ -213,7 +211,7 @@ psensor_free(Psensor *s)
 }
 
 void
-ANALYZER_TAKES_MALLOC(1)
+//ANALYZER_TAKES_MALLOC(1)
 psensor_list_free(Psensor **sensors)
 {
     if (sensors)
@@ -250,24 +248,26 @@ size_t psensor_list_size(const Psensor * const *sensors)
  * Return a new sensors list with 'sensor' added at the end of
  * 'sensors'. Layout: old items + new item + null termination
  */
-static Psensor ** ANALYZER_RETURNS_MALLOC psensor_list_add(Psensor **all_sensors,
+static Psensor ** 
+//ANALYZER_RETURNS_MALLOC
+psensor_list_add(Psensor **all_sensors,
                                   Psensor *new_sensor)
 {
-    Psensor **new_sensor_list = NULL;
+    Psensor **new_sensor_list = nullptr;
 
     if (all_sensors)
     {
         size_t size = psensor_list_size((const Psensor *const *)all_sensors);
         // allocate new list with one more entry
         new_sensor_list = (Psensor **)malloc((size + 1 + 1) * sizeof(Psensor *));
-        if (new_sensor_list == NULL)
-            return NULL;
+        if (new_sensor_list == nullptr)
+            return nullptr;
 
         memcpy((void*)new_sensor_list, (void*)all_sensors, size * sizeof(Psensor *));
 
         new_sensor_list[size] = new_sensor;
         // null terminate the list
-        new_sensor_list[size + 1] = NULL;
+        new_sensor_list[size + 1] = nullptr;
     }
     return new_sensor_list;
 }
@@ -276,15 +276,15 @@ static Psensor ** ANALYZER_RETURNS_MALLOC psensor_list_add(Psensor **all_sensors
 /// @param list_sensors
 /// @param new_sensor
 void
-ANALYZER_TAKES_MALLOC(1) 
-ANALYZER_HOLDS_MALLOC(2)
+// ANALYZER_TAKES_MALLOC(1) 
+// ANALYZER_HOLDS_MALLOC(2)
 psensor_list_append(Psensor ***list_sensors, Psensor *new_sensor )
 {
     if (!new_sensor)
         return;
 
     Psensor **tmp = psensor_list_add(*list_sensors, new_sensor);
-    if (tmp != NULL)
+    if (tmp != nullptr)
     {
         // free old sensors list
         free((void*)*list_sensors);
@@ -305,7 +305,7 @@ const Psensor *psensor_list_get_by_id(const Psensor *const *sensors, const char 
         sensors_cur++;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool is_temperature_type(unsigned int type)
@@ -344,11 +344,7 @@ static void update_lowest_highest(Psensor *s, double v) {
 
 void psensor_set_current_measure(Psensor *s, double v, struct timeval tv)
 {
-    if (s->measures_count == 0) {
-        s->measures_head = 0;
-        s->measures_tail = 0;
-        s->measures_count = 1;
-    } else {
+    if (s->measures_count > 0) {
         // TĂNG HEAD - conditional
         s->measures_head++;
         if (s->measures_head >= s->measures_size)
@@ -363,9 +359,11 @@ void psensor_set_current_measure(Psensor *s, double v, struct timeval tv)
             s->measures_count++;
             if (s->measures_count == s->measures_size)
                 s->measures_full = true;
-            else
-                s->measures_full = false;
         }
+    } else {
+        s->measures_head = 0;
+        s->measures_tail = 0;
+        s->measures_count = 1;
     }
     
     s->measures[s->measures_head].value = v;
@@ -379,17 +377,17 @@ void psensor_set_current_value(Psensor *sensor, double value)
 {
     struct timeval tv;
 
-    if (gettimeofday(&tv, NULL) != 0)
+    if (gettimeofday(&tv, nullptr) != 0)
         timerclear(&tv);
 
     psensor_set_current_measure(sensor, value, tv);
 }
-
+#define INIT_REMAINING_TO_MEASURE_COUNT sensor->measures_count
 void measure_iterator_init(struct measure_iterator *it, const Psensor *sensor)
 {
     it->sensor = sensor;
     it->current_pos = sensor->measures_tail;  // 
-    it->remaining = sensor->measures_count;
+    it->remaining = INIT_REMAINING_TO_MEASURE_COUNT;
     it->direction = ITER_FORWARD; // 
 }
 
@@ -397,13 +395,13 @@ void measure_iterator_init_reverse(struct measure_iterator *it, const Psensor *s
 {
     it->sensor = sensor;
     it->current_pos = sensor->measures_head;  // 
-    it->remaining = sensor->measures_count;
+    it->remaining = INIT_REMAINING_TO_MEASURE_COUNT;
     it->direction = ITER_REVERSE; // Reverse iteration
 }
 
 bool measure_iterator_next(struct measure_iterator *it, struct measure **result)
 {
-    if (it->remaining <= 0)
+    if (it->remaining == 0)
         return false;
     
     *result = &it->sensor->measures[it->current_pos];
@@ -419,7 +417,7 @@ bool measure_iterator_next(struct measure_iterator *it, struct measure **result)
 
 bool measure_iterator_prev(struct measure_iterator *it, struct measure **result)
 {
-    if (it->remaining <= 0)
+    if (it->remaining == 0)
         return false;
     
     *result = &it->sensor->measures[it->current_pos];
@@ -482,10 +480,10 @@ ALL_MINMAX get_all_minmax_value(const Psensor * const *all_sensors)
         0,                      // end_time
     };
 
-    if (all_sensors == NULL)
+    if (all_sensors == nullptr)
         return minmax;
-    // Iterate through all sensors in the system (array ends with NULL)
-    for (size_t sensor_index = 0; all_sensors[sensor_index] != NULL; sensor_index++)
+    // Iterate through all sensors in the system (array ends with nullptr)
+    for (size_t sensor_index = 0; all_sensors[sensor_index] != nullptr; sensor_index++)
     {
         const Psensor *current_sensor = all_sensors[sensor_index];
         if (current_sensor->type & SENSOR_TYPE_TEMP)
@@ -589,11 +587,11 @@ const Psensor **psensor_list_copy(const Psensor *const *sensors)
     size_t n = psensor_list_size(sensors);
 
     result = (const Psensor * *)malloc((n + 1) * sizeof(Psensor *));
-    if (result != NULL)
+    if (result != nullptr)
     {
         for (size_t i = 0; i < n; i++)
             result[i] = sensors[i];
-        result[n] = NULL;
+        result[n] = nullptr;
     }
 
     return result;

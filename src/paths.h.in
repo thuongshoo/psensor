@@ -1,6 +1,7 @@
 #ifndef PSENSOR_PATHS_H
 #define PSENSOR_PATHS_H
 
+#include <bool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -49,7 +50,7 @@ static inline char *get_data_path(void) {
             if (PACKAGE_DATA_DIR[0] != '/' && PACKAGE_DATA_DIR[0] != '\0') {
                 size_t need = strlen(selfpath) + 1 + strlen(PACKAGE_DATA_DIR) + 1;
                 path = (char *)malloc(need);
-                if (!path) return NULL;
+                if (!path) return nullptr;
                 snprintf(path, need, "%s/%s", selfpath, PACKAGE_DATA_DIR);
 
                 /* build full glade path to test presence */
@@ -68,7 +69,7 @@ static inline char *get_data_path(void) {
 
             /* 4) Try common locations relative to executable */
             path = (char *)malloc(strlen(selfpath) + 32);
-            if (!path) return NULL;
+            if (!path) return nullptr;
             snprintf(path, strlen(selfpath) + 32, "%s/share/psensor-fork", selfpath);
             if (access(path, F_OK) == 0) {
                 return path;
@@ -77,7 +78,7 @@ static inline char *get_data_path(void) {
 
             /* Try src/glade in source tree (useful for running from a source copy) */
             path = (char *)malloc(strlen(selfpath) + 32);
-            if (!path) return NULL;
+            if (!path) return nullptr;
             snprintf(path, strlen(selfpath) + 32, "%s/src/glade", selfpath);
             if (access(path, F_OK) == 0) {
                 return path;

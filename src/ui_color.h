@@ -20,6 +20,7 @@
 #define PSENSOR_UI_COLOR_H
 
 #include <bool.h>
+#include <gtk/gtk.h>
 
 bool ui_change_color(const char *, GdkRGBA *, GtkWindow *);
 

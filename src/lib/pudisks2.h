@@ -19,7 +19,6 @@
 #ifndef PSENSOR_UDISKS2_H
 #define PSENSOR_UDISKS2_H
 
-#include <config.h>
 #include <bool.h>
 #include <psensor.h>
 

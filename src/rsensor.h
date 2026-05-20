@@ -19,7 +19,6 @@
 #ifndef PSENSOR_RSENSOR_H
 #define PSENSOR_RSENSOR_H
 
-#include <config.h>
 #include <bool.h>
 
 #include <psensor.h>

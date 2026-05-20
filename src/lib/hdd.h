@@ -20,7 +20,6 @@
 #define PSENSOR_HDD_H
 
 #include <bool.h>
-#include <config.h>
 #include <psensor.h>
 
 #if defined(HAVE_ATASMART) && HAVE_ATASMART

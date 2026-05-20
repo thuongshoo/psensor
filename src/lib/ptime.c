@@ -16,11 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#include <stdlib.h>
-#include <string.h>
-
 #include <ptime.h>
 
+#include <stdlib.h>
+#include <string.h>
 const int P_TIME_VER = 3;
 
 static const int ISO8601_TIME_LENGTH = 19; /* YYYY-MM-DDThh:mm:ss */
@@ -32,7 +31,7 @@ char *time_to_ISO8601_time(time_t *t)
 
 	memset(&lt, 0, sizeof(struct tm));
 	if (!gmtime_r(t, &lt))
-		return NULL;
+		return nullptr;
 
 	return tm_to_ISO8601_time(&lt);
 }
@@ -43,7 +42,7 @@ char *time_to_ISO8601_date(time_t *t)
 
 	memset(&lt, 0, sizeof(struct tm));
 	if (!gmtime_r(t, &lt))
-		return NULL;
+		return nullptr;
 
 	return tm_to_ISO8601_date(&lt);
 }
@@ -51,32 +50,32 @@ char *time_to_ISO8601_date(time_t *t)
 char *tm_to_ISO8601_date(const struct tm *tm)
 {
 	char *str = malloc(ISO8601_DATE_LENGTH + 1);
-	if (str == NULL)
-		return NULL;
+	if (str == nullptr)
+		return nullptr;
 
 	if (strftime(str, ISO8601_DATE_LENGTH + 1, "%F", tm))
 		return str;
 
 	free(str);
-	return NULL;
+	return nullptr;
 }
 
 char *tm_to_ISO8601_time(const struct tm *tm)
 {
 	char *str = malloc(ISO8601_TIME_LENGTH + 1);
-	if (str == NULL)
-		return NULL;
+	if (str == nullptr)
+		return nullptr;
 
 	if (strftime(str, ISO8601_TIME_LENGTH + 1, "%FT%T", tm))
 		return str;
 
 	free(str);
-	return NULL;
+	return nullptr;
 }
 
 char *get_current_ISO8601_time(void)
 {
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 	return time_to_ISO8601_time(&t);
 }
 
@@ -86,13 +85,13 @@ char *time_to_str(time_t s)
     const struct tm *tm = localtime(&s);
 
     if (!tm)
-        return NULL;
+        return nullptr;
 
     char *str = calloc(8, sizeof(char));
 
-    if (str ==NULL)
+    if (str ==nullptr)
     {
-       return NULL;
+       return nullptr;
     }        
 
     strftime(str, 6, "%H:%M", tm);
@@ -106,12 +105,12 @@ char *time_to_str2(time_t s)
     const struct tm *tm = localtime(&s);
 
     if (!tm)
-        return NULL;
+        return nullptr;
 
     char *str = calloc(24, sizeof(char));
 
-    if (str == NULL)
-        return NULL;
+    if (str == nullptr)
+        return nullptr;
 
     strftime(str, 16, "%H:%M:%S", tm);
 
@@ -124,7 +123,7 @@ char *time_to_str3(const time_t *t)
 	char *str;
 
 	if (!localtime_r(t, &lt))
-		return NULL;
+		return nullptr;
 
 	str = malloc(64);
 
@@ -132,5 +131,5 @@ char *time_to_str3(const time_t *t)
 		return str;
 
 	free(str);
-	return NULL;
+	return nullptr;
 }

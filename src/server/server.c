@@ -68,15 +68,15 @@ static const int DEFAULT_PORT = 3131;
 "Page not found - Go to <a href='/'>Main page</a></p></body>"))
 
 static struct option long_options[] = {
-	{"version", no_argument, NULL, 'v'},
-	{"help", no_argument, NULL, 'h'},
-	{"port", required_argument, NULL, 'p'},
-	{"wdir", required_argument, NULL, 'w'},
-	{"debug", required_argument, NULL, 'd'},
-	{"log-file", required_argument, NULL, 'l'},
-	{"sensor-log-file", required_argument, NULL, 0},
-	{"sensor-log-interval", required_argument, NULL, 0},
-	{NULL, 0, NULL, 0}
+	{"version", no_argument, nullptr, 'v'},
+	{"help", no_argument, nullptr, 'h'},
+	{"port", required_argument, nullptr, 'p'},
+	{"wdir", required_argument, nullptr, 'w'},
+	{"debug", required_argument, nullptr, 'd'},
+	{"log-file", required_argument, nullptr, 'l'},
+	{"sensor-log-file", required_argument, nullptr, 0},
+	{"sensor-log-interval", required_argument, nullptr, 0},
+	{nullptr, 0, nullptr, 0}
 };
 
 static struct server_data server_data;
@@ -143,7 +143,7 @@ static char *get_path(const char *url, const char *www_dir)
     size_t p_len = strlen(p);
     char *res = malloc(www_len + p_len + 1);
     
-    if (!res) return NULL;
+    if (!res) return nullptr;
     
     // Manual concatenation - safe and portable
     char *ptr = res;
@@ -173,7 +173,7 @@ create_response_api(const char *nurl, const char *method, unsigned int *rp_code)
 {
 	struct MHD_Response *resp;
 	const Psensor *s;
-	char *page = NULL;
+	char *page = nullptr;
 
 	if (!strcmp(nurl, URL_BASE_API_1_1_SENSORS))  {
 		page = sensors_to_json_string((const Psensor*const *)server_data.sensors);
@@ -213,7 +213,7 @@ create_response_api(const char *nurl, const char *method, unsigned int *rp_code)
 		return resp;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static struct MHD_Response *create_response_file(const char *nurl,
@@ -234,7 +234,7 @@ static struct MHD_Response *create_response_file(const char *nurl,
 			if (!st.st_size) {
 				fclose(file);
 				return MHD_create_response_from_buffer
-					(0, NULL, 0);
+					(0, nullptr, 0);
 			}
 
 			return MHD_create_response_from_callback
@@ -249,17 +249,17 @@ static struct MHD_Response *create_response_file(const char *nurl,
 		log_err("Failed to open: %s.", fpath);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 static int is_access_allowed(char *path)
 {
 	char *rpath;
-	int n, ret;
+	int ret;
 
-	rpath = realpath(path, NULL);
+	rpath = realpath(path, nullptr);
 	if (rpath) {
-		n = strlen(server_data.www_dir);
+		size_t n = strlen(server_data.www_dir);
 		if (!strncmp(server_data.www_dir, rpath, n)
 		    || !strcmp(rpath,
 			       "/usr/share/javascript/jquery/jquery.js")) {
@@ -286,7 +286,7 @@ static struct MHD_Response *
 create_response(const char *nurl, const char *method, unsigned int *rp_code)
 {
 	char *page, *fpath;
-	struct MHD_Response *resp = NULL;
+	struct MHD_Response *resp = nullptr;
 
 	if (!strncmp(nurl, URL_BASE_API_1_1, strlen(URL_BASE_API_1_1))) {
 		resp = create_response_api(nurl, method, rp_code);
@@ -342,7 +342,7 @@ static enum MHD_Result cbk_http_request(void *cls,
 	if (*upload_data_size)
 		return MHD_NO;
 
-	*ptr = NULL;		/* clear context pointer */
+	*ptr = nullptr;		/* clear context pointer */
 
 	log_debug(_("HTTP Request: %s"), url);
 
@@ -375,12 +375,12 @@ int main(int argc, char *argv[])
 	textdomain(PACKAGE);
 #endif
 
-	server_data.www_dir = NULL;
+	server_data.www_dir = nullptr;
 #ifdef HAVE_GTOP
-	server_data.psysinfo.interfaces = NULL;
+	server_data.psysinfo.interfaces = nullptr;
 #endif
-	log_file = NULL;
-	slog_file = NULL;
+	log_file = nullptr;
+	slog_file = nullptr;
 	slog_interval = 300;
 	port = DEFAULT_PORT;
 	cmdok = 1;
@@ -393,7 +393,7 @@ int main(int argc, char *argv[])
 		switch (optc) {
 		case 'w':
 			if (optarg)
-				server_data.www_dir = realpath(optarg, NULL);
+				server_data.www_dir = realpath(optarg, nullptr);
 			break;
 		case 'p':
 			if (optarg)
@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (!server_data.www_dir) {
-		server_data.www_dir = realpath(DEFAULT_WWW_DIR, NULL);
+		server_data.www_dir = realpath(DEFAULT_WWW_DIR, nullptr);
 		if (!server_data.www_dir) {
 			fprintf(stderr,
 				_("Webserver directory does not exist.\n"));
@@ -461,7 +461,10 @@ int main(int argc, char *argv[])
 
 	d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION,
 			     port,
-			     NULL, NULL, (void*)&cbk_http_request, server_data.sensors,
+			     nullptr,
+				 nullptr,
+				 (void*)&cbk_http_request,
+				 (void*)server_data.sensors,
 			     MHD_OPTION_END);
 	if (!d) {
 		log_err(_("Failed to create Web server."));
@@ -476,7 +479,7 @@ int main(int argc, char *argv[])
 		if (slog_interval <= 0)
 			slog_interval = 300;
 		ret = slog_activate(slog_file,
-				    (const Psensor**) server_data.sensors,
+				    (const Psensor* const *) server_data.sensors,
 				    &mutex,
 				    slog_interval);
 		if (!ret)

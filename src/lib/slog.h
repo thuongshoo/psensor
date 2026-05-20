@@ -19,11 +19,15 @@
 #ifndef PSENSOR_SLOG_H
 #define PSENSOR_SLOG_H
 
-#include <pthread.h>
+#include "bool.h"
 
+#include <pthread.h>
 #include "psensor.h"
 
-bool slog_activate(const char *, const Psensor *const *, pthread_mutex_t *, unsigned int s);
+bool slog_activate(const char *path,
+           const Psensor *const *ss,
+           pthread_mutex_t *mutex,
+           unsigned int p);
 void slog_close(void);
 
 #endif

@@ -29,7 +29,6 @@
 #include <sensors/sensors.h>
 #include <sensors/error.h>
 
-
 static int init_done;
 
 static const char *PROVIDER_NAME = "lmsensor";
@@ -48,7 +47,7 @@ static const sensors_chip_name *get_chip_name(Psensor *s)
         if (provider_data)
             return provider_data->chip;		
     }
-    return NULL;
+    return nullptr;
 }
 
 static const sensors_feature *get_feature(Psensor *s)
@@ -59,7 +58,7 @@ static const sensors_feature *get_feature(Psensor *s)
         if (provider_data)
             return provider_data->feature;
     }
-    return NULL;
+    return nullptr;
 }
 
 static void lmsensor_data_set(Psensor *s,
@@ -67,7 +66,7 @@ static void lmsensor_data_set(Psensor *s,
                   const struct sensors_feature *feature)
 {
     struct lmsensor_data *data = malloc(sizeof(struct lmsensor_data));
-    if (data != NULL)
+    if (data != nullptr)
     {
         data->chip = chip;
         data->feature = feature;
@@ -159,7 +158,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
     char name[200];
     
     if (sensors_snprintf_chip_name(name, 200, chip) < 0)
-        return NULL;
+        return nullptr;
 
     sensors_subfeature_type fault_subfeature;
     sensors_subfeature_type min_subfeature;
@@ -174,12 +173,12 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
         min_subfeature = SENSORS_SUBFEATURE_FAN_MIN;
     } else {
         log_err(_("%s: Wrong feature type."), PROVIDER_NAME);
-        return NULL;
+        return nullptr;
     }
 
     char* label = sensors_get_label(chip, feature);
     if (!label)
-        return NULL;
+        return nullptr;
 
     unsigned int type = SENSOR_TYPE_LMSENSOR;
     if (feature->type == SENSORS_FEATURE_TEMP)
@@ -187,7 +186,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
     else if (feature->type == SENSORS_FEATURE_FAN)
         type |= (SENSOR_TYPE_RPM|SENSOR_TYPE_FAN);
     else
-        return NULL;
+        return nullptr;
 
     char* id = malloc(strlen(PROVIDER_NAME)
             + 1
@@ -195,8 +194,8 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
             + 1
             + strlen(label)
             + 1);
-    if (id == NULL)
-        return NULL;
+    if (id == nullptr)
+        return nullptr;
 
     sprintf(id, "%s %s %s", PROVIDER_NAME, name, label);
 
@@ -217,19 +216,19 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
         cname = strdup(chip->prefix);
 
     Psensor *psensor = psensor_create(id, label, cname, type, values_max_length);
-    if (psensor == NULL)
+    if (psensor == nullptr)
     {
         free(cname);
         free(id);
         free(label);
-        return NULL;
+        return nullptr;
     }
 
     const sensors_subfeature *sf = sensors_get_subfeature(chip, feature, fault_subfeature);
-    if (sf && get_value(chip, sf))
+    if (sf && get_value(chip, sf) != UNKNOWN_DOUBLE_VALUE)
     {
         psensor_free(psensor);
-        return NULL;
+        return nullptr;
     }
 
     sf = sensors_get_subfeature(chip, feature, max_subfeature);
@@ -245,7 +244,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
     if (feature->type == SENSORS_FEATURE_TEMP
         && (get_temp_input(psensor) == UNKNOWN_DOUBLE_VALUE)) {
         psensor_free(psensor);
-        return NULL;
+        return nullptr;
     }
 
     return psensor;
@@ -253,7 +252,7 @@ lmsensor_psensor_create(const sensors_chip_name *chip,
 
 static void lmsensor_init(void)
 {
-    int err = sensors_init(NULL);
+    int err = sensors_init(nullptr);
 
     if (err) {
         log_err(_("%s: initialization failure: %s."),
@@ -265,7 +264,9 @@ static void lmsensor_init(void)
     }
 }
 
-void lmsensor_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
+void
+//ANALYZER_HOLDS_MALLOC(1)
+lmsensor_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
 {
     if (!init_done)
         lmsensor_init();
@@ -275,7 +276,7 @@ void lmsensor_psensor_list_append(Psensor ***sensors, unsigned int values_max_le
 
     int chip_nr = 0;
     const sensors_chip_name *chip;
-    while ((chip = sensors_get_detected_chips(NULL, &chip_nr))) {
+    while ((chip = sensors_get_detected_chips(nullptr, &chip_nr))) {
         int i = 0;
         const sensors_feature *feature;
         while ((feature = sensors_get_features(chip, &i))) {

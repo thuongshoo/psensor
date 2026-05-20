@@ -20,7 +20,7 @@
 /* Part of the code in this file is based on GNOME sensors applet code
  * hddtemp-plugin.c see http://sensors-applet.sourceforge.net/
  */
-
+#include <hdd.h>
 #include <locale.h>
 #include <libintl.h>
 #define _(str) gettext(str)
@@ -36,7 +36,6 @@
 #include <errno.h>
 #include <limits.h>
 
-#include <hdd.h>
 #include <psensor.h>
 
 static const char *PROVIDER_NAME = "hddtemp";
@@ -53,7 +52,7 @@ struct hdd_info {
 static char *fetch(void)
 {
     int sockfd;
-    ssize_t n;                            /* Sửa: dùng ssize_t cho read() */
+    ssize_t n;
     size_t output_length = 0;
     char *pc, *buffer;
     struct sockaddr_in address;
@@ -61,14 +60,14 @@ static char *fetch(void)
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         log_err(_("%s: failed to open socket."), PROVIDER_NAME);
-        return NULL;
+        return nullptr;
     }
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr(HDDTEMP_SERVER_IP_ADDRESS);
     address.sin_port = htons(HDDTEMP_PORT_NUMBER);
 
-    buffer = NULL;
+    buffer = nullptr;
 
     if (connect(sockfd,
             (struct sockaddr *)&address,
@@ -76,10 +75,10 @@ static char *fetch(void)
         log_err(_("%s: failed to open connection."), PROVIDER_NAME);
     } else {
         buffer = malloc(HDDTEMP_OUTPUT_BUFFER_LENGTH);
-        if (buffer == NULL) {           /* Thêm: kiểm tra malloc */
+        if (buffer == nullptr) {           /* Thêm: kiểm tra malloc */
             log_err(_("%s: memory allocation failed."), PROVIDER_NAME);
             close(sockfd);
-            return NULL;
+            return nullptr;
         }
 
         pc = buffer;
@@ -106,7 +105,7 @@ static int str_index(const char *str, char d)  /* Thêm const */
     const char *c;
     int i;
 
-    if (str == NULL || *str == '\0')    /* Dùng == NULL thay vì !str */
+    if (str == nullptr || *str == '\0')    /* Dùng == nullptr thay vì !str */
         return -1;
 
     c = str;
@@ -130,16 +129,16 @@ create_sensor(char *id, char *name, unsigned int values_max_length)
     t = SENSOR_TYPE_HDD | SENSOR_TYPE_HDDTEMP | SENSOR_TYPE_TEMP;
 
     char *chip = strdup(_("Disk"));
-    if (chip == NULL)                      /* Thêm: kiểm tra strdup */
-        return NULL;
+    if (chip == nullptr)                      /* Thêm: kiểm tra strdup */
+        return nullptr;
 
     Psensor *tmp_psensor = psensor_create(id, name, chip,
                   t,
                   values_max_length);
-    if (tmp_psensor == NULL)
+    if (tmp_psensor == nullptr)
     {
         free(chip);
-        return NULL;
+        return nullptr;
     }
     return tmp_psensor;
 }
@@ -151,9 +150,9 @@ static char *next_hdd_info(char *string, struct hdd_info *info)
     long temp_long;                       /* Sửa: dùng long cho strtol */
     char *endptr;
 
-    if (string == NULL || strlen(string) <= 5   /* Sửa: == NULL */
+    if (string == nullptr || strlen(string) <= 5   /* Sửa: == nullptr */
         || string[0] != '|')
-        return NULL;
+        return nullptr;
 
     /* skip first pipe */
     c = string + 1;
@@ -162,38 +161,38 @@ static char *next_hdd_info(char *string, struct hdd_info *info)
     idx_name_n = str_index(c, '|');
 
     if (idx_name_n == -1)
-        return NULL;
+        return nullptr;
     c = c + idx_name_n + 1;
 
     /* skip label */
     i = str_index(c, '|');
     if (i == -1)
-        return NULL;
+        return nullptr;
     c = c + i + 1;
 
     /* temp - Sửa: dùng strtol thay vì atoi */
     i = str_index(c, '|');
     if (i == -1)
-        return NULL;
+        return nullptr;
     
     errno = 0;
     temp_long = strtol(c, &endptr, 10);
     if (errno != 0 || endptr == c || temp_long > INT_MAX || temp_long < INT_MIN) {
         log_err(_("%s: invalid temperature value."), PROVIDER_NAME);
-        return NULL;
+        return nullptr;
     }
     c = c + i + 1;
 
     /* skip unit  */
     i = str_index(c, '|');
     if (i == -1)
-        return NULL;
+        return nullptr;
     c = c + i + 1;
 
     info->name = malloc((size_t)idx_name_n + 1);  /* Ép kiểu tường minh */
-    if (info->name == NULL) {               /* Thêm: kiểm tra malloc */
+    if (info->name == nullptr) {               /* Thêm: kiểm tra malloc */
         log_err(_("%s: memory allocation failed."), PROVIDER_NAME);
-        return NULL;
+        return nullptr;
     }
     strncpy(info->name, string + 1, (size_t)idx_name_n);
     info->name[idx_name_n] = '\0';
@@ -207,7 +206,7 @@ void
 hddtemp_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
 {
     char *hddtemp_output = fetch();
-    if (hddtemp_output == NULL)           /* Sửa: so sánh với NULL */
+    if (hddtemp_output == nullptr)
         return;
 
     if (hddtemp_output[0] != '|') {
@@ -222,20 +221,20 @@ hddtemp_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
     char *c = hddtemp_output;
 
     struct hdd_info info;
-    info.name = NULL;                     /* Khởi tạo để an toàn */
+    info.name = nullptr;                     /* Khởi tạo để an toàn */
     info.temp = 0;
     
     while (c && (c = next_hdd_info(c, &info))) {
         size_t id_len = strlen(PROVIDER_NAME) + 1 + strlen(info.name) + 1;
         char *id = malloc(id_len);
-        if (id == NULL) {               /* Thêm: kiểm tra malloc */
+        if (id == nullptr) {               /* Thêm: kiểm tra malloc */
             free(info.name);
             continue;
         }
         sprintf(id, "%s %s", PROVIDER_NAME, info.name);
 
         Psensor *sensor = create_sensor(id, info.name, values_max_length);
-        if (sensor != NULL)
+        if (sensor != nullptr)
         {
             psensor_list_append(sensors, sensor);
         }
@@ -261,7 +260,7 @@ static void update(Psensor **sensors, const struct hdd_info *info)
 
 static bool contains_hddtemp_sensor(Psensor **sensors)
 {
-    if (sensors == NULL)                  /* Sửa: so sánh với NULL */
+    if (sensors == nullptr)
         return false;
 
     while (*sensors) {
@@ -279,19 +278,19 @@ void hddtemp_psensor_list_update(Psensor **sensors)
 {
     char *hddtemp_output;
 
-    if (contains_hddtemp_sensor(sensors) == false)  /* Sửa: so sánh với false */
+    if (!contains_hddtemp_sensor(sensors))
         return;
 
     hddtemp_output = fetch();
 
-    if (hddtemp_output == NULL)           /* Sửa: so sánh với NULL */
+    if (hddtemp_output == nullptr)
         return;
 
     if (hddtemp_output[0] == '|') {
         char *c = hddtemp_output;
         struct hdd_info info;
 
-        info.name = NULL;
+        info.name = nullptr;
         info.temp = 0;
 
         while (c && (c = next_hdd_info(c, &info))) {

@@ -54,7 +54,7 @@ static void smart_update(Psensor *s, UDisksDriveAta *ata)
 	struct udisks_data *data = s->provider_data;
 	struct timeval t;
 
-	if (gettimeofday(&t, NULL) != 0) {
+	if (gettimeofday(&t, nullptr) != 0) {
 		log_err("%s: %s", PROVIDER_NAME, _("gettimeofday failed."));
 		return;
 	}
@@ -71,8 +71,8 @@ static void smart_update(Psensor *s, UDisksDriveAta *ata)
 
 	gboolean ret = udisks_drive_ata_call_smart_update_sync(ata,
 								variant,
-								NULL,
-								NULL);
+								nullptr,
+								nullptr);
 
 	if (!ret) {
 		log_functionname("%s: SMART update failed for %s",
@@ -99,8 +99,8 @@ void udisks2_psensor_list_update(Psensor **sensors)
 			if (!o)
 				continue;
 
-			UDisksDriveAta *drive_ata = NULL;
-			g_object_get(o, "drive-ata", &drive_ata, NULL);
+			UDisksDriveAta *drive_ata = nullptr;
+			g_object_get(o, "drive-ata", &drive_ata, nullptr);
 
 			smart_update(s, drive_ata);
 
@@ -118,7 +118,7 @@ void udisks2_psensor_list_append(Psensor ***sensors, unsigned int values_length)
 {
 	log_functionname_enter();
 
-	UDisksClient *client = udisks_client_new_sync(NULL, NULL);
+	UDisksClient *client = udisks_client_new_sync(nullptr, nullptr);
 	if (!client) {
 		log_err(_("%s: cannot get the udisks2 client"), PROVIDER_NAME);
 		log_functionname_exit();
@@ -133,12 +133,12 @@ void udisks2_psensor_list_append(Psensor ***sensors, unsigned int values_length)
 	for (GList *cur = objects; cur; cur = cur->next) {
 		const char *path = g_dbus_object_get_object_path(cur->data);
 
-		UDisksDrive *drive = NULL;
-		UDisksDriveAta *drive_ata = NULL;
+		UDisksDrive *drive = nullptr;
+		UDisksDriveAta *drive_ata = nullptr;
 		g_object_get(cur->data,
 			     "drive", &drive,
 			     "drive-ata", &drive_ata,
-			     NULL);
+			     nullptr);
 
 		if (!drive) {
 			log_functionname("Not a drive: %s", path);
@@ -182,14 +182,14 @@ void udisks2_psensor_list_append(Psensor ***sensors, unsigned int values_length)
 		unsigned int type = SENSOR_TYPE_TEMP | SENSOR_TYPE_UDISKS2 | SENSOR_TYPE_HDD;
 
 		Psensor *s = psensor_create(id, name, chip, type, values_length);
-		if (s == NULL) {
+		if (s == nullptr) {
 			free(chip);
 			free(name);
 			free(id);
 			continue;
 		}
 		struct udisks_data *data = malloc(sizeof(struct udisks_data));
-		if (data == NULL) {
+		if (data == nullptr) {
 			psensor_free(s);
 			continue;
 		}

@@ -21,6 +21,7 @@
  * Part of the following code is based on:
  * http://www.geekhideout.com/urlcode.shtml
  */
+
 #include "url.h"
 
 #include <ctype.h>
@@ -29,16 +30,24 @@
 
 char *url_normalize(const char *url)
 {
-	size_t n = strlen(url);
-	char *ret = strdup(url);
+	if (url == nullptr)
+		return nullptr;
 
-	if (url[n - 1] == '/')
+	size_t n = strlen(url);
+	
+	/* Nếu URL rỗng hoặc không kết thúc bằng '/', trả về bản copy */
+	if (n == 0 || url[n - 1] != '/')
+		return strdup(url);
+
+	/* Copy và bỏ dấu '/' cuối */
+	char *ret = strdup(url);
+	if (ret != nullptr)
 		ret[n - 1] = '\0';
 
 	return ret;
 }
 
-static char to_hex(char code)
+static char to_hex(unsigned char code)
 {
 	static const char hex[] = "0123456789abcdef";
 	return hex[code & 0x0f];
@@ -46,26 +55,28 @@ static char to_hex(char code)
 
 /*
  * Returns a url-encoded version of str.
+ * Caller must free the returned string.
  */
 char *url_encode(const char *str)
 {
-	char *c, *buf, *pbuf;
+	if (str == nullptr)
+		return nullptr;
 
-	buf = (char *)malloc(strlen(str) * 3 + 1);
-	if (buf == NULL)
-		return NULL;
-	pbuf = buf;
+	size_t len = strlen(str);
+	char *buf = (char *)malloc((len * 3) + 1);
+	if (buf == nullptr)
+		return nullptr;
 
-	c = (char *)str;
+	char *pbuf = buf;
+	const unsigned char *c = (const unsigned char *)str;
 
 	while (*c) {
-
 		if (isalnum(*c) ||
-		    *c == '.' || *c == '_' || *c == '-' || *c == '~')
-			*pbuf++ = *c;
-		else {
+		    *c == '.' || *c == '_' || *c == '-' || *c == '~') {
+			*pbuf++ = (char)*c;
+		} else {
 			*pbuf++ = '%';
-			*pbuf++ = to_hex(*c >> 4);
+			*pbuf++ = to_hex((unsigned char)(*c >> 4));
 			*pbuf++ = to_hex(*c & 0x0f);
 		}
 		c++;

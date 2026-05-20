@@ -98,10 +98,10 @@ static json_object *get_json_object(const char *url)
 	struct ucontent chunk;
 	json_object *obj;
 
-	obj = NULL;
+	obj = nullptr;
 
 	if (!curl)
-		return NULL;
+		return nullptr;
 
 	chunk.data = malloc(1);
 	chunk.len = 0;
@@ -126,7 +126,7 @@ static json_object *get_json_object(const char *url)
 Psensor **get_remote_sensors(const char *server_url,
 				    uint32_t values_max_length)
 {
-	Psensor **sensors = NULL;
+	Psensor **sensors = nullptr;
 	char *url = create_api_1_1_sensors_url(server_url);
 	json_object *obj = get_json_object(url);
 
@@ -142,7 +142,7 @@ Psensor **get_remote_sensors(const char *server_url,
 			sensors[i] = s;
 		}
 
-		sensors[n] = NULL;
+		sensors[n] = nullptr;
 		json_object_put(obj);
 	} else {
 		log_err(_("%s: Invalid content: %s"), PROVIDER_NAME, url);
@@ -151,9 +151,9 @@ Psensor **get_remote_sensors(const char *server_url,
 	free(url);
 
 	if (!sensors) {
-		/* Allocate a single NULL pointer to signify an empty list */
+		/* Allocate a single nullptr pointer to signify an empty list */
 		sensors = (Psensor **)calloc(1, sizeof(Psensor *));
-		*sensors = NULL;
+		*sensors = nullptr;
 	}
 
 	return sensors;

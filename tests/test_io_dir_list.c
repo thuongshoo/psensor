@@ -28,7 +28,7 @@ static int test_empty_dir(void)
 	int ret;
 	char **paths;
 
-	paths = dir_list("data/empty_dir", NULL);
+	paths = dir_list("data/empty_dir", nullptr);
 
 	ret = 0;
 	if (paths) {
@@ -48,12 +48,12 @@ static int test_2files_dir(void)
 	int ret, one, two;
 	char **paths, **cur;
 
-	paths = dir_list("data/2files_dir", NULL);
+	paths = dir_list("data/2files_dir", nullptr);
 
 	one = two = ret = 0;
 
 	if (!paths) {
-		fprintf(stderr, "ERROR: list is NULL\n");
+		fprintf(stderr, "ERROR: list is nullptr\n");
 		return 1;
 	}
 
