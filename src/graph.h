@@ -26,36 +26,24 @@
 
 extern bool is_smooth_curves_enabled;
 
-/* Graph rendering dimensions and offsets */
-typedef struct graph_info {
-	/* Plotting area position relative to canvas */
-	double plot_x;      /* X offset of plotting area */
-	double plot_y;      /* Y offset of plotting area */
-	
-	/* Plotting area dimensions */
-	double plot_width;  /* Width of data drawing area */
-	double plot_height; /* Height of data drawing area */
-	
-	/* Total canvas dimensions */
-	double canvas_width;  /* Total drawing area width */
-	double canvas_height; /* Total drawing area height */
+/*
+ * Kích thước và vị trí vùng vẽ đồ thị.
+ */
+typedef struct graph_info
+{
+    double plot_x;
+    double plot_y;
+    double plot_width;
+    double plot_height;
+    double canvas_width;
+    double canvas_height;
 } graph_info_st;
-// ┌─────────────────────────────────────────┐
-// │ Canvas (width x height)                 │
-// │                                         │
-// │   ┌─────────────────────────────┐       │
-// │   │ Plotting area               │       │
-// │   │ (plot_width x plot_height)  │       │
-// │   │                             │       │
-// │   │   [Data curves drawn here]  │       │
-// │   │                             │       │
-// │   └─────────────────────────────┘       │
-// │    ↑plot_y                              │
-// │    └──→plot_x                           │
-// │                                         │
-// └─────────────────────────────────────────┘
 
-typedef struct {
+/*
+ * Context chứa tất cả dữ liệu cần để vẽ 1 lần đồ thị.
+ */
+typedef struct
+{
     graph_info_st layout;
     char *str_min;
     char *str_max;
@@ -64,44 +52,154 @@ typedef struct {
     char *str_etime;
     time_t begin_time;
     time_t end_time;
-	ALL_MINMAX all_minmax;
+    ALL_MINMAX all_minmax;
 } GraphDrawingContext;
 
-
 void graph_update(Psensor **sensors,
-		  GtkWidget *w_graph,
-		  struct config *config,
-		  GtkWidget *window);
+                  GtkWidget *w_graph,
+                  struct config *config,
+                  GtkWidget *window);
 
-void
-redraw_graph(cairo_surface_t *graph_surface,
-	         cairo_t *cr,
-	         const Psensor *const *sensors,
-	         GtkWidget *w_graph,
-	         const struct config *config,
-	         GtkWidget *window);
+/*
+ * Vẽ toàn bộ đồ thị lên surface.
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ */
+void redraw_graph(cairo_surface_t *graph_surface,
+                  cairo_t *cr,
+                  const Psensor *const *graph_enabled_sensors,
+                  GtkWidget *w_graph,
+                  const struct config *config,
+                  GtkWidget *window);
 
-/* chỉ vẽ background (nền, trục, nhãn) */
-void redraw_background_only(cairo_surface_t *surface, cairo_t *cr,
-                            const Psensor *const *sensors, GtkWidget *w_graph,
-                            const struct config *config, GtkWidget *window);
+/*
+ * Vẽ plot background (nền + grid lines).
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ */
+void draw_plot_background(cairo_surface_t *surface,
+                          cairo_t *cr,
+                          const Psensor *const *graph_enabled_sensors,
+                          GtkWidget *w_graph,
+                          const struct config *config,
+                          GtkWidget *window);
 
-/* chỉ vẽ curves (từ đầu) */
-void redraw_curves_only(cairo_surface_t *surface, cairo_t *cr,
-                        const Psensor *const *sensors, GtkWidget *w_graph,
-                        const struct config *config, GtkWidget *window);
+/*
+ * Vẽ curves lên surface (surface chỉ chứa vùng plot, không có labels).
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ */
+void draw_curves_only(cairo_surface_t *surface,
+                      cairo_t *cr,
+                      const Psensor *const *graph_enabled_sensors,
+                      GtkWidget *w_graph,
+                      const struct config *config,
+                      GtkWidget *window,
+                      double fixed_min, // THÊM
+                      double fixed_max);
+void draw_curves_only1(cairo_surface_t *surface,
+                       cairo_t *cr,
+                       const Psensor *const *graph_enabled_sensors,
+                       GtkWidget *w_graph,
+                       const struct config *config,
+                       GtkWidget *window);
 
-/* Compute the number of measures which must be kept. */
-unsigned int compute_values_max_length(const struct config *);
+/*
+ * Vẽ left labels (min, max, unit) lên surface nhỏ.
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ * font_metrics: font metrics đã cache.
+ */
+void draw_left_labels(cairo_surface_t *surface,
+                      cairo_t *cr,
+                      const Psensor *const *graph_enabled_sensors,
+                      const struct config *config,
+                      GtkWidget *window,
+                      const FontMetrics *font_metrics,
+                      char **out_str_min,
+                      char **out_str_max,
+                      char **out_str_unit);
 
-/* dịch chuyển */
+/*
+ * Vẽ bottom labels (begin/end time) lên surface nhỏ.
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ * font_metrics: font metrics đã cache.
+ */
+void draw_bottom_labels(cairo_surface_t *surface,
+                        cairo_t *cr,
+                        const Psensor *const *graph_enabled_sensors,
+                        const struct config *config,
+                        GtkWidget *window,
+                        const FontMetrics *font_metrics,
+                        char **out_str_btime,
+                        char **out_str_etime);
+
+/*
+ * Dịch graph_surface sang trái shift_pixels pixel, vẽ data mới.
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ */
 void graph_shift_and_append(cairo_surface_t *graph_surface,
-                            const Psensor * const *sensors,
+                            const Psensor *const *graph_enabled_sensors,
                             GtkWidget *w_graph,
                             const struct config *config,
                             GtkWidget *window,
                             double *last_values_buffer,
-                            size_t buffer_size);
-                            
-const Psensor **list_filter_graph_enabled(const Psensor * const *sensors);
+                            size_t buffer_size,
+                            int shift_pixels,
+                            int plot_height,
+                            double fixed_min, // TRUYỀN TỪ WD
+                            double fixed_max);
+
+void graph_shift_and_append1(cairo_surface_t *graph_surface,
+                             const Psensor *const *graph_enabled_sensors,
+                             GtkWidget *w_graph,
+                             const struct config *config,
+                             GtkWidget *window,
+                             double *last_values_buffer,
+                             size_t buffer_size,
+                             int shift_pixels);
+
+/*
+ * Tính số pixel mỗi data point chiếm.
+ */
+double calculate_pixels_per_point(const struct config *cfg, int plot_width);
+
+/*
+ * Tính ngưỡng dịch tối thiểu từ DPI (1mm).
+ */
+int calculate_min_shift_pixels(GtkWidget *widget);
+
+/*
+ * Đo và cache font metrics.
+ */
+void measure_font_metrics(cairo_t *cr, FontMetrics *fm);
+
+/*
+ * Lấy measure cuối cùng hợp lệ từ sensor (ring buffer safe).
+ */
+double get_last_valid_value(const Psensor *s);
+
+/*
+ * Lọc danh sách sensors, chỉ giữ sensor có graph_enabled = TRUE.
+ */
+const Psensor **list_filter_graph_enabled(const Psensor *const *sensors);
+
+/*
+ * Tính fixed range 20°C.
+ */
+void calculate_fixed_plot_range(const Psensor *const *graph_enabled_sensors,
+                                double *out_min,
+                                double *out_max);
+
+unsigned int compute_values_max_length(const struct config *);
+
+time_t get_graph_end_time_s(const Psensor *const *all_sensors);
+time_t get_graph_begin_time_s(const struct config *cfg, time_t etime);
+
+/* horizontal padding */
+extern const int GRAPH_H_PADDING;
+/* vertical padding */
+extern const int GRAPH_V_PADDING;
+
+/* Foreground color of the current desktop theme */
+extern GdkRGBA theme_fg_color;
+/* Background color of the current desktop theme */
+extern GdkRGBA theme_bg_color;
+
 #endif
