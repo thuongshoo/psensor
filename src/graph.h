@@ -23,21 +23,9 @@
 
 #include <cfg.h>
 #include <psensor.h>
+#include <graph_context.h>
 
-extern bool is_smooth_curves_enabled;
-
-/*
- * Kích thước và vị trí vùng vẽ đồ thị.
- */
-typedef struct graph_info
-{
-    double plot_x;
-    double plot_y;
-    double plot_width;
-    double plot_height;
-    double canvas_width;
-    double canvas_height;
-} graph_info_st;
+#define BEGIN_END_TIME_FONT "sans-serif"
 
 /*
  * Context chứa tất cả dữ liệu cần để vẽ 1 lần đồ thị.
@@ -54,6 +42,14 @@ typedef struct
     time_t end_time;
     ALL_MINMAX all_minmax;
 } GraphDrawingContext;
+
+typedef void (*draw_sensor_curve_function_type)(
+    GraphContext *ctx,
+    const Psensor *sensor, cairo_t *cr,
+    double min, double max,
+    time_t begin_time, time_t end_time,
+    double plot_x, double plot_y,
+    double plot_width, double plot_height);
 
 void graph_update(Psensor **sensors,
                   GtkWidget *w_graph,
@@ -72,88 +68,25 @@ void redraw_graph(cairo_surface_t *graph_surface,
                   GtkWidget *window);
 
 /*
- * Vẽ plot background (nền + grid lines).
- * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
- */
-void draw_plot_background(cairo_surface_t *surface,
-                          cairo_t *cr,
-                          const Psensor *const *graph_enabled_sensors,
-                          GtkWidget *w_graph,
-                          const struct config *config,
-                          GtkWidget *window);
-
-/*
- * Vẽ curves lên surface (surface chỉ chứa vùng plot, không có labels).
- * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
- */
-void draw_curves_only(cairo_surface_t *surface,
-                      cairo_t *cr,
-                      const Psensor *const *graph_enabled_sensors,
-                      GtkWidget *w_graph,
-                      const struct config *config,
-                      GtkWidget *window,
-                      double fixed_min, // THÊM
-                      double fixed_max);
-void draw_curves_only1(cairo_surface_t *surface,
-                       cairo_t *cr,
-                       const Psensor *const *graph_enabled_sensors,
-                       GtkWidget *w_graph,
-                       const struct config *config,
-                       GtkWidget *window);
-
-/*
  * Vẽ left labels (min, max, unit) lên surface nhỏ.
  * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
  * font_metrics: font metrics đã cache.
  */
-void draw_left_labels(cairo_surface_t *surface,
+void draw_left_labels(GraphContext *ctx,
                       cairo_t *cr,
-                      const Psensor *const *graph_enabled_sensors,
+                      // const Psensor *const *graph_enabled_sensors,
                       const struct config *config,
-                      GtkWidget *window,
-                      const FontMetrics *font_metrics,
-                      char **out_str_min,
-                      char **out_str_max,
-                      char **out_str_unit);
+                      GtkWidget *window);
 
 /*
- * Vẽ bottom labels (begin/end time) lên surface nhỏ.
- * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
- * font_metrics: font metrics đã cache.
+ * Vẽ nhãn thời gian (begin / end time) lên surface đã cache.
+ * Mọi kích thước được lấy từ GraphContext, không gọi cairo_get_width/height.
  */
-void draw_bottom_labels(cairo_surface_t *surface,
+void draw_bottom_labels(GraphContext *ctx,
                         cairo_t *cr,
-                        const Psensor *const *graph_enabled_sensors,
+                        // const Psensor *const *graph_enabled_sensors,
                         const struct config *config,
-                        GtkWidget *window,
-                        const FontMetrics *font_metrics,
-                        char **out_str_btime,
-                        char **out_str_etime);
-
-/*
- * Dịch graph_surface sang trái shift_pixels pixel, vẽ data mới.
- * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
- */
-void graph_shift_and_append(cairo_surface_t *graph_surface,
-                            const Psensor *const *graph_enabled_sensors,
-                            GtkWidget *w_graph,
-                            const struct config *config,
-                            GtkWidget *window,
-                            double *last_values_buffer,
-                            size_t buffer_size,
-                            int shift_pixels,
-                            int plot_height,
-                            double fixed_min, // TRUYỀN TỪ WD
-                            double fixed_max);
-
-void graph_shift_and_append1(cairo_surface_t *graph_surface,
-                             const Psensor *const *graph_enabled_sensors,
-                             GtkWidget *w_graph,
-                             const struct config *config,
-                             GtkWidget *window,
-                             double *last_values_buffer,
-                             size_t buffer_size,
-                             int shift_pixels);
+                        GtkWidget *window);
 
 /*
  * Tính số pixel mỗi data point chiếm.
@@ -168,38 +101,63 @@ int calculate_min_shift_pixels(GtkWidget *widget);
 /*
  * Đo và cache font metrics.
  */
-void measure_font_metrics(cairo_t *cr, FontMetrics *fm);
+void measure_font_metrics_once(cairo_t *cr, GraphContext *ctx);
 
 /*
  * Lấy measure cuối cùng hợp lệ từ sensor (ring buffer safe).
  */
-double get_last_valid_value(const Psensor *s);
+double get_last_valid_value(const Psensor *s, bool is_smooth_curves_enabled);
 
 /*
  * Lọc danh sách sensors, chỉ giữ sensor có graph_enabled = TRUE.
  */
-const Psensor **list_filter_graph_enabled(const Psensor *const *sensors);
+const Psensor **list_filter_graph_enabled1(const Psensor *const *sensors);
 
 /*
  * Tính fixed range 20°C.
  */
-void calculate_fixed_plot_range(const Psensor *const *graph_enabled_sensors,
+void calculate_fixed_plot_range(GraphContext *ctx,
+                                const Psensor *const *graph_enabled_sensors,
                                 double *out_min,
                                 double *out_max);
 
 unsigned int compute_values_max_length(const struct config *);
 
-time_t get_graph_end_time_s(const Psensor *const *all_sensors);
+time_t get_graph_end_time_s(const Psensor *const *all_sensors, bool is_smooth_curves_enabled);
 time_t get_graph_begin_time_s(const struct config *cfg, time_t etime);
-
-/* horizontal padding */
-extern const int GRAPH_H_PADDING;
-/* vertical padding */
-extern const int GRAPH_V_PADDING;
 
 /* Foreground color of the current desktop theme */
 extern GdkRGBA theme_fg_color;
 /* Background color of the current desktop theme */
 extern GdkRGBA theme_bg_color;
+
+void draw_plot_background(GraphContext *ctx, cairo_t *cr,
+                          const struct config *config);
+
+void draw_curves_only(GraphContext *ctx, cairo_t *cr,
+                      const Psensor *const *graph_enabled_sensors,
+                      bool is_smooth_curves_enabled);
+// void draw_sensor_linear_curve(GraphContext *ctx, const Psensor *s, cairo_t *cr,
+//                               double min, double max,
+//                               time_t begin_time, time_t ending_time,
+//                               double plot_x, double plot_y,
+//                               double plot_width, double plot_height);
+
+/*
+ * Dịch graph_surface sang trái shift_pixels pixel, vẽ data mới.
+ * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
+ */
+void graph_shift_and_append(GraphContext *ctx,
+                            const Psensor *const *graph_enabled_sensors,
+                            const Pconfig *config,
+                            int shift_pixels);
+void update_theme(GraphContext *ctx);
+
+void ctx_display_range_get(const GraphContext *ctx,
+                           PsensorType type,
+                           double *out_min, double *out_max);
+void ctx_last_display_range_get(const GraphContext *ctx,
+                                PsensorType type,
+                                double *out_min, double *out_max);
 
 #endif

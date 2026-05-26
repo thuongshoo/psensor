@@ -35,22 +35,31 @@
 
 #define PSENSOR_ICON PACKAGE_NAME
 
-struct ui_psensor
+#include <sys/syscall.h>
+#define gettid() syscall(SYS_gettid)
+
+typedef struct ui_psensor
 {
-	Psensor **sensors;
-	/* mutex which MUST be used for accessing sensors.*/
-	pthread_mutex_t sensors_mutex;
+    Psensor **sensors;
+    /* mutex which MUST be used for accessing sensors.*/
+    pthread_mutex_t sensors_mutex;
 
-	Pconfig *config;
+    Pconfig *config;
 
-	GtkWidget *main_window;
-	GtkWidget *popup_menu;
+    // Cache cho danh sách graph
+    pthread_mutex_t graph_mutex;
+    const Psensor **graph_cache;
+    guint graph_version;
 
-	GtkListStore *sensors_store;
-	GtkTreeView *sensors_tree;
+    GtkWidget *main_window;
+    GtkWidget *popup_menu;
 
-	uint32_t graph_update_interval;
-};
+    GtkListStore *sensors_store;
+    GtkTreeView *sensors_tree;
+
+    uint32_t graph_update_interval;
+    bool should_exit;
+} UI_psensor;
 
 /*
  * Update the window according to the configuration.

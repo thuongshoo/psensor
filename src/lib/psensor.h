@@ -217,13 +217,13 @@ typedef struct minmax_st
 
 typedef struct all_minmax_st
 {
-    MINMAX temp;
-    MINMAX rpm;
+    MINMAX temperature;
+    MINMAX revolutions_per_minute;
     MINMAX percent;
     time_t end_time;
 } ALL_MINMAX;
 
-ALL_MINMAX get_all_minmax_value(const Psensor *const *all_sensors);
+ALL_MINMAX get_all_minmax_values(const Psensor *const *all_sensors);
 
 char *psensor_current_value_to_str(const Psensor *, Temperature_Unit temperature_unit);
 

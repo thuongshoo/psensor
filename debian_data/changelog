@@ -5,7 +5,7 @@ psensor-fork (1.3.0-1) noble; urgency=medium
   * Refactor codebase to follow modern coding conventions
   * Fix multiple coding rule violations
 
- -- thuongshoo <yuyoonshoo@gmail.com>  Tue, 12 May 2026 10:30:00 +0000
+ -- thuongshoo <yuyoonshoo@gmail.com>  Tue, 28 Jun 2026 10:30:00 +0000
 
 psensor-fork (1.2.1-1) noble; urgency=medium
 
