@@ -30,12 +30,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
-#include <pmutex.h>
+#include <sys/syscall.h>
 
 #include <gtk/gtk.h>
 
-
-
+#include <pmutex.h>
 #include <amd.h>
 #include <cfg.h>
 #include <graph.h>
@@ -57,6 +56,7 @@
 #include <ui_sensorlist.h>
 #include <ui_status.h>
 #include <ui_unity.h>
+#include <glib.h>
 #include "copyright.h"
 
 #define ONE_SECOND 1000U
@@ -127,7 +127,7 @@ update_psensor_values_size(Psensor **sensors, const struct config *cfg)
                                   cfg->sensor_values_max_length);
         else
         {
-            //Currently all sensors share the same buffer size so no need to check all
+            // Currently all sensors share the same buffer size so no need to check all
             return;
         }
     }
@@ -139,13 +139,16 @@ static void *update_measures(void *data)
     Pconfig *cfg = ui->config;
 
     pthread_setname_np(pthread_self(), "update_measures");
-    while (1)
+    while (!ui->should_exit)
     {
         update_measures_lock(&ui->sensors_mutex);
 
         Psensor **sensors = ui->sensors;
         if (!sensors)
+        {
+            update_measures_unlock(&ui->sensors_mutex);
             pthread_exit(nullptr);
+        }
 
         update_psensor_values_size(sensors, cfg);
 
@@ -163,15 +166,18 @@ static void *update_measures(void *data)
         psensor_log_measures(sensors);
 
         if (count > 0)
-        {
             cfg->is_new_data = true;
-        }
+
         unsigned int period = (unsigned int)cfg->sensor_update_interval;
+
+        increase_skipped_draw(&cfg->graph_ctx);
 
         update_measures_unlock(&ui->sensors_mutex);
 
         sleep(period);
     }
+
+    return nullptr;
 }
 
 static void indicators_update(struct ui_psensor *ui)
@@ -219,21 +225,52 @@ static int ui_refresh_thread_unlock(pthread_mutex_t *m)
 {
     return pmutex_unlock(m);
 }
-static gboolean ui_refresh_thread(gpointer data)
+
+static void update_sensor_list_thread(gpointer data, gpointer user_data)
 {
+    pthread_setname_np(pthread_self(), "list-update");
+
     struct ui_psensor *ui = (struct ui_psensor *)data;
 
-    pthread_setname_np(pthread_self(), "ui_refresh_thread");
+    ui_refresh_thread_lock(&ui->sensors_mutex);
+    ui_sensorlist_update(ui, false);
+    ui_refresh_thread_unlock(&ui->sensors_mutex);
 
+    // Xong việc với danh sách text, giờ yêu cầu vẽ đồ thị
+    // Phải dùng g_idle_add vì GTK không cho gọi queue_draw từ thread khác
+    g_idle_add((GSourceFunc)queue_redraw_idle, ui_get_graph_widget());
+}
+
+// ===== THREAD POOL CHO XỬ LÝ CẢM BIẾN =====
+static GThreadPool *sensor_update_pool = nullptr;
+
+static void init_sensor_update_pool(void)
+{
+    if (sensor_update_pool)
+        return;
+
+    sensor_update_pool = g_thread_pool_new(
+        (GFunc)update_sensor_list_thread,
+        nullptr,
+        1, // 1 thread, tránh chồng lấn dữ liệu
+        FALSE,
+        nullptr);
+}
+
+static gboolean ui_refresh_thread(gpointer data)
+{
+    pthread_setname_np(pthread_self(), "ui-timer");
+
+    struct ui_psensor *ui = (struct ui_psensor *)data;
     gboolean ret = TRUE;
-    const Pconfig *config = ui->config;
+    Pconfig *config = ui->config;
 
     if (!config->is_new_data)
     {
         queue_another_execution(ui);
         return FALSE;
     }
-    ////
+
     ui_refresh_thread_lock(&ui->sensors_mutex);
 
     if (is_appindicator_supported() || is_status_supported())
@@ -246,45 +283,18 @@ static gboolean ui_refresh_thread(gpointer data)
         ui->graph_update_interval = config->graph_update_interval;
         ret = FALSE;
     }
-    
+
     ui_refresh_thread_unlock(&ui->sensors_mutex);
-    ////
-    if (!should_update_ui(ui)) {
-        // App không active, tăng counter
-        struct config *cfg = ui->config;
-        MyWidgetData *widget_data = &cfg->widget_data;
-        widget_data->skipped_redraws++;
-        
+
+    if (!should_update_ui(ui))
+    {
         queue_another_execution(ui);
         return G_SOURCE_REMOVE;
     }
 
-    ui_sensorlist_update(ui, false);
-
-    // ===== KHI QUAY LẠI, NẾU CÓ SKIPPED_REDRAWS > 0 =====
-    struct config *cfg = ui->config;
-    MyWidgetData *widget_data = &cfg->widget_data;
-    
-    if (widget_data->skipped_redraws > 0) {
-        // Bỏ qua tất cả các lần dịch đã bỏ qua, vẽ lại toàn bộ
-        g_print("Recovering from %lu skipped redraws\n", widget_data->skipped_redraws);
-        
-        // Force full redraw
-        widget_data->cache_valid = FALSE;
-        widget_data->background_valid = FALSE;
-        widget_data->shift_count = 0;
-        widget_data->skipped_redraws = 0;
-        
-        // Reset last_values buffer
-        if (widget_data->last_values && widget_data->last_sensors_count > 0) {
-            for (int i = 0; i < widget_data->last_sensors_count; i++) {
-                widget_data->last_values[i] = UNKNOWN_DOUBLE_VALUE;
-            }
-        }
-    }
-    // Instead of direct drawing, request a widget redraw
-    g_idle_add((GSourceFunc)queue_redraw_idle,
-               ui_get_graph_widget());
+    //  Đẩy việc cập nhật danh sách cảm biến sang thread riêng
+    init_sensor_update_pool();
+    g_thread_pool_push(sensor_update_pool, ui, nullptr);
 
     if (ret == FALSE)
         queue_another_execution(ui);
@@ -343,33 +353,33 @@ associate_cb_alarm_raised(Psensor **sensors, struct ui_psensor *ui)
 
 /**
  * @brief Associates user-defined names with sensor objects
- * 
+ *
  * This function iterates through an array of sensor pointers and replaces
  * the default sensor names (from lmsensor) with user-defined names
  * retrieved from the configuration system. If a user has configured a
  * custom name for a sensor ID, that name will replace the original.
- * 
+ *
  * @param[in,out] sensors Double pointer to an array of psensor pointers.
  *                        The array must be nullptr-terminated. The function
  *                        modifies the 'name' field of each sensor struct
  *                        if a user-defined name exists in configuration.
- * 
+ *
  * @note The function takes ownership of the allocated name string from
  *       config_get_sensor_name() and frees the original name. The sensor
  *       array itself is not modified, only the name fields of individual
  *       sensor structures.
- * 
+ *
  * @warning The original sensor names are freed when replaced. Ensure
  *          the names were dynamically allocated.
  */
 static void associate_preferences(Psensor **sensors)
 {
-    Psensor **sensor_cur = sensors;  /* Current position in sensor array */
+    Psensor **sensor_cur = sensors; /* Current position in sensor array */
 
     /* Iterate through nullptr-terminated array of sensor pointers */
     while (*sensor_cur)
     {
-        Psensor *s = *sensor_cur;  /* Current sensor being processed */
+        Psensor *s = *sensor_cur; /* Current sensor being processed */
 
         /* Retrieve user-defined name from configuration using sensor ID */
         char *n = config_get_sensor_name(s->id);
@@ -383,7 +393,7 @@ static void associate_preferences(Psensor **sensors)
             s->name = n;
         }
 
-        sensor_cur++;  /* Move to next sensor in the array */
+        sensor_cur++; /* Move to next sensor in the array */
     }
 }
 
@@ -554,6 +564,7 @@ int main(int argc, char **argv)
     int optc, cmdok, opti, ret;
     char *url = nullptr;
 
+    pthread_setname_np(pthread_self(), "mymain");
     // cpu_set_t mask;
     // CPU_ZERO(&mask);
     // CPU_SET(0, &mask); // Only use CPU 0
@@ -561,8 +572,6 @@ int main(int argc, char **argv)
 
     program_name = argv[0];
 
-    #pragma message("Compiling at: " __DATE__ " " __TIME__)
-    printf("2 DATE TIME: %s %s \n", __TIME__, __DATE__);
     // char *current_locale = setlocale(LC_ALL, "");
     // printf("Current locale: %s\n", current_locale ? current_locale : "nullptr");
     // printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "nullptr");
@@ -642,8 +651,8 @@ int main(int argc, char **argv)
         exit(EXIT_SUCCESS);
     }
 
-    struct ui_psensor ui;
-    memset((void *)&ui, 0, sizeof(struct ui_psensor));
+    UI_psensor ui;
+    memset((void *)&ui, 0, sizeof(UI_psensor));
 
     g_signal_connect(app, "activate", G_CALLBACK(cb_activate), &ui);
 
@@ -660,6 +669,7 @@ int main(int argc, char **argv)
     gtk_init(nullptr, nullptr);
 
     pmutex_init(&ui.sensors_mutex);
+    pmutex_init(&ui.graph_mutex);
 
     ui.config = config_load();
 
@@ -668,7 +678,7 @@ int main(int argc, char **argv)
 
     if (ui.config->slog_enabled)
         slog_activate(nullptr,
-                      (const Psensor*const *) ui.sensors,
+                      (const Psensor *const *)ui.sensors,
                       &ui.sensors_mutex,
                       config_get_slog_interval());
 
@@ -679,9 +689,9 @@ int main(int argc, char **argv)
     ui_window_create(&ui);
 
     ui_enable_alpha_channel(&ui);
-    
-    pthread_t thread;
-    ret = pthread_create(&thread, nullptr, update_measures, &ui);
+
+    pthread_t update_measures_thread;
+    ret = pthread_create(&update_measures_thread, nullptr, update_measures, &ui);
     if (ret)
         log_err(_("Failed to create thread for monitoring sensors"));
 
@@ -696,7 +706,7 @@ int main(int argc, char **argv)
 
     // /*
     //  * hack, did not find a cleaner solution.
-    //  * wait 30s to ensure that the status icon is attempted to be
+    //  * wait 1s to ensure that the status icon is attempted to be
     //  * drawn before determining whether the main window must be
     //  * show.
     //  */
@@ -712,9 +722,10 @@ int main(int argc, char **argv)
     /* main loop */
     gtk_main();
 
-    cleanup(&ui);
+    ui.should_exit = true;
+    pthread_join(update_measures_thread, nullptr);
 
-    pthread_join(thread, nullptr);
+    cleanup(&ui);
 
     log_debug("Quitting...");
     log_close();

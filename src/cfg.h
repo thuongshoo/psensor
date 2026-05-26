@@ -25,6 +25,7 @@
 #include <gdk/gdk.h>
 
 #include <temperature.h>
+#include <graph_context.h>
 
 enum sensorlist_position
 {
@@ -34,125 +35,6 @@ enum sensorlist_position
     SENSORLIST_POSITION_BOTTOM = 3
 };
 const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
-
-/*
- * Font metrics đã được cache, chỉ đo 1 lần.
- */
-typedef struct
-{
-    double font_height;
-    double digit_width;
-    double colon_width;
-    double degree_width;
-    gboolean measured;
-} FontMetrics;
-
-typedef struct
-{
-    // Canvas lớn (chứa toàn bộ đồ thị)
-    cairo_surface_t *canvas;
-    cairo_surface_t *background;
-
-    // Các surface chính
-    cairo_surface_t *graph_surface;
-    cairo_surface_t *plot_bg_surface;
-    cairo_surface_t *left_labels_surface;
-    cairo_surface_t *btm_labels_surface;
-
-    // Viewport
-    double viewport_x;
-    double viewport_width;
-    double viewport_height;
-
-    // Kích thước canvas
-    double canvas_width;
-    double canvas_height;
-
-    // Dự phòng cho min/max
-    double global_min;
-    double global_max;
-    double min_temp_range;
-
-    // Fixed min/max cho trục đứng
-    double fixed_plot_min;
-    double fixed_plot_max;
-    gboolean plot_range_initialized;
-
-    // Các field hiện có
-    int last_width, last_height;
-    gboolean cache_valid;
-    gboolean background_valid;
-
-    int shift_count;
-    double *last_values;
-    size_t last_sensors_count;
-    gboolean last_values_initialized;
-    size_t skipped_redraws;
-    time_t last_shift_time;
-    time_t last_drawn_timestamp;
-
-    // Shift và pixels
-    double pixels_per_point;
-    double min_shift_pixels;
-
-    // Cache labels
-    char *cached_str_min;
-    char *cached_str_max;
-    char *cached_str_unit;
-    char *cached_str_btime;
-    char *cached_str_etime;
-    gboolean labels_valid;
-
-    // Font metrics cache
-    FontMetrics font_metrics;
-} MyWidgetData;
-
-typedef struct
-{
-    // Canvas lớn (chứa toàn bộ đồ thị)
-    cairo_surface_t *canvas;     // Canvas lớn hơn viewport
-    cairo_surface_t *background; // Background cố định
-
-    cairo_surface_t *graph_surface;      // Đường cong
-    cairo_surface_t *background_surface; // Nền + trục
-
-    // Viewport (phần hiển thị ra màn hình)
-    double viewport_x;      // Vị trí x của viewport trên canvas
-    double viewport_width;  // Chiều rộng viewport (bằng plot_width)
-    double viewport_height; // Chiều cao viewport (bằng plot_height)
-
-    // Kích thước canvas
-    double canvas_width;  // = viewport_width * 2 (hoặc lớn hơn)
-    double canvas_height; // = viewport_height + margin_top + margin_bottom
-
-    // Dự phòng cho min/max
-    double global_min;     // Min tuyệt đối (có dự phòng)
-    double global_max;     // Max tuyệt đối (có dự phòng)
-    double min_temp_range; // Biên độ tối thiểu (mặc định 20 độ)
-
-    // Fixed min/max cho trục đứng (có dự phòng)
-    double fixed_min;
-    double fixed_max;
-    gboolean minmax_initialized;
-
-    // Các field hiện có
-    int last_width, last_height;
-    gboolean cache_valid;
-    gboolean background_valid;
-
-    int shift_count;
-    double *last_values;
-    size_t last_sensors_count;
-    gboolean last_values_initialized;
-    size_t skipped_redraws;
-    time_t last_shift_time;
-    time_t last_drawn_timestamp;
-    double pixel_per_point;
-    int total_points;
-
-    double pixels_per_point; // Số pixel cho mỗi data point
-    double min_shift_pixels; // Ngưỡng dịch tối thiểu (từ mm)
-} MyWidgetData1;
 
 typedef struct config
 {
@@ -174,12 +56,14 @@ typedef struct config
     uint32_t slog_interval;
     double graph_bg_alpha;
 
-    MyWidgetData widget_data;
+    GraphContext graph_ctx;
     bool alpha_channel_enabled;
     bool window_restore_enabled;
     bool slog_enabled;
     bool is_new_data;
     bool hide_on_startup;
+
+    bool is_smooth_curves_enabled;
 
     pthread_mutex_t graph_enabled_mutex;
 
@@ -194,6 +78,7 @@ void config_cleanup(void);
 
 GdkRGBA *config_get_sensor_color(const char *);
 void config_set_sensor_color(const char *, const GdkRGBA *);
+gboolean config_get_sensor_color_into(const char *sid, GdkRGBA *out_color);
 
 bool config_get_sensor_alarm_high_threshold(const char *, double *);
 void config_set_sensor_alarm_high_threshold(const char *, int);

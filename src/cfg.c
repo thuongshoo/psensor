@@ -831,6 +831,27 @@ GdkRGBA *config_get_sensor_color(const char *sid)
     return gdk_rgba_copy(&rgba);
 }
 
+// Sửa lại config_get_sensor_color để nhận pointer từ stack
+gboolean config_get_sensor_color_into(const char *sid, GdkRGBA *out_color)
+{
+    gboolean found = FALSE;
+    char *str = sensor_get_str(sid, ATT_SENSOR_COLOR);
+
+    if (str)
+    {
+        found = gdk_rgba_parse(out_color, str);
+        free(str);
+    }
+
+    if (!found)
+    {
+        gdk_rgba_parse(out_color, next_default_color());
+        config_set_sensor_color(sid, out_color);
+    }
+
+    return found; // hoặc return TRUE nếu luôn có màu
+}
+
 bool config_is_sensor_graph_enabled(const char *sid)
 {
     return sensor_get_bool(sid, ATT_SENSOR_GRAPH_ENABLED, false);

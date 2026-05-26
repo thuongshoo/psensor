@@ -25,6 +25,7 @@
 #include <ui_pref.h>
 #include <ui_sensorlist.h>
 #include <ui_sensorpref.h>
+#include <ui_graph.h>
 
 enum
 {
@@ -71,9 +72,10 @@ static void populate(struct ui_psensor *ui)
         GtkTreeIter iter;
         gtk_list_store_append(store, &iter);
 
-        GdkRGBA *color = config_get_sensor_color(s->id);
+        GdkRGBA color;
+        config_get_sensor_color_into(s->id, &color);
 
-        char *scolor = gdk_rgba_to_string(color);
+        char *scolor = gdk_rgba_to_string(&color);
 
         gboolean enabled = bool_to_gboolean(config_is_sensor_enabled(s->id));
         gtk_list_store_set(store, &iter,
@@ -84,7 +86,6 @@ static void populate(struct ui_psensor *ui)
                            COL_DISPLAY_ENABLED, enabled,
                            -1);
         free(scolor);
-        gdk_rgba_free(color);
     }
     free((void *)ordered_sensors);
 }
@@ -124,9 +125,10 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
                            COL_TEMP_MIN, min,
                            COL_TEMP_MAX, max,
                            -1);
-        free(value);
-        free(min);
+
         free(max);
+        free(min);
+        free(value);
 
         valid = gtk_tree_model_iter_next(model, &iter);
     }
@@ -293,7 +295,6 @@ static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
     struct ui_psensor *ui;
     GtkTreeView *view;
     Psensor *s;
-    GdkRGBA *color;
 
     ui = (struct ui_psensor *)data;
     view = ui->sensors_tree;
@@ -306,17 +307,17 @@ static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
 
         if (coli == COL_COLOR)
         {
-            color = config_get_sensor_color(s->id);
+            GdkRGBA color;
+            config_get_sensor_color_into(s->id, &color);
             if (ui_change_color(_("Select sensor color"),
-                                color,
+                                &color,
                                 GTK_WINDOW(ui->main_window)))
             {
-                config_set_sensor_color(s->id, color);
+                config_set_sensor_color(s->id, &color);
                 ui_sensorlist_update(ui, true);
                 config_sync();
             }
 
-            gdk_rgba_free(color);
             return TRUE;
         }
 
@@ -354,6 +355,8 @@ void ui_sensorlist_cb_graph_toggled(GtkCellRendererToggle *cell,
     config_set_sensor_graph_enabled(fmodel_sensor->id, b);
 
     config_sync();
+
+    graph_cache_invalidate(ui);
 
     gtk_tree_path_free(path);
 

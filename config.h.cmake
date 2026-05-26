@@ -31,9 +31,27 @@
 #define PACKAGE_URL "@PACKAGE_URL@"
 #define VERSION "@PROJECT_VERSION@"
 
-#define ANALYZER_RETURNS_MALLOC
-#define ANALYZER_RETURNS_MALLOC_SIZE(idx)
-#define ANALYZER_TAKES_MALLOC(idx)
-#define ANALYZER_HOLDS_MALLOC(idx)
+#ifndef __clang_analyzer__
+  #define ANALYZER_RETURNS_MALLOC
+  #define ANALYZER_RETURNS_MALLOC_SIZE(idx)
+  #define ANALYZER_TAKES_MALLOC(idx)
+  #define ANALYZER_HOLDS_MALLOC(idx)
+#else
+  #define ANALYZER_RETURNS_MALLOC __attribute__((ownership_returns(malloc)))
+  #define ANALYZER_RETURNS_MALLOC_SIZE(idx) __attribute__((ownership_returns(malloc, idx)))
+  #define ANALYZER_TAKES_MALLOC(idx) __attribute__((ownership_takes(malloc, idx)))
+  #define ANALYZER_HOLDS_MALLOC(idx) __attribute__((ownership_holds(malloc, idx)))
+#endif
+
+
+#define ENABLE_DEBUG_PRINT 0
+
+#if ENABLE_DEBUG_PRINT
+  #define DEBUG_PRINT(fmt, ...) g_print(fmt, ##__VA_ARGS__)
+#else
+  #define DEBUG_PRINT(fmt, ...) ((void)0)
+#endif
+
+#include <stddef.h>
 
 #endif /* CONFIG_H */
