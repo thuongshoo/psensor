@@ -56,6 +56,11 @@
 #define nullptr NULL
 #endif
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
+#define _GNU_SOURCE
 #include <stddef.h>
 
 #endif /* CONFIG_H */
