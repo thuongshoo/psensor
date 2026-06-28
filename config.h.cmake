@@ -52,6 +52,10 @@
   #define DEBUG_PRINT(fmt, ...) ((void)0)
 #endif
 
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 #include <stddef.h>
 
 #endif /* CONFIG_H */
