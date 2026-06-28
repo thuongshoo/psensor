@@ -22,6 +22,7 @@
  * http://www.geekhideout.com/urlcode.shtml
  */
 
+#include "config.h"
 #include "url.h"
 
 #include <ctype.h>
@@ -34,7 +35,7 @@ char *url_normalize(const char *url)
 		return nullptr;
 
 	size_t n = strlen(url);
-	
+
 	/* Nếu URL rỗng hoặc không kết thúc bằng '/', trả về bản copy */
 	if (n == 0 || url[n - 1] != '/')
 		return strdup(url);
@@ -70,11 +71,15 @@ char *url_encode(const char *str)
 	char *pbuf = buf;
 	const unsigned char *c = (const unsigned char *)str;
 
-	while (*c) {
+	while (*c)
+	{
 		if (isalnum(*c) ||
-		    *c == '.' || *c == '_' || *c == '-' || *c == '~') {
+			*c == '.' || *c == '_' || *c == '-' || *c == '~')
+		{
 			*pbuf++ = (char)*c;
-		} else {
+		}
+		else
+		{
 			*pbuf++ = '%';
 			*pbuf++ = to_hex((unsigned char)(*c >> 4));
 			*pbuf++ = to_hex(*c & 0x0f);
