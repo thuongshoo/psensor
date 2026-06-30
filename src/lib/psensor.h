@@ -99,7 +99,7 @@ typedef struct psensor
      * Last registered measures of the sensor.  Index 0 for the
      * oldest measure.
      */
-    struct measure *measures;
+    Pmeasure *measures;
     // callback handler
     void (*cb_alarm_raised)(Psensor *, void *);
     void *cb_alarm_raised_data;
@@ -153,8 +153,8 @@ struct measure_iterator
 
 void measure_iterator_init(struct measure_iterator *it, const Psensor *s);
 void measure_iterator_init_reverse(struct measure_iterator *it, const Psensor *s);
-bool measure_iterator_next(struct measure_iterator *it, struct measure **result);
-bool measure_iterator_prev(struct measure_iterator *it, struct measure **result);
+bool measure_iterator_next(struct measure_iterator *it, Pmeasure **result);
+bool measure_iterator_prev(struct measure_iterator *it, Pmeasure **result);
 
 Psensor *psensor_create(char *id,
                         char *name,
@@ -188,7 +188,7 @@ char *psensor_value_to_str(unsigned int type,
 char *psensor_unit_to_str(unsigned int type,
                           Temperature_Unit temperature_unit);
 
-char *psensor_measure_to_str(const struct measure *m,
+char *psensor_measure_to_str(const Pmeasure *m,
                              unsigned int type,
                              Temperature_Unit temperature_unit);
 
@@ -202,7 +202,7 @@ void psensor_set_current_measure(Psensor *sensor, double value,
 
 double psensor_get_current_value(const Psensor *);
 
-struct measure *psensor_get_current_measure(const Psensor *sensor);
+Pmeasure *psensor_get_current_measure(const Psensor *sensor);
 
 /* Returns a string representation of a psensor type. */
 const char *psensor_type_to_str(unsigned int type);

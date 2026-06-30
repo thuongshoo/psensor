@@ -28,16 +28,17 @@
 
 #define UNKNOWN_DOUBLE_VALUE DBL_MIN
 
-typedef struct measure {
+typedef struct measure
+{
 	double value;
 
 	struct timeval time;
 } Pmeasure;
 
-void measure_copy(const struct measure *src, struct measure *dst);
+void measure_copy(const Pmeasure *src, Pmeasure *dst);
 
-struct measure *measures_double_create(size_t size);
+Pmeasure *measures_double_create(size_t size);
 
-void measures_free(struct measure *measures);
+void measures_free(Pmeasure *measures);
 
 #endif
