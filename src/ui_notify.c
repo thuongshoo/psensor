@@ -43,13 +43,13 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 	log_debug("last_notification %d", last_notification_tv.tv_sec);
 
 	struct timeval time;
-	if (gettimeofday(&time, nullptr) != 0) {
+	if (gettimeofday(&time, nullptr) != 0)
+	{
 		log_err(_("gettimeofday failed."));
 		return;
 	}
 
-	if (!last_notification_tv.tv_sec
-	    || time.tv_sec - last_notification_tv.tv_sec >= 60)
+	if (!last_notification_tv.tv_sec || time.tv_sec - last_notification_tv.tv_sec >= 60)
 		last_notification_tv = time;
 	else
 		return;
@@ -57,22 +57,22 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 	if (notify_is_initted() == FALSE)
 		notify_init(PACKAGE_NAME);
 
-	if (notify_is_initted() == TRUE) {
+	if (notify_is_initted() == TRUE)
+	{
 		Temperature_Unit temperature_unit = config_get_temperature_unit();
 
-		const struct measure *measure = psensor_get_current_measure(sensor);
+		const Pmeasure *measure = psensor_get_current_measure(sensor);
 		char *svalue;
-		svalue = psensor_measure_to_str
-			(measure,
-			 sensor->type,
-			 temperature_unit);
-		
+		svalue = psensor_measure_to_str(measure,
+										sensor->type,
+										temperature_unit);
+
 		char *body;
 		if (-1 == asprintf(&body, "%s : %s", sensor->name, svalue))
 		{
 			free(svalue);
 			return;
-		} 
+		}
 		free(svalue);
 
 		const char *summary;
@@ -92,9 +92,9 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 		notif = notify_notification_new(summary, body, PSENSOR_ICON);
 #else
 		notif = notify_notification_new(summary,
-						body,
-						PSENSOR_ICON,
-						GTK_WIDGET(ui->main_window));
+										body,
+										PSENSOR_ICON,
+										GTK_WIDGET(ui->main_window));
 #endif
 		log_debug("notif_notification_new %s", body);
 
@@ -102,7 +102,9 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 
 		free(body);
 		g_object_unref(notif);
-	} else {
+	}
+	else
+	{
 		log_err("notify not initialized");
 	}
 }

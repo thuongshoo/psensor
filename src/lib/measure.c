@@ -22,28 +22,29 @@
 
 #include "measure.h"
 
-struct measure *measures_double_create(size_t size)
+Pmeasure *measures_double_create(size_t size)
 {
 	size_t i;
-	struct measure *result = (struct measure *)malloc(size * sizeof(struct measure));
+	Pmeasure *result = (Pmeasure *)malloc(size * sizeof(Pmeasure));
 
-    if (result != nullptr)
-    {
-    	for (i = 0; i < size; i++) {
-	    	result[i].value = UNKNOWN_DOUBLE_VALUE;
-		    timerclear(&result[i].time);
-	    }
-    }
+	if (result != nullptr)
+	{
+		for (i = 0; i < size; i++)
+		{
+			result[i].value = UNKNOWN_DOUBLE_VALUE;
+			timerclear(&result[i].time);
+		}
+	}
 
 	return result;
 }
 
-void measures_free(struct measure *measures)
+void measures_free(Pmeasure *measures)
 {
 	free(measures);
 }
 
-void measure_copy(const struct measure *src, struct measure *dst)
+void measure_copy(const Pmeasure *src, Pmeasure *dst)
 {
-	memcpy(dst, src, sizeof(struct measure));
+	memcpy(dst, src, sizeof(Pmeasure));
 }

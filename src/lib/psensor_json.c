@@ -35,15 +35,15 @@
 #define ATT_MEASURE_TIME "time"
 
 static json_object *
-measure_to_json_object(struct measure *m)
+measure_to_json_object(Pmeasure *m)
 {
 	json_object *o = json_object_new_object();
 
 	json_object_object_add(o,
-			       ATT_MEASURE_VALUE,
-			       json_object_new_double(m->value));
+						   ATT_MEASURE_VALUE,
+						   json_object_new_double(m->value));
 	json_object_object_add(o, ATT_MEASURE_TIME,
-			       json_object_new_int((m->time).tv_sec));
+						   json_object_new_int((m->time).tv_sec));
 	return o;
 }
 
@@ -53,14 +53,13 @@ measures_to_json_object(const Psensor *sensor)
 	json_object *o = json_object_new_array();
 
 	struct measure_iterator it;
-    measure_iterator_init(&it, sensor);
-    
-    struct measure *measure;
-    while (measure_iterator_next(&it, &measure)) {		
-		if (measure->time.tv_sec)
-			json_object_array_add
-				(o, measure_to_json_object(measure));
+	measure_iterator_init(&it, sensor);
 
+	Pmeasure *measure;
+	while (measure_iterator_next(&it, &measure))
+	{
+		if (measure->time.tv_sec)
+			json_object_array_add(o, measure_to_json_object(measure));
 	}
 	return o;
 }
@@ -72,30 +71,30 @@ static json_object *sensor_to_json(const Psensor *s)
 	obj = json_object_new_object();
 
 	json_object_object_add(obj,
-			       ATT_SENSOR_ID,
-			       json_object_new_string(s->id));
+						   ATT_SENSOR_ID,
+						   json_object_new_string(s->id));
 	json_object_object_add(obj,
-			       ATT_SENSOR_NAME,
-			       json_object_new_string(s->name));
+						   ATT_SENSOR_NAME,
+						   json_object_new_string(s->name));
 	json_object_object_add(obj,
-			       ATT_SENSOR_TYPE, json_object_new_int(s->type));
+						   ATT_SENSOR_TYPE, json_object_new_int(s->type));
 	json_object_object_add(obj,
-			       ATT_SENSOR_MIN,
-			       json_object_new_double(s->sess_lowest));
+						   ATT_SENSOR_MIN,
+						   json_object_new_double(s->sess_lowest));
 	json_object_object_add(obj,
-			       ATT_SENSOR_MAX,
-			       json_object_new_double(s->sess_highest));
+						   ATT_SENSOR_MAX,
+						   json_object_new_double(s->sess_highest));
 	json_object_object_add(obj,
-			       ATT_SENSOR_MEASURES,
-			       measures_to_json_object(s));
+						   ATT_SENSOR_MEASURES,
+						   measures_to_json_object(s));
 
-	struct measure *m = psensor_get_current_measure(s);
+	Pmeasure *m = psensor_get_current_measure(s);
 	mo = json_object_new_object();
 	json_object_object_add(mo,
-			       ATT_MEASURE_VALUE,
-			       json_object_new_double(m->value));
+						   ATT_MEASURE_VALUE,
+						   json_object_new_double(m->value));
 	json_object_object_add(mo, ATT_MEASURE_TIME,
-			       json_object_new_int((m->time).tv_sec));
+						   json_object_new_int((m->time).tv_sec));
 	json_object_object_add(obj, ATT_SENSOR_LAST_MEASURE, mo);
 
 	return obj;
@@ -115,22 +114,24 @@ char *sensor_to_json_string(const Psensor *s)
 
 char *sensors_to_json_string(const Psensor *const *sensors)
 {
-    // Psensor **sensors_cur; // Remove this pointer
+	// Psensor **sensors_cur; // Remove this pointer
 	char *str;
 	json_object *obj = json_object_new_array();
 
-	if (sensors) {
-        // sensors_cur = sensors; // Not needed
-        size_t i = 0; // Use an index
+	if (sensors)
+	{
+		// sensors_cur = sensors; // Not needed
+		size_t i = 0; // Use an index
 
-        // Access via index
-        while (sensors[i] != nullptr) {
-            const Psensor *s = sensors[i];
+		// Access via index
+		while (sensors[i] != nullptr)
+		{
+			const Psensor *s = sensors[i];
 
 			json_object_array_add(obj, sensor_to_json(s));
 
-            // sensors_cur++; // Remove the unsafe pointer increment
-            i++; // Increment the index instead
+			// sensors_cur++; // Remove the unsafe pointer increment
+			i++; // Increment the index instead
 		}
 	}
 
@@ -141,8 +142,8 @@ char *sensors_to_json_string(const Psensor *const *sensors)
 }
 
 Psensor *psensor_new_from_json(json_object *o,
-				      const char *sensors_url,
-				      unsigned int values_max_length)
+							   const char *sensors_url,
+							   unsigned int values_max_length)
 {
 	json_object *oid, *oname, *otype;
 
@@ -151,22 +152,23 @@ Psensor *psensor_new_from_json(json_object *o,
 	json_object_object_get_ex(o, "type", &otype);
 
 	char *eid = url_encode(json_object_get_string(oid));
-	
+
 	char *url;
 	int result = asprintf(&url, "%s/%s", sensors_url, eid);
-	if (result == -1) {
+	if (result == -1)
+	{
 		free(eid);
 		return nullptr;
 	}
 
-	char* id = strdup(url);
-	char* name = strdup(json_object_get_string(oname));
+	char *id = strdup(url);
+	char *name = strdup(json_object_get_string(oname));
 	Psensor *s = psensor_create(id,
-			   name,
-			   nullptr,
-			   json_object_get_int(otype) | SENSOR_TYPE_REMOTE,
-			   values_max_length);
-	if(s == nullptr)
+								name,
+								nullptr,
+								json_object_get_int(otype) | SENSOR_TYPE_REMOTE,
+								values_max_length);
+	if (s == nullptr)
 	{
 		free(name);
 		free(id);
@@ -179,4 +181,3 @@ Psensor *psensor_new_from_json(json_object *o,
 
 	return s;
 }
-

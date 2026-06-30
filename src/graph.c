@@ -96,7 +96,7 @@ time_t get_graph_end_time_s(const Psensor *const *all_sensors, bool is_smooth_cu
 
         struct measure_iterator it_reverse;
         measure_iterator_init_reverse(&it_reverse, sensor);
-        struct measure *m;
+        Pmeasure *m;
         while (measure_iterator_prev(&it_reverse, &m))
         {
             if (m->value == UNKNOWN_DOUBLE_VALUE || !(m->time.tv_sec))
@@ -246,7 +246,7 @@ static void draw_sensor_segmented_bezier(GraphContext *ctx, const Psensor *senso
     struct measure_iterator it;
     measure_iterator_init(&it, sensor);
 
-    struct measure *m;
+    Pmeasure *m;
     while (measure_iterator_next(&it, &m))
     {
         time_t t = m->time.tv_sec;
@@ -325,7 +325,7 @@ static void draw_sensor_linear_curve(GraphContext *ctx, const Psensor *s, cairo_
     struct measure_iterator it;
     measure_iterator_init(&it, s);
 
-    struct measure *m;
+    Pmeasure *m;
     bool first = true;
     time_t time_range = ending_time - begin_time;
     if (time_range <= 0)
@@ -538,7 +538,7 @@ double get_last_valid_value(const Psensor *s, bool is_smooth_curves_enabled)
     int skip = is_smooth_curves_enabled ? 2 : 0;
     struct measure_iterator it_rev;
     measure_iterator_init_reverse(&it_rev, s);
-    struct measure *m;
+    Pmeasure *m;
 
     while (measure_iterator_prev(&it_rev, &m))
     {
@@ -878,7 +878,7 @@ static void draw_new_data(GraphContext *ctx,
         int skip = is_smooth_curves_enabled ? 2 : 0;
         struct measure_iterator it_rev;
         measure_iterator_init_reverse(&it_rev, s);
-        struct measure *m;
+        Pmeasure *m;
 
         /*
          * Duyệt ngược skipped_count + 1 lần:

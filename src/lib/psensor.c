@@ -101,7 +101,7 @@ psensor_unit_to_str(unsigned int type, Temperature_Unit temperature_unit)
 }
 
 char *
-psensor_measure_to_str(const struct measure *m,
+psensor_measure_to_str(const Pmeasure *m,
                        unsigned int type,
                        Temperature_Unit temperature_unit)
 {
@@ -164,8 +164,8 @@ psensor_create(char *id,
 
 void psensor_values_resize(Psensor *psensor, unsigned int new_size)
 {
-    struct measure *cur_ms = psensor->measures;
-    struct measure *new_ms = measures_double_create(new_size);
+    Pmeasure *cur_ms = psensor->measures;
+    Pmeasure *new_ms = measures_double_create(new_size);
 
     if (cur_ms)
     {
@@ -406,7 +406,7 @@ void measure_iterator_init_reverse(struct measure_iterator *it, const Psensor *s
     it->direction = ITER_REVERSE; // Reverse iteration
 }
 
-bool measure_iterator_next(struct measure_iterator *it, struct measure **result)
+bool measure_iterator_next(struct measure_iterator *it, Pmeasure **result)
 {
     if (it->remaining == 0)
         return false;
@@ -423,7 +423,7 @@ bool measure_iterator_next(struct measure_iterator *it, struct measure **result)
     return true;
 }
 
-bool measure_iterator_prev(struct measure_iterator *it, struct measure **result)
+bool measure_iterator_prev(struct measure_iterator *it, Pmeasure **result)
 {
     if (it->remaining == 0)
         return false;
@@ -449,7 +449,7 @@ double psensor_get_current_value(const Psensor *sensor)
     return sensor->measures[sensor->measures_head].value;
 }
 
-struct measure *psensor_get_current_measure(const Psensor *sensor)
+Pmeasure *psensor_get_current_measure(const Psensor *sensor)
 {
     return &sensor->measures[sensor->measures_head];
 }
@@ -463,7 +463,7 @@ static void process_measure_values_per_sensor(const Psensor *sensor, MINMAX *min
 
     for (size_t measure_index = 0; measure_index < total_measures; measure_index++)
     {
-        struct measure measure = sensor->measures[measure_index];
+        Pmeasure measure = sensor->measures[measure_index];
         if (local_max < measure.value)
         {
             local_max = measure.value;
