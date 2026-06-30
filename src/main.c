@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#define _GNU_SOURCE
+
 #include <bool.h>
 
 #include <locale.h>
@@ -60,7 +60,6 @@
 #include "copyright.h"
 
 #define ONE_SECOND 1000U
-static const char *program_name;
 
 static void print_version(void)
 {
@@ -70,7 +69,7 @@ static void print_version(void)
            PSENSOR_CURRENT_YEARS, PSENSOR_CURRENT_EMAIL);
 }
 
-static void print_help(void)
+static void print_help(const char *program_name)
 {
     printf(_("Usage: %s [OPTION]...\n"), program_name);
 
@@ -133,12 +132,12 @@ update_psensor_values_size(Psensor **sensors, const struct config *cfg)
     }
 }
 
-static void *update_measures(void *data)
+static void *sensor_data_collector(void *data)
 {
     struct ui_psensor *ui = (struct ui_psensor *)data;
     Pconfig *cfg = ui->config;
 
-    pthread_setname_np(pthread_self(), "update_measures");
+    pthread_setname_np(pthread_self(), "collector");
     while (!ui->should_exit)
     {
         update_measures_lock(&ui->sensors_mutex);
@@ -263,7 +262,7 @@ static gboolean ui_refresh_thread(gpointer data)
 
     struct ui_psensor *ui = (struct ui_psensor *)data;
     gboolean ret = TRUE;
-    Pconfig *config = ui->config;
+    const Pconfig *config = ui->config;
 
     if (!config->is_new_data)
     {
@@ -559,39 +558,62 @@ static Psensor **create_sensors_list(const char *url, const struct config *confi
     return sensors;
 }
 
-int main(int argc, char **argv)
+/* ============ 1. AppOptions struct ============ */
+typedef struct
 {
-    int optc, cmdok, opti, ret;
-    char *url = nullptr;
+    char *url;
+    int debug_level;
+    int new_instance;
+    int show_help;
+    int show_version;
+} AppOptions;
+/* Định nghĩa ở đầu file hoặc trong header */
+typedef struct
+{
+    AppOptions options;      // Options từ command line
+    UI_psensor ui;           // UI state
+    GApplication *app;       // GTK application
+    pthread_t update_thread; // Background thread
+    guint timer_id;          // Timer ID
+} AppContext;
 
-    pthread_setname_np(pthread_self(), "mymain");
-    // cpu_set_t mask;
-    // CPU_ZERO(&mask);
-    // CPU_SET(0, &mask); // Only use CPU 0
-    // sched_setaffinity(0, sizeof(mask), &mask);
+/* Helper: parse integer an toàn */
+static int parse_int(const char *str, int min, int max, int *out)
+{
+    char *endptr;
+    long val;
 
-    program_name = argv[0];
+    if (!str || !out)
+        return 0;
 
-    // char *current_locale = setlocale(LC_ALL, "");
-    // printf("Current locale: %s\n", current_locale ? current_locale : "nullptr");
-    // printf("LANGUAGE=%s\n", getenv("LANGUAGE") ? getenv("LANGUAGE") : "nullptr");
-    // printf("LANG=%s\n", getenv("LANG") ? getenv("LANG") : "nullptr");
-    // printf("LC_ALL=%s\n", getenv("LC_ALL") ? getenv("LC_ALL") : "nullptr");
+    errno = 0;
+    val = strtol(str, &endptr, 10);
 
-#if ENABLE_NLS
-    // printf("PACKAGE: %s, LOCALEDIR: %s\n", PACKAGE, LOCALEDIR);
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-    // char *bound_dir = bindtextdomain(PACKAGE, nullptr);
-    // printf("Bound directory: %s\n", bound_dir ? bound_dir : "nullptr");
-    // printf("Current textdomain: %s\n", textdomain(nullptr));
-#else
-    printf("NLS not enabled\n");
-#endif
+    /* Kiểm tra lỗi */
+    if (errno == ERANGE || val < min || val > max)
+    {
+        return 0;
+    }
 
-    int new_instance = 0;
+    if (*endptr != '\0' || endptr == str)
+    {
+        return 0;
+    }
 
-    cmdok = 1;
+    *out = (int)val;
+    return 1;
+}
+
+/* ============ 2. Parse arguments ============ */
+static int parse_arguments(int argc, char **argv, AppOptions *opts)
+{
+    int optc, opti;
+
+    const char *program_name = argv[0];
+
+    memset(opts, 0, sizeof(AppOptions));
+
+    // Chuyển các static option vào đây
     while ((optc = getopt_long(argc, argv, "vhd:u:n", long_options, &opti)) != -1)
     {
         switch (optc)
@@ -599,141 +621,262 @@ int main(int argc, char **argv)
         case 'u':
             if (optarg)
             {
-                if (url)
-                    free(url);
-                url = strdup(optarg);
+                if (opts->url)
+                    free(opts->url);
+                opts->url = strdup(optarg);
             }
             break;
         case 'h':
-            print_help();
-            if (url)
-                free(url);
-            exit(EXIT_SUCCESS);
+            opts->show_help = 1;
+            break;
         case 'v':
-            print_version();
-            if (url)
-                free(url);
-            exit(EXIT_SUCCESS);
+            opts->show_version = 1;
+            break;
         case 'd':
-            log_level = atoi(optarg);
+            if (!parse_int(optarg, 0, 3, &opts->debug_level))
+            {
+                fprintf(stderr, _("Debug level must be integer between 0 and 3.\n"));
+                return 0;
+            }
+            log_level = opts->debug_level;
             log_info(_("Enables debug mode."));
             break;
         case 'n':
-            new_instance = 1;
+            opts->new_instance = 1;
             break;
         default:
-            cmdok = 0;
-            break;
+            return 0;
         }
     }
 
-    if (!cmdok || optind != argc)
+    if (opts->show_help)
     {
-        fprintf(stderr, _("Try `%s --help' for more information.\n"),
-                program_name);
-        if (url)
-            free(url);
-        exit(EXIT_FAILURE);
+        print_help(program_name);
+        return 0;
     }
 
+    if (opts->show_version)
+    {
+        print_version();
+        return 0;
+    }
+
+    if (optind != argc)
+    {
+        fprintf(stderr, _("Try `%s --help' for more information.\n"), program_name);
+        return 0;
+    }
+
+    return 1;
+}
+
+static void free_url(AppContext *ctx)
+{
+    // Free options
+    if (ctx->options.url)
+    {
+        free(ctx->options.url);
+        ctx->options.url = nullptr;
+    }
+}
+/* ============ 3. Initialize application ============ */
+static int initialize_application(AppContext *ctx)
+{
+    // Setup NLS
+#if ENABLE_NLS
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+#endif
+
+    // Setup logging
     log_init();
-
-    GApplication *app = g_application_new(PACKAGE_GSETTING, 0);
-
-    g_application_register(app, nullptr, nullptr);
-
-    if (!new_instance && g_application_get_is_remote(app))
-    {
-        g_application_activate(app);
-        log_warn(_("A Psensor instance already exists."));
-        if (url)
-            free(url);
-        exit(EXIT_SUCCESS);
-    }
-
-    UI_psensor ui;
-    memset((void *)&ui, 0, sizeof(UI_psensor));
-
-    g_signal_connect(app, "activate", G_CALLBACK(cb_activate), &ui);
-
     log_glib_info();
+
+    // Setup GTK
+    gtk_init(nullptr, nullptr);
+
+    // Setup GLib
 #if !(GLIB_CHECK_VERSION(2, 31, 0))
-    /*
-     * Since GLib 2.31 g_thread_init call is deprecated and not
-     * needed.
-     */
-    log_debug("Calling g_thread_init(nullptr)");
     g_thread_init(nullptr);
 #endif
 
-    gtk_init(nullptr, nullptr);
+    // Create GApplication
+    ctx->app = g_application_new(PACKAGE_GSETTING, 0);
+    g_application_register(ctx->app, nullptr, nullptr);
 
-    pmutex_init(&ui.sensors_mutex);
-    pmutex_init(&ui.graph_mutex);
+    // Check remote instance
+    if (!ctx->options.new_instance && g_application_get_is_remote(ctx->app))
+    {
+        g_application_activate(ctx->app);
+        log_warn(_("A Psensor instance already exists."));
+        return 0;
+    }
 
-    ui.config = config_load();
+    // Init UI struct
+    memset(&ctx->ui, 0, sizeof(UI_psensor));
 
-    ui.sensors = create_sensors_list(url, ui.config);
-    associate_cb_alarm_raised(ui.sensors, &ui);
+    // Init mutexes
+    pmutex_init(&ctx->ui.sensors_mutex);
+    pmutex_init(&ctx->ui.graph_mutex);
 
-    if (ui.config->slog_enabled)
-        slog_activate(nullptr,
-                      (const Psensor *const *)ui.sensors,
-                      &ui.sensors_mutex,
-                      config_get_slog_interval());
+    // Load config
+    ctx->ui.config = config_load();
+    if (!ctx->ui.config)
+    {
+        log_err("Failed to load config");
+        return 0;
+    }
 
-    // obsolete ui_status_init(&ui);
-    // ui_status_set_visible(1);
+    // Create sensors list
+    ctx->ui.sensors = create_sensors_list(ctx->options.url, ctx->ui.config);
 
-    /* main window */
-    ui_window_create(&ui);
+    // Associate callbacks
+    associate_cb_alarm_raised(ctx->ui.sensors, &ctx->ui);
 
-    ui_enable_alpha_channel(&ui);
+    // Init status (obsolete but keep for compatibility)
+    // ui_status_init(&ctx->ui);
 
-    pthread_t update_measures_thread;
-    ret = pthread_create(&update_measures_thread, nullptr, update_measures, &ui);
-    if (ret)
-        log_err(_("Failed to create thread for monitoring sensors"));
+    // Connect signals
+    g_signal_connect(ctx->app, "activate", G_CALLBACK(cb_activate), &ctx->ui);
 
-    ui.graph_update_interval = ui.config->graph_update_interval;
+    return 1;
+}
 
-    g_timeout_add(ONE_SECOND * ui.graph_update_interval, ui_refresh_thread, &ui);
+/* ============ 4. Create main window ============ */
+static int create_main_window(AppContext *ctx)
+{
+    UI_psensor *ui = &ctx->ui;
 
-    ui_appindicator_init(&ui);
+    // Enable alpha channel
+    ui_enable_alpha_channel(ui);
+
+    // Create main window
+    ui_window_create(ui);
+
+    // Init appindicator
+    ui_appindicator_init(ui);
     ui_unity_init();
 
-    gdk_notify_startup_complete();
-
-    // /*
-    //  * hack, did not find a cleaner solution.
-    //  * wait 1s to ensure that the status icon is attempted to be
-    //  * drawn before determining whether the main window must be
-    //  * show.
-    //  */
-    if (ui.config->hide_on_startup)
+    // Setup startup behavior
+    if (ui->config->hide_on_startup)
     {
-        g_timeout_add(ONE_SECOND, (GSourceFunc)initial_window_show, &ui);
+        g_timeout_add(ONE_SECOND, (GSourceFunc)initial_window_show, ui);
     }
     else
     {
-        initial_window_show(&ui);
+        initial_window_show(ui);
     }
 
-    /* main loop */
+    // Enable slog if configured
+    if (ui->config->slog_enabled)
+    {
+        slog_activate(nullptr,
+                      (const Psensor *const *)ui->sensors,
+                      &ui->sensors_mutex,
+                      config_get_slog_interval());
+    }
+
+    gdk_notify_startup_complete();
+
+    return 1;
+}
+
+/* ============ 5. Start background threads ============ */
+static int start_background_threads(AppContext *ctx)
+{
+    UI_psensor *ui = &ctx->ui;
+    int ret;
+
+    // Start update thread
+    ret = pthread_create(&ctx->update_thread, nullptr, sensor_data_collector, ui);
+    if (ret)
+    {
+        log_err(_("Failed to create thread for monitoring sensors: %s"),
+                strerror(ret));
+        // Continue anyway, UI can still work
+    }
+
+    // Setup graph update timer
+    ui->graph_update_interval = ui->config->graph_update_interval;
+    ctx->timer_id = g_timeout_add(ONE_SECOND * ui->graph_update_interval,
+                                  ui_refresh_thread, ui);
+
+    return 1;
+}
+
+/* ============ 6. Run main loop ============ */
+static void run_main_loop(AppContext *ctx)
+{
     gtk_main();
+}
 
-    ui.should_exit = true;
-    pthread_join(update_measures_thread, nullptr);
+/* ============ 7. Cleanup ============ */
+static void cleanup_application(AppContext *ctx)
+{
+    UI_psensor *ui = &ctx->ui;
 
-    cleanup(&ui);
+    // Signal exit
+    ui->should_exit = TRUE;
 
+    // Cleanup threads
+    if (ctx->update_thread)
+    {
+        pthread_join(ctx->update_thread, nullptr);
+    }
+
+    // Remove timer
+    if (ctx->timer_id)
+    {
+        g_source_remove(ctx->timer_id);
+    }
+
+    // Cleanup UI
+    cleanup(ui);
+
+    // Unref app
+    if (ctx->app)
+    {
+        g_object_unref(ctx->app);
+        ctx->app = nullptr;
+    }
+
+    // Close log
     log_debug("Quitting...");
     log_close();
+}
 
-    g_object_unref(app);
+int main(int argc, char **argv)
+{
+    AppContext ctx = {0}; // Gom tất cả biến vào struct
+    int ret = EXIT_SUCCESS;
 
-    if (url)
-        free(url);
+    // 1. Parse arguments
+    if (!parse_arguments(argc, argv, &ctx.options))
+    {
+        free_url(&ctx);
+        return EXIT_FAILURE;
+    }
 
-    return 0;
+    // 2. Initialize
+    if (!initialize_application(&ctx))
+    {
+        free_url(&ctx);
+        return EXIT_FAILURE;
+    }
+
+    // 3. Create UI
+    if (!create_main_window(&ctx))
+        return EXIT_FAILURE;
+
+    // 4. Start background threads
+    if (!start_background_threads(&ctx))
+        return EXIT_FAILURE;
+
+    // 5. Run main loop
+    run_main_loop(&ctx);
+
+    // 6. Cleanup
+    cleanup_application(&ctx);
+
+    return ret;
 }
