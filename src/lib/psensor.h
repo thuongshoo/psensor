@@ -138,18 +138,21 @@ typedef struct
     size_t length;
 } PsensorList;
 
+//
+typedef enum
+{
+    ITER_FORWARD = 0,
+    ITER_REVERSE = 1
+} iter_direction_t;
+
 // Iterator để vẽ từ OLDEST đến NEWEST
 struct measure_iterator
 {
     const Psensor *sensor;
     size_t current_pos;
     size_t remaining;
-    int direction;
+    iter_direction_t direction;
 };
-
-// Định nghĩa hướng iteration
-#define ITER_FORWARD 0
-#define ITER_REVERSE 1
 
 void measure_iterator_init(struct measure_iterator *it, const Psensor *s);
 void measure_iterator_init_reverse(struct measure_iterator *it, const Psensor *s);
