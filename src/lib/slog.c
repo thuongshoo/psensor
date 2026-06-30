@@ -21,7 +21,7 @@
 #define _GNU_SOURCE
 #endif
 #ifndef _LARGEFILE_SOURCE
-    #define _LARGEFILE_SOURCE 1
+#define _LARGEFILE_SOURCE 1
 #endif
 
 #include "slog.h"
@@ -42,11 +42,10 @@
 #include <pmutex.h>
 #include "ptime.h"
 
-
 static FILE *file;
 static double *s_last_values;
 static unsigned int period;
-static const Psensor * const *s_sensors;
+static const Psensor *const *s_sensors;
 static pthread_mutex_t *sensors_mutex;
 static pthread_t thread;
 static time_t st;
@@ -60,15 +59,16 @@ static char *get_default_path(void)
 
     home = getenv("HOME");
 
-    if (home) {
+    if (home)
+    {
         int result = asprintf(&dir, "%s/%s", home, PACKAGE_USER_FOLDER);
-        if (result == -1 )
+        if (result == -1)
             return nullptr;
         mkdir(dir, 0777);
 
-        result = asprintf(&path, "%s/%s", dir, DEFAULT_FILENAME);		
+        result = asprintf(&path, "%s/%s", dir, DEFAULT_FILENAME);
         free(dir);
-        if (result == -1 ) 
+        if (result == -1)
             return nullptr;
 
         return path;
@@ -80,12 +80,13 @@ static char *get_default_path(void)
 
 static bool slog_open(const char *path, const Psensor *const *sensors)
 {
-    if (file) {
+    if (file)
+    {
         log_err(_("Sensor log file already open."));
         return false;
     }
 
-    char* lpath = path ? (char *)path : get_default_path();
+    char *lpath = path ? (char *)path : get_default_path();
 
     file = fopen(lpath, "a");
 
@@ -99,12 +100,13 @@ static bool slog_open(const char *path, const Psensor *const *sensors)
         return false;
 
     st = time(nullptr);
-    char* time = time_to_str3(&st);
+    char *time = time_to_str3(&st);
     fprintf(file, "I,%s,%s\n", time, VERSION);
     free(time);
 
-    while (*sensors) {
-        fprintf(file, "S,%s,%x\n", (*sensors)->id,  (*sensors)->type);
+    while (*sensors)
+    {
+        fprintf(file, "S,%s,%x\n", (*sensors)->id, (*sensors)->type);
         sensors++;
     }
 
@@ -118,7 +120,8 @@ static void slog_write_sensors(const Psensor *const *sensors)
     struct timeval tv;
     bool is_first_call;
 
-    if (!file) {
+    if (!file)
+    {
         log_debug(_("Sensor log file not open."));
         return;
     }
@@ -127,16 +130,20 @@ static void slog_write_sensors(const Psensor *const *sensors)
 
     size_t count = psensor_list_size(sensors);
 
-    if (s_last_values) {
+    if (s_last_values)
+    {
         is_first_call = false;
-    } else {
+    }
+    else
+    {
         is_first_call = true;
         // to avoid malloc 0 byte in case of no sensor,
-        s_last_values = malloc( (count +1) * sizeof(double));
+        s_last_values = malloc((count + 1) * sizeof(double));
     }
 
     fprintf(file, "%ld", (long int)(tv.tv_sec - st));
-    for (size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++)
+    {
         double v = psensor_get_current_value(sensors[i]);
 
         if (!is_first_call && s_last_values[i] == v)
@@ -152,19 +159,22 @@ static void slog_write_sensors(const Psensor *const *sensors)
     fflush(file);
 }
 
-static int slog_activate_lock(pthread_mutex_t *m) {
+static int slog_activate_lock(pthread_mutex_t *m)
+{
     return pmutex_lock(m);
 }
-static int slog_activate_unlock(pthread_mutex_t *m) {
+static int slog_activate_unlock(pthread_mutex_t *m)
+{
     return pmutex_unlock(m);
 }
 
 static void *slog_routine(void *data)
 {
     pthread_setname_np(pthread_self(), "slog_routine");
-    while (slog_thread_running) {
+    while (slog_thread_running)
+    {
         pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
-        
+
         slog_activate_lock(sensors_mutex);
         slog_write_sensors(s_sensors);
         slog_activate_unlock(sensors_mutex);
@@ -178,24 +188,26 @@ static void *slog_routine(void *data)
 
 void slog_close(void)
 {
-    if (file) {
-        slog_thread_running = 0;  // signal to stop thread
-        pthread_join(thread, nullptr);  // wait for thread to finish
+    if (file)
+    {
+        slog_thread_running = 0;       // signal to stop thread
+        pthread_join(thread, nullptr); // wait for thread to finish
 
         fclose(file);
         file = nullptr;
         free(s_last_values);
         s_last_values = nullptr;
-    } else {
+    }
+    else
+    {
         log_debug(_("Sensor log not open, cannot close."));
     }
 }
 
-
 bool slog_activate(const char *path,
-           const Psensor *const *ss,
-           pthread_mutex_t *mutex,
-           unsigned int p)
+                   const Psensor *const *ss,
+                   pthread_mutex_t *mutex,
+                   unsigned int p)
 {
     bool ret;
 
