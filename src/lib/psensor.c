@@ -68,14 +68,10 @@ const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit tempera
     }
 
     if (type & SENSOR_TYPE_RPM)
-    {
         return _("RPM");
-    }
 
     if (type & SENSOR_TYPE_PERCENT)
-    {
         return _("%");
-    }
 
     return _("N/A");
 }
@@ -415,9 +411,7 @@ bool measure_iterator_next(struct measure_iterator *it, Pmeasure **result)
 
     it->current_pos++;
     if (it->current_pos >= it->sensor->measures_size)
-    {
         it->current_pos = 0;
-    }
 
     it->remaining--;
     return true;
@@ -432,9 +426,7 @@ bool measure_iterator_prev(struct measure_iterator *it, Pmeasure **result)
 
     //
     if (it->current_pos == 0)
-    {
         it->current_pos = it->sensor->measures_size - 1;
-    }
     else
         it->current_pos--;
 
@@ -465,14 +457,10 @@ static void process_measure_values_per_sensor(const Psensor *sensor, MINMAX *min
     {
         Pmeasure measure = sensor->measures[measure_index];
         if (local_max < measure.value)
-        {
             local_max = measure.value;
-        }
 
         if (local_min > measure.value)
-        {
             local_min = measure.value;
-        }
     }
 
     minmax->min = local_min;
@@ -495,17 +483,11 @@ ALL_MINMAX get_all_minmax_values(const Psensor *const *all_sensors)
     {
         const Psensor *current_sensor = all_sensors[sensor_index];
         if (is_temperature_type(current_sensor->type))
-        {
             process_measure_values_per_sensor(current_sensor, &minmax.temperature);
-        }
         else if (current_sensor->type & SENSOR_TYPE_FAN)
-        {
             process_measure_values_per_sensor(current_sensor, &minmax.revolutions_per_minute);
-        }
         else
-        {
             process_measure_values_per_sensor(current_sensor, &minmax.percent);
-        }
     }
 
     return minmax;
