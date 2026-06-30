@@ -386,7 +386,7 @@ void psensor_set_current_value(Psensor *sensor, double value)
     psensor_set_current_measure(sensor, value, tv);
 }
 #define INIT_REMAINING_TO_MEASURE_COUNT sensor->measures_count
-void measure_iterator_init(struct measure_iterator *it, const Psensor *sensor)
+void measure_iterator_init(Pmeasure_iterator *it, const Psensor *sensor)
 {
     it->sensor = sensor;
     it->current_pos = sensor->measures_tail; //
@@ -394,7 +394,7 @@ void measure_iterator_init(struct measure_iterator *it, const Psensor *sensor)
     it->direction = ITER_FORWARD; //
 }
 
-void measure_iterator_init_reverse(struct measure_iterator *it, const Psensor *sensor)
+void measure_iterator_init_reverse(Pmeasure_iterator *it, const Psensor *sensor)
 {
     it->sensor = sensor;
     it->current_pos = sensor->measures_head; //
@@ -402,7 +402,7 @@ void measure_iterator_init_reverse(struct measure_iterator *it, const Psensor *s
     it->direction = ITER_REVERSE; // Reverse iteration
 }
 
-bool measure_iterator_next(struct measure_iterator *it, Pmeasure **result)
+bool measure_iterator_next(Pmeasure_iterator *it, Pmeasure **result)
 {
     if (it->remaining == 0)
         return false;
@@ -417,7 +417,7 @@ bool measure_iterator_next(struct measure_iterator *it, Pmeasure **result)
     return true;
 }
 
-bool measure_iterator_prev(struct measure_iterator *it, Pmeasure **result)
+bool measure_iterator_prev(Pmeasure_iterator *it, Pmeasure **result)
 {
     if (it->remaining == 0)
         return false;

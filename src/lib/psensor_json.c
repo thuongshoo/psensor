@@ -52,7 +52,7 @@ measures_to_json_object(const Psensor *sensor)
 {
 	json_object *o = json_object_new_array();
 
-	struct measure_iterator it;
+	Pmeasure_iterator it;
 	measure_iterator_init(&it, sensor);
 
 	Pmeasure *measure;
