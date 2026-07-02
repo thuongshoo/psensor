@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#define _GNU_SOURCE
+
 #include <psensor.h>
 
 #include <stdlib.h>
