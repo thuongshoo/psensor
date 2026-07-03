@@ -27,127 +27,124 @@
 #include <glibtop/cpu.h>
 #include <glibtop/mem.h>
 
-
-static unsigned long int  last_used;
-static unsigned long int last_total;
-
 static const char *PROVIDER_NAME = "gtop2";
 
 Psensor *create_cpu_usage_sensor(unsigned int measures_len)
 {
-	char* id = g_strdup_printf("%s cpu usage", PROVIDER_NAME);
-	char* label = strdup(_("CPU usage"));
-	unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_CPU_USAGE;
+    char *id = g_strdup_printf("%s cpu usage", PROVIDER_NAME);
+    char *label = strdup(_("CPU usage"));
+    unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_CPU_USAGE;
 
-	char* chip = strdup(_("CPU"));
-	Psensor *psensor = psensor_create(id,
-				 label,
-				 chip,
-				 type,
-				 measures_len);
-	if (psensor == nullptr)
-	{
-		free(chip);
-		free(label);
-		free(id);
-		return nullptr;
-	}
-	return psensor;
+    char *chip = strdup(_("CPU"));
+    Psensor *psensor = psensor_create(id,
+                                      label,
+                                      chip,
+                                      type,
+                                      measures_len);
+    if (psensor == nullptr)
+    {
+        free(chip);
+        free(label);
+        free(id);
+        return nullptr;
+    }
+    return psensor;
 }
 
 static Psensor *create_mem_free_sensor(unsigned int measures_len)
 {
-	char* id = g_strdup_printf("%s mem free", PROVIDER_NAME);
-	char* name = strdup(_("free memory"));
-	char* chip = strdup(_("memory"));
-	unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_MEMORY | SENSOR_TYPE_PERCENT;
-	Psensor* tmp = psensor_create(id,
-			      name,
-			      chip,
-			      type,
-			      measures_len);
-	if (tmp == nullptr)
-	{
-		free(chip);
-		free(name);
-		free(id);
-		return nullptr;
-	}
-	return tmp;
+    char *id = g_strdup_printf("%s mem free", PROVIDER_NAME);
+    char *name = strdup(_("free memory"));
+    char *chip = strdup(_("memory"));
+    unsigned int type = SENSOR_TYPE_GTOP | SENSOR_TYPE_MEMORY | SENSOR_TYPE_PERCENT;
+    Psensor *tmp = psensor_create(id,
+                                  name,
+                                  chip,
+                                  type,
+                                  measures_len);
+    if (tmp == nullptr)
+    {
+        free(chip);
+        free(name);
+        free(id);
+        return nullptr;
+    }
+    return tmp;
 }
 
 static double get_usage(void)
 {
-	glibtop_cpu cpu;
+    static unsigned long int last_used;
+    static unsigned long int last_total;
+    glibtop_cpu cpu;
 
-	glibtop_get_cpu(&cpu);
+    glibtop_get_cpu(&cpu);
 
-	unsigned long int used = cpu.user + cpu.nice + cpu.sys;
-	unsigned long int dt = cpu.total - last_total;
-	double cpu_rate;
+    unsigned long int used = cpu.user + cpu.nice + cpu.sys;
+    unsigned long int dt = cpu.total - last_total;
+    double cpu_rate;
 
-	if (dt)
-		cpu_rate = 100.0 * (used - last_used) / dt;
-	else
-		cpu_rate = UNKNOWN_DOUBLE_VALUE;
+    if (dt)
+        cpu_rate = 100.0 * (used - last_used) / dt;
+    else
+        cpu_rate = UNKNOWN_DOUBLE_VALUE;
 
-	last_used = used;
-	last_total = cpu.total;
+    last_used = used;
+    last_total = cpu.total;
 
-	return cpu_rate;
+    return cpu_rate;
 }
 
 static double get_mem_free(void)
 {
-	glibtop_mem mem;
+    glibtop_mem mem;
 
-	glibtop_get_mem(&mem);
-	double v = ((double)mem.free) * 100.0 / mem.total;
+    glibtop_get_mem(&mem);
+    double v = ((double)mem.free) * 100.0 / mem.total;
 
-	return v;
+    return v;
 }
 
 void gtop2_psensor_list_append(Psensor ***sensors, unsigned int measures_len)
 {
-	psensor_list_append(sensors, create_cpu_usage_sensor(measures_len));
-	psensor_list_append(sensors, create_mem_free_sensor(measures_len));
+    psensor_list_append(sensors, create_cpu_usage_sensor(measures_len));
+    psensor_list_append(sensors, create_mem_free_sensor(measures_len));
 }
 
 void cpu_usage_sensor_update(Psensor *s)
 {
-	double v;
+    double v;
 
-	v = get_usage();
+    v = get_usage();
 
-	if (v != UNKNOWN_DOUBLE_VALUE)
-		psensor_set_current_value(s, v);
+    if (v != UNKNOWN_DOUBLE_VALUE)
+        psensor_set_current_value(s, v);
 }
 
 static void mem_free_sensor_update(Psensor *s)
 {
-	double v;
+    double v;
 
-	v = get_mem_free();
+    v = get_mem_free();
 
-	if (v != UNKNOWN_DOUBLE_VALUE)
-		psensor_set_current_value(s, v);
+    if (v != UNKNOWN_DOUBLE_VALUE)
+        psensor_set_current_value(s, v);
 }
 
 void gtop2_psensor_list_update(Psensor **sensors)
 {
-	Psensor *s;
+    while (*sensors)
+    {
+        Psensor *s = *sensors;
 
-	while (*sensors) {
-		s = *sensors;
+        if (!(s->type & SENSOR_TYPE_REMOTE) && s->type & SENSOR_TYPE_GTOP)
+        {
+            if (s->type & SENSOR_TYPE_CPU)
+                cpu_usage_sensor_update(s);
+            else if (s->type & SENSOR_TYPE_MEMORY)
+                mem_free_sensor_update(s);
+        }
 
-		if (!(s->type & SENSOR_TYPE_REMOTE)
-		    && s->type & SENSOR_TYPE_GTOP) {
-			if (s->type & SENSOR_TYPE_CPU)
-				cpu_usage_sensor_update(s);
-			else if (s->type & SENSOR_TYPE_MEMORY)
-				mem_free_sensor_update(s);
-		}
-
-		sensors++;
-	}
+        sensors++;
+    }
 }

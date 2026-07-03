@@ -25,7 +25,6 @@
  */
 bool ui_change_color(const char *title, GdkRGBA *color, GtkWindow *win)
 {
-	int res;
 	GtkColorChooserDialog *colordlg;
 
 	colordlg = GTK_COLOR_CHOOSER_DIALOG
@@ -35,7 +34,7 @@ bool ui_change_color(const char *title, GdkRGBA *color, GtkWindow *win)
 
 	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(colordlg), color);
 
-	res = gtk_dialog_run(GTK_DIALOG(colordlg));
+	int res = gtk_dialog_run(GTK_DIALOG(colordlg));
 
 	if (res == GTK_RESPONSE_OK)
 		gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(colordlg), color);
