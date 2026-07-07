@@ -1,6 +1,23 @@
 = Psensor NEWS
 :docinfo2:
 
+1.4.0
+------
+
+  * You can now easily customize the display order of your sensors!
+  * Simply open the Sensor Preferences window and drag any sensor up
+  * or down to reposition it. The changes take effect immediately and
+  * the new order will be reflected in the main sensor list (the one
+  * shown next to the graph). Your custom order is saved automatically
+  * and persists across sessions
+
+1.3.0
+------
+
+  * Implement intelligent graph rendering: only draw new values, shift existing graph left
+  * Refactor codebase to follow modern coding conventions
+  * Fix multiple coding rule violations
+
 v1.2.1
 ------
 

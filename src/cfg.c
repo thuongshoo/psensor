@@ -218,34 +218,22 @@ void config_set_notif_script(const char *str)
         set_string(KEY_NOTIFICATION_SCRIPT, "");
 }
 
-static struct color *get_background_color(void)
+static Pcolor get_background_color(void)
 {
-    char *scolor;
-    struct color *c;
+    char *scolor = get_string(KEY_GRAPH_BACKGROUND_COLOR);
 
-    scolor = get_string(KEY_GRAPH_BACKGROUND_COLOR);
-
-    c = str_to_color(scolor);
+    Pcolor c = str_to_color(scolor);
     free(scolor);
-
-    if (c == nullptr)
-        return color_new(1, 1, 1);
 
     return c;
 }
 
-static struct color *get_foreground_color(void)
+static Pcolor get_foreground_color(void)
 {
-    char *scolor;
-    struct color *c;
+    char *scolor = get_string(KEY_GRAPH_FOREGROUND_COLOR);
 
-    scolor = get_string(KEY_GRAPH_FOREGROUND_COLOR);
-
-    c = str_to_color(scolor);
+    Pcolor c = str_to_color(scolor);
     free(scolor);
-
-    if (c == nullptr)
-        return color_new(0, 0, 0);
 
     return c;
 }
@@ -315,11 +303,9 @@ static void set_graph_background_alpha(double alpha)
     set_double(KEY_GRAPH_BACKGROUND_ALPHA, alpha);
 }
 
-static void set_background_color(const struct color *color)
+static void set_background_color(const Pcolor *color)
 {
-    char *scolor;
-
-    scolor = color_to_str(color);
+    char *scolor = color_to_str(color);
     if (scolor == nullptr)
         scolor = strdup(DEFAULT_GRAPH_BACKGROUND_COLOR);
 
@@ -328,7 +314,7 @@ static void set_background_color(const struct color *color)
     free(scolor);
 }
 
-static void set_foreground_color(const struct color *color)
+static void set_foreground_color(const Pcolor *color)
 {
     char *str;
 
@@ -523,8 +509,8 @@ struct config *config_load(void)
 void config_save_to_g_file(const struct config *c)
 {
     set_alpha_channeld_enabled(c->alpha_channel_enabled);
-    set_background_color(c->graph_bgcolor);
-    set_foreground_color(c->graph_fgcolor);
+    set_background_color(&c->graph_bgcolor);
+    set_foreground_color(&c->graph_fgcolor);
     set_graph_background_alpha(c->graph_bg_alpha);
     set_slog_enabled(c->slog_enabled);
     set_slog_interval(c->slog_interval);
@@ -597,7 +583,6 @@ static const char *get_sensor_config_path(void)
 
 static GKeyFile *get_sensor_key_file(void)
 {
-
     GError *err;
     const char *path;
 
@@ -831,7 +816,6 @@ GdkRGBA *config_get_sensor_color(const char *sid)
     return gdk_rgba_copy(&rgba);
 }
 
-// Sửa lại config_get_sensor_color để nhận pointer từ stack
 gboolean config_get_sensor_color_into(const char *sid, GdkRGBA *out_color)
 {
     gboolean found = FALSE;

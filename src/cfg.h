@@ -38,8 +38,8 @@ const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
 typedef struct config
 {
-    struct color *graph_bgcolor;
-    struct color *graph_fgcolor;
+    Pcolor graph_bgcolor;
+    Pcolor graph_fgcolor;
     /* Last saved position of the window. */
     int window_x;
     int window_y;

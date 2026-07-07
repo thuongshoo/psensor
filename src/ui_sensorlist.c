@@ -107,28 +107,32 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
     while (valid)
     {
         Psensor *s;
-
         gtk_tree_model_get(model, &iter, COL_SENSOR, &s, -1);
 
-        char *value = psensor_value_to_str(s->type,
-                                           psensor_get_current_value(s),
-                                           temperature_unit);
-        char *min = psensor_value_to_str(s->type,
-                                         s->sess_lowest,
-                                         temperature_unit);
-        char *max = psensor_value_to_str(s->type,
-                                         s->sess_highest,
-                                         temperature_unit);
+        char value[PSENSOR_MAX_VALUE_LEN];
+        psensor_value_to_string_buffer(s->type,
+                                       psensor_get_current_value(s),
+                                       temperature_unit,
+                                       value,
+                                       sizeof(value));
+        char min[PSENSOR_MAX_VALUE_LEN];
+        psensor_value_to_string_buffer(s->type,
+                                       s->sess_lowest,
+                                       temperature_unit,
+                                       min,
+                                       sizeof(min));
+        char max[PSENSOR_MAX_VALUE_LEN];
+        psensor_value_to_string_buffer(s->type,
+                                       s->sess_highest,
+                                       temperature_unit,
+                                       max,
+                                       sizeof(max));
 
         gtk_list_store_set(store, &iter,
                            COL_TEMP, value,
                            COL_TEMP_MIN, min,
                            COL_TEMP_MAX, max,
                            -1);
-
-        free(max);
-        free(min);
-        free(value);
 
         valid = gtk_tree_model_iter_next(model, &iter);
     }

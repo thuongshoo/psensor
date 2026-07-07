@@ -27,6 +27,20 @@
 #include <plog.h>
 #include <temperature.h>
 
+#ifndef PSENSOR_STRINGS_LENGTH_H
+#define PSENSOR_STRINGS_LENGTH_H
+
+enum string_lengths
+{
+    SENSOR_NAME_MAX_LEN = 64,
+    UNIT_STR_MAX_LEN = 4,
+    PSENSOR_MAX_VALUE_LEN = 16,
+    VALUE_STR_MAX_LEN = 32,
+    LABEL_MAX_LEN = 128
+};
+
+#endif
+
 typedef enum psensor_type
 {
     /* type of sensor values */
@@ -184,16 +198,11 @@ bool is_rpm_type(unsigned int type);
  * parameter 'type' is SENSOR_TYPE_LMSENSOR_TEMP, SENSOR_TYPE_NVIDIA,
  * or SENSOR_TYPE_LMSENSOR_FAN
  */
-char *psensor_value_to_str(unsigned int type,
-                           double value,
-                           Temperature_Unit temperature_unit);
+void psensor_value_to_string_buffer(unsigned int type, double value, Temperature_Unit temperature_unit, char *buffer, size_t buffer_size);
 
-char *psensor_unit_to_str(unsigned int type,
-                          Temperature_Unit temperature_unit);
+char *psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperature_unit);
 
-char *psensor_measure_to_str(const Pmeasure *m,
-                             unsigned int type,
-                             Temperature_Unit temperature_unit);
+void psensor_unit_to_str(unsigned int type, Temperature_Unit temperature_unit, char *buffer, size_t buffer_size);
 
 void psensor_list_append(Psensor ***sensors, Psensor *sensor);
 
@@ -228,7 +237,7 @@ typedef struct all_minmax_st
 
 ALL_MINMAX get_all_minmax_values(const Psensor *const *all_sensors);
 
-char *psensor_current_value_to_str(const Psensor *, Temperature_Unit temperature_unit);
+void psensor_current_value_to_str(const Psensor *s, Temperature_Unit temperature_unit, char *buffer, size_t buffer_size);
 
 void psensor_log_measures(Psensor **sensors);
 

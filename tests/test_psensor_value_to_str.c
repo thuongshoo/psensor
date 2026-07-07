@@ -29,17 +29,19 @@
 
 static int
 test_psensor_value_to_str(unsigned int type,
-			  double value,
-			  Temperature_Unit temperature_unit,
-			  const char *ref)
+						  double value,
+						  Temperature_Unit temperature_unit,
+						  const char *ref)
 {
-	char *str;
-
-	str = psensor_value_to_str(type, value, temperature_unit);
-	if (strcmp(ref, str)) {
+	char str[PSENSOR_MAX_VALUE_LEN];
+	psensor_value_to_string_buffer(type, value, temperature_unit, str, sizeof(str));
+	if (strcmp(ref, str))
+	{
 		fprintf(stderr, "returns: %s expected: %s\n", str, ref);
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
@@ -50,15 +52,15 @@ int main(int argc, char **argv)
 	int errs;
 
 	errs = test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13, USE_CELSIUS,
-					 "13"CELSIUS);
+									 "13" CELSIUS);
 	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13, USE_FAHRENHEIT,
-					  "55"FAHRENHEIT);
+									  "55" FAHRENHEIT);
 	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13.4, USE_CELSIUS,
-					  "13"CELSIUS);
+									  "13" CELSIUS);
 	errs += test_psensor_value_to_str(SENSOR_TYPE_TEMP, 13.5, USE_FAHRENHEIT,
-					  "14"CELSIUS);
+									  "14" CELSIUS);
 
-	if (errs) 
+	if (errs)
 		exit(EXIT_FAILURE);
 	else
 		exit(EXIT_SUCCESS);

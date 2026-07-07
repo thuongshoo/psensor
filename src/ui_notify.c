@@ -61,18 +61,12 @@ void ui_notify(Psensor *sensor, struct ui_psensor *ui)
 		Temperature_Unit temperature_unit = config_get_temperature_unit();
 
 		const Pmeasure *measure = psensor_get_current_measure(sensor);
-		char *svalue;
-		svalue = psensor_measure_to_str(measure,
-										sensor->type,
-										temperature_unit);
+		char svalue[PSENSOR_MAX_VALUE_LEN];
+		psensor_value_to_string_buffer(sensor->type, measure->value, temperature_unit, svalue, sizeof(svalue));
 
 		char *body;
 		if (-1 == asprintf(&body, "%s : %s", sensor->name, svalue))
-		{
-			free(svalue);
 			return;
-		}
-		free(svalue);
 
 		const char *summary;
 		if (is_temperature_type(sensor->type))

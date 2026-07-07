@@ -26,18 +26,21 @@
 
 void notify_cmd(Psensor *s)
 {
-	char *script, *v, *cmd;
+	char *script, *cmd;
 	int ret;
 
 	script = config_get_notif_script();
 
-	if (script) {
-		v = psensor_current_value_to_str(s, 1);
+	if (script)
+	{
+		char v[PSENSOR_MAX_VALUE_LEN];
+		psensor_current_value_to_str(s, 1, v, sizeof(v));
 
 		int result = asprintf(&cmd, "%s \"%s\" %s", script, s->id, v);
-		if (result == -1) {
+		if (result == -1)
+		{
 			log_functionname("cannot allote memory when trying to execute cmd: %s", cmd);
-			if (v) free(v);
+
 			free(script);
 			return;
 		}
@@ -49,8 +52,6 @@ void notify_cmd(Psensor *s)
 		log_functionname("cmd returns: %d", ret);
 
 		free(cmd);
-		free(v);
 		free(script);
 	}
 }
-

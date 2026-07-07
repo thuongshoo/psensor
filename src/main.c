@@ -493,8 +493,6 @@ static void cleanup(struct ui_psensor *ui)
 
     config_cleanup();
 
-    free(ui->config->graph_fgcolor);
-    free(ui->config->graph_bgcolor);
     free(ui->config);
 
     log_debug("Cleanup done, closing log");

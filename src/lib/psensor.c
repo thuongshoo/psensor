@@ -33,8 +33,23 @@
 #include <hdd.h>
 #include <temperature.h>
 
-char *
-psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperature_unit)
+void psensor_value_to_string_buffer(unsigned int type, double value, Temperature_Unit temperature_unit, char *buffer, size_t buffer_size)
+{
+    // if (buffer == nullptr || buffer_size == 0)
+    //     return nullptr;
+
+    if (is_temperature_type(type))
+    {
+        if (!is_celsius(temperature_unit))
+            value = celsius_to_fahrenheit(value);
+    }
+
+    snprintf(buffer, buffer_size, "%.0f", value);
+
+    //    return buffer;
+}
+
+char *psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperature_unit)
 {
     /*
      * should not be possible to exceed 16 characters with temp or
@@ -76,32 +91,11 @@ const char *psensor_type_to_unit_str(unsigned int type, Temperature_Unit tempera
     return _("N/A");
 }
 
-char *
-psensor_unit_to_str(unsigned int type, Temperature_Unit temperature_unit)
+void psensor_unit_to_str(unsigned int type, Temperature_Unit temperature_unit, char *buffer, size_t buffer_size)
 {
-    /*
-     * should not be possible to exceed 4 characters with temp or
-     * rpm values the .x part is never displayed
-     */
-    const int MAX_STR_LEN = 4;
-
-    char *str = malloc(MAX_STR_LEN);
-    if (str == nullptr)
-        return nullptr;
-
     const char *unit = psensor_type_to_unit_str(type, temperature_unit);
 
-    snprintf(str, MAX_STR_LEN, "%s", unit);
-
-    return str;
-}
-
-char *
-psensor_measure_to_str(const Pmeasure *m,
-                       unsigned int type,
-                       Temperature_Unit temperature_unit)
-{
-    return psensor_value_to_str(type, m->value, temperature_unit);
+    snprintf(buffer, buffer_size, "%s", unit);
 }
 
 Psensor *
@@ -585,10 +579,11 @@ const Psensor **psensor_list_copy(const Psensor *const *sensors)
     return result;
 }
 
-char *
-psensor_current_value_to_str(const Psensor *s, Temperature_Unit temperature_unit)
+void psensor_current_value_to_str(const Psensor *s, Temperature_Unit temperature_unit, char *buffer, size_t buffer_size)
 {
-    return psensor_value_to_str(s->type,
-                                psensor_get_current_value(s),
-                                temperature_unit);
+    psensor_value_to_string_buffer(s->type,
+                                   psensor_get_current_value(s),
+                                   temperature_unit,
+                                   buffer,
+                                   buffer_size);
 }

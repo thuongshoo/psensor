@@ -167,7 +167,7 @@ static int ndash = ARRAY_SIZE(dashes);
 static void draw_background_lines(cairo_t *cr, GraphContext *ctx,
                                   const struct config *config)
 {
-    const struct color *color = config->graph_fgcolor;
+    const struct color *color = &config->graph_fgcolor;
     int min = (int)ctx->display_range.temp_min;
     int max = (int)ctx->display_range.temp_max;
 
@@ -635,7 +635,7 @@ int calculate_min_shift_pixels(GtkWidget *widget)
 void draw_plot_background(GraphContext *ctx, cairo_t *cr,
                           const Pconfig *config)
 {
-    const struct color *bgcolor = config->graph_bgcolor;
+    const struct color *bgcolor = &config->graph_bgcolor;
 
     if (config->alpha_channel_enabled)
         cairo_set_source_rgba(cr, ctx->theme_bg_color.red,
@@ -686,16 +686,8 @@ void draw_bottom_labels(GraphContext *ctx,
                         const struct config *config,
                         GtkWidget *window)
 {
-    char *str_btime = time_to_str(ctx->begin_time);
-    char *str_etime = time_to_str(ctx->end_time);
-
-    if (ctx->cached_str_btime)
-        free(ctx->cached_str_btime);
-    ctx->cached_str_btime = str_btime;
-
-    if (ctx->cached_str_etime)
-        free(ctx->cached_str_etime);
-    ctx->cached_str_etime = str_etime;
+    time_to_string_buffer(ctx->begin_time, ctx->str_btime, sizeof(ctx->str_btime));
+    time_to_string_buffer(ctx->end_time, ctx->str_etime, sizeof(ctx->str_etime));
 
     cairo_select_font_face(cr, BEGIN_END_TIME_FONT,
                            CAIRO_FONT_SLANT_NORMAL,
@@ -707,7 +699,7 @@ void draw_bottom_labels(GraphContext *ctx,
                          ctx->theme_fg_color.blue);
 
     cairo_text_extents_t extents_etime;
-    estimate_text_extents(&ctx->font_metrics, str_etime, &extents_etime);
+    estimate_text_extents(&ctx->font_metrics, ctx->str_etime, &extents_etime);
 
     int surf_width = ctx->time_labels_surface_width;
     int surf_height = ctx->time_labels_surface_height;
@@ -715,10 +707,10 @@ void draw_bottom_labels(GraphContext *ctx,
     double text_y = (surf_height) / 2.0;
 
     cairo_move_to(cr, ctx->minmax_labels_surface_width + ctx->h_padding, text_y);
-    cairo_show_text(cr, str_btime);
+    cairo_show_text(cr, ctx->str_btime);
 
     cairo_move_to(cr, surf_width - extents_etime.width - ctx->h_padding, text_y);
-    cairo_show_text(cr, str_etime);
+    cairo_show_text(cr, ctx->str_etime);
 }
 
 /*
@@ -732,21 +724,11 @@ void draw_left_labels(GraphContext *ctx,
 {
     Temperature_Unit temperature_unit = config_get_temperature_unit();
 
-    char *str_max = psensor_value_to_str(SENSOR_TYPE_TEMP, ctx->display_range.temp_max, temperature_unit);
-    char *str_min = psensor_value_to_str(SENSOR_TYPE_TEMP, ctx->display_range.temp_min, temperature_unit);
-    char *str_unit = psensor_unit_to_str(SENSOR_TYPE_TEMP, temperature_unit);
+    psensor_value_to_string_buffer(SENSOR_TYPE_TEMP, ctx->display_range.temp_max, temperature_unit, &ctx->str_max, sizeof(ctx->str_max));
 
-    if (ctx->cached_str_max)
-        free(ctx->cached_str_max);
-    ctx->cached_str_max = str_max;
+    psensor_value_to_string_buffer(SENSOR_TYPE_TEMP, ctx->display_range.temp_min, temperature_unit, &ctx->str_min, sizeof(ctx->str_min));
 
-    if (ctx->cached_str_min)
-        free(ctx->cached_str_min);
-    ctx->cached_str_min = str_min;
-
-    if (ctx->cached_str_unit)
-        free(ctx->cached_str_unit);
-    ctx->cached_str_unit = str_unit;
+    psensor_unit_to_str(SENSOR_TYPE_TEMP, temperature_unit, &ctx->str_unit, UNIT_STR_MAX_LEN);
 
     cairo_select_font_face(cr, BEGIN_END_TIME_FONT,
                            CAIRO_FONT_SLANT_NORMAL,
@@ -758,9 +740,9 @@ void draw_left_labels(GraphContext *ctx,
                          ctx->theme_fg_color.blue);
 
     cairo_text_extents_t extents_max, extents_min, extents_unit;
-    estimate_text_extents(&ctx->font_metrics, str_max, &extents_max);
-    estimate_text_extents(&ctx->font_metrics, str_min, &extents_min);
-    estimate_text_extents(&ctx->font_metrics, str_unit, &extents_unit);
+    estimate_text_extents(&ctx->font_metrics, ctx->str_max, &extents_max);
+    estimate_text_extents(&ctx->font_metrics, ctx->str_min, &extents_min);
+    estimate_text_extents(&ctx->font_metrics, &ctx->str_unit, &extents_unit);
 
     double max_width = extents_max.width;
     if (extents_min.width > max_width)
@@ -773,17 +755,17 @@ void draw_left_labels(GraphContext *ctx,
 
     /* Draw top‑aligned: max value + unit */
     cairo_move_to(cr, max_width / 2.0, line_height);
-    cairo_show_text(cr, str_max);
+    cairo_show_text(cr, ctx->str_max);
 
     cairo_move_to(cr, max_width / 2.0, 2.0 * line_height);
-    cairo_show_text(cr, str_unit);
+    cairo_show_text(cr, &ctx->str_unit);
 
     /* Draw bottom‑aligned: min value + unit */
     cairo_move_to(cr, max_width / 2.0, surf_height - (2.0 * line_height));
-    cairo_show_text(cr, str_min);
+    cairo_show_text(cr, ctx->str_min);
 
     cairo_move_to(cr, max_width / 2.0, surf_height - line_height);
-    cairo_show_text(cr, str_unit);
+    cairo_show_text(cr, &ctx->str_unit);
 }
 
 /* ── Getter: trả về min/max theo loại sensor ── */

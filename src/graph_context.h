@@ -4,6 +4,7 @@
 
 #include <gtk/gtk.h>
 #include "psensor.h"
+#include "ptime.h"
 
 #define MIN_TEMPERATURE_RANGE 40.0
 #define HALF_RANGE (MIN_TEMPERATURE_RANGE / 2)
@@ -91,8 +92,11 @@ typedef struct
 
     // === Label state ===
     gboolean minmax_labels_valid, time_labels_valid;
-    char *cached_str_min, *cached_str_max, *cached_str_unit;
-    char *cached_str_btime, *cached_str_etime;
+    char str_min[PSENSOR_MAX_VALUE_LEN];
+    char str_max[PSENSOR_MAX_VALUE_LEN];
+    char str_unit[UNIT_STR_MAX_LEN];
+    char str_btime[TIME_STR_MAX_LEN];
+    char str_etime[TIME_STR_MAX_LEN];
     int minmax_labels_width;
 
     // === Shift state ===

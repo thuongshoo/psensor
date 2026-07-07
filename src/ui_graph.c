@@ -877,10 +877,5 @@ void ui_graph_cleanup(struct ui_psensor *ui_psensor)
     free_cairo_resource((void **)&ctx->graph_surface);
     free_cairo_resource((void **)&ctx->grid_surface);
 
-    free_resource((void **)&ctx->cached_str_min);
-    free_resource((void **)&ctx->cached_str_max);
-    free_resource((void **)&ctx->cached_str_unit);
-    free_resource((void **)&ctx->cached_str_btime);
-    free_resource((void **)&ctx->cached_str_etime);
     free_resource((void **)&ui_psensor->graph_cache);
 }

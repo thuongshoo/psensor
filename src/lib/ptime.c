@@ -79,24 +79,12 @@ char *get_current_ISO8601_time(void)
     return time_to_ISO8601_time(&t);
 }
 
-char *time_to_str(time_t s)
+void time_to_string_buffer(time_t s, char *buffer, size_t buffer_size)
 {
     /* note: localtime returns a static field, no free required */
     const struct tm *tm = localtime(&s);
 
-    if (!tm)
-        return nullptr;
-
-    char *str = calloc(8, sizeof(char));
-
-    if (str == nullptr)
-    {
-        return nullptr;
-    }
-
-    strftime(str, 6, "%H:%M", tm);
-
-    return str;
+    strftime(buffer, buffer_size, "%H:%M", tm);
 }
 
 char *time_to_str2(const time_t *t)

@@ -66,11 +66,11 @@ void ui_appindicator_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
 static void
 update_menu_item(GtkMenuItem *item, const Psensor *s, Temperature_Unit temperature_unit)
 {
-    char *v = psensor_current_value_to_str(s, temperature_unit);
+    char v[PSENSOR_MAX_VALUE_LEN];
+    psensor_current_value_to_str(s, temperature_unit, v, sizeof(v));
     gchar *str = g_strdup_printf("%s: %s", s->name, v);
     gtk_menu_item_set_label(item, str);
     g_free(str);
-    free(v);
 }
 
 static void update_menu_items(Temperature_Unit temperature_unit)
@@ -248,22 +248,16 @@ static void update_label(const struct ui_psensor *ui)
             continue;
         }
 
-        char *value_string = psensor_current_value_to_str(*sensorList, temperature_unit);
-        if (!value_string)
-        {
-            continue;
-        }
+        char value_string[PSENSOR_MAX_VALUE_LEN];
+        psensor_current_value_to_str(*sensorList, temperature_unit, value_string, sizeof(value_string));
 
         const char *unit_format = get_unit_format_string((*sensorList)->type);
 
         if (append_sensor_to_strings(&label, &guide, value_string, unit_format) != 0)
         {
-            free(value_string);
             // Có thể log lỗi ở đây
             continue;
         }
-
-        free(value_string);
     }
 
     if (label && guide)
