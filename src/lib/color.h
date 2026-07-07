@@ -42,12 +42,12 @@ typedef struct color
     color_channel_datatype_t blue;
 } Pcolor;
 
-struct color *color_new(color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b);
-struct color *color_dup(const struct color *c);
-void color_set(struct color *c, color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b);
+Pcolor *color_new(color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b);
+Pcolor *color_dup(const Pcolor *c);
+void color_set(Pcolor *c, color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b);
 
 bool is_color(const char *str);
 
-char *color_to_str(const struct color *color);
+char *color_to_str(const Pcolor *color);
 Pcolor str_to_color(const char *str);
 #endif

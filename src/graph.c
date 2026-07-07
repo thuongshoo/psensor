@@ -63,7 +63,7 @@ void update_theme(GraphContext *ctx)
     ctx->theme_valid = TRUE;
 }
 
-unsigned int compute_values_max_length(const struct config *c)
+unsigned int compute_values_max_length(const Pconfig *c)
 {
     const unsigned int duration = c->graph_monitoring_duration * 60U; // minutes to seconds
     const unsigned int interval = c->sensor_update_interval;
@@ -122,7 +122,7 @@ time_t get_graph_end_time_s(const Psensor *const *all_sensors, bool is_smooth_cu
     return latest_time;
 }
 
-time_t get_graph_begin_time_s(const struct config *cfg, time_t etime)
+time_t get_graph_begin_time_s(const Pconfig *cfg, time_t etime)
 {
     if (!etime)
         return 0;
@@ -165,9 +165,9 @@ static double dashes[] = {
 static int ndash = ARRAY_SIZE(dashes);
 
 static void draw_background_lines(cairo_t *cr, GraphContext *ctx,
-                                  const struct config *config)
+                                  const Pconfig *config)
 {
-    const struct color *color = &config->graph_fgcolor;
+    const Pcolor *color = &config->graph_fgcolor;
     int min = (int)ctx->display_range.temp_min;
     int max = (int)ctx->display_range.temp_max;
 
@@ -586,7 +586,7 @@ void calculate_fixed_plot_range(GraphContext *ctx,
 /*
  * Tính pixels_per_point.
  */
-double calculate_pixels_per_point(const struct config *cfg, int plot_width)
+double calculate_pixels_per_point(const Pconfig *cfg, int plot_width)
 {
     unsigned int duration_seconds = cfg->graph_monitoring_duration * 60U;
     unsigned int update_interval = cfg->sensor_update_interval;
@@ -635,7 +635,7 @@ int calculate_min_shift_pixels(GtkWidget *widget)
 void draw_plot_background(GraphContext *ctx, cairo_t *cr,
                           const Pconfig *config)
 {
-    const struct color *bgcolor = &config->graph_bgcolor;
+    const Pcolor *bgcolor = &config->graph_bgcolor;
 
     if (config->alpha_channel_enabled)
         cairo_set_source_rgba(cr, ctx->theme_bg_color.red,
@@ -683,7 +683,7 @@ void draw_curves_only(GraphContext *ctx, cairo_t *cr,
  */
 void draw_bottom_labels(GraphContext *ctx,
                         cairo_t *cr,
-                        const struct config *config,
+                        const Pconfig *config,
                         GtkWidget *window)
 {
     time_to_string_buffer(ctx->begin_time, ctx->str_btime, sizeof(ctx->str_btime));
@@ -719,7 +719,7 @@ void draw_bottom_labels(GraphContext *ctx,
  */
 void draw_left_labels(GraphContext *ctx,
                       cairo_t *cr,
-                      const struct config *config,
+                      const Pconfig *config,
                       GtkWidget *window)
 {
     Temperature_Unit temperature_unit = config_get_temperature_unit();

@@ -70,9 +70,9 @@ typedef struct config
 } Pconfig;
 
 /* Loads psensor configuration */
-struct config *config_load(void);
+Pconfig *config_load(void);
 
-void config_save_to_g_file(const struct config *);
+void config_save_to_g_file(const Pconfig *);
 
 void config_cleanup(void);
 

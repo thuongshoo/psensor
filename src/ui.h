@@ -69,20 +69,20 @@ typedef struct ui_psensor
  *
  * Show or hide the menu bar.
  */
-void ui_window_update(struct ui_psensor *);
+void ui_window_update(UI_psensor *);
 
 /* Show the main psensor window. */
-void ui_window_show(struct ui_psensor *);
+void ui_window_show(UI_psensor *);
 
 /* Must be called to terminate Psensor UI. */
-void ui_psensor_quit(struct ui_psensor *ui);
+void ui_psensor_quit(UI_psensor *ui);
 
 /* Creates the main GTK window */
-void ui_window_create(struct ui_psensor *ui);
+void ui_window_create(UI_psensor *ui);
 
-void ui_menu_bar_show(unsigned int show, struct ui_psensor *ui);
+void ui_menu_bar_show(unsigned int show, UI_psensor *ui);
 
-void ui_enable_alpha_channel(struct ui_psensor *ui);
+void ui_enable_alpha_channel(UI_psensor *ui);
 
 void ui_cb_preferences(GtkMenuItem *mi, gpointer data);
 void ui_cb_menu_quit(GtkMenuItem *mi, gpointer data);

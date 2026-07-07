@@ -53,7 +53,7 @@ typedef void (*draw_sensor_curve_function_type)(
 
 void graph_update(Psensor **sensors,
                   GtkWidget *w_graph,
-                  struct config *config,
+                  Pconfig *config,
                   GtkWidget *window);
 
 /*
@@ -64,7 +64,7 @@ void redraw_graph(cairo_surface_t *graph_surface,
                   cairo_t *cr,
                   const Psensor *const *graph_enabled_sensors,
                   GtkWidget *w_graph,
-                  const struct config *config,
+                  const Pconfig *config,
                   GtkWidget *window);
 
 /*
@@ -75,7 +75,7 @@ void redraw_graph(cairo_surface_t *graph_surface,
 void draw_left_labels(GraphContext *ctx,
                       cairo_t *cr,
                       // const Psensor *const *graph_enabled_sensors,
-                      const struct config *config,
+                      const Pconfig *config,
                       GtkWidget *window);
 
 /*
@@ -85,13 +85,13 @@ void draw_left_labels(GraphContext *ctx,
 void draw_bottom_labels(GraphContext *ctx,
                         cairo_t *cr,
                         // const Psensor *const *graph_enabled_sensors,
-                        const struct config *config,
+                        const Pconfig *config,
                         GtkWidget *window);
 
 /*
  * Tính số pixel mỗi data point chiếm.
  */
-double calculate_pixels_per_point(const struct config *cfg, int plot_width);
+double calculate_pixels_per_point(const Pconfig *cfg, int plot_width);
 
 /*
  * Tính ngưỡng dịch tối thiểu từ DPI (1mm).
@@ -121,10 +121,10 @@ void calculate_fixed_plot_range(GraphContext *ctx,
                                 double *out_min,
                                 double *out_max);
 
-unsigned int compute_values_max_length(const struct config *);
+unsigned int compute_values_max_length(const Pconfig *);
 
 time_t get_graph_end_time_s(const Psensor *const *all_sensors, bool is_smooth_curves_enabled);
-time_t get_graph_begin_time_s(const struct config *cfg, time_t etime);
+time_t get_graph_begin_time_s(const Pconfig *cfg, time_t etime);
 
 /* Foreground color of the current desktop theme */
 extern GdkRGBA theme_fg_color;
@@ -132,7 +132,7 @@ extern GdkRGBA theme_fg_color;
 extern GdkRGBA theme_bg_color;
 
 void draw_plot_background(GraphContext *ctx, cairo_t *cr,
-                          const struct config *config);
+                          const Pconfig *config);
 
 void draw_curves_only(GraphContext *ctx, cairo_t *cr,
                       const Psensor *const *graph_enabled_sensors,

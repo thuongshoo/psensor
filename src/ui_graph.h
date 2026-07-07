@@ -23,9 +23,9 @@
 
 #include "ui.h"
 
-void ui_graph_create(struct ui_psensor *sensor_context);
-void ui_graph_cleanup(struct ui_psensor *ui_psensor);
+void ui_graph_create(UI_psensor *sensor_context);
+void ui_graph_cleanup(UI_psensor *ui_psensor);
 
-gboolean should_update_ui(struct ui_psensor *ui);
+gboolean should_update_ui(UI_psensor *ui);
 void graph_cache_invalidate(UI_psensor *ui);
 #endif

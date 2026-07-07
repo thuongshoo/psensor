@@ -26,7 +26,7 @@
  * Kiểm tra xem app có đang hiển thị để cập nhật UI hay không.
  * Trả về TRUE nếu cửa sổ đang visible, active, và không bị iconified.
  */
-gboolean should_update_ui(struct ui_psensor *ui)
+gboolean should_update_ui(UI_psensor *ui)
 {
     GtkWindow *window = GTK_WINDOW(ui->main_window);
 
@@ -64,7 +64,7 @@ on_graph_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data)
     free(mynow2);
     free(mynow);
 #endif
-    gtk_menu_popup_at_pointer(GTK_MENU(((struct ui_psensor *)data)->popup_menu),
+    gtk_menu_popup_at_pointer(GTK_MENU(((UI_psensor *)data)->popup_menu),
                               (const GdkEvent *)event);
 
     return TRUE;
@@ -268,7 +268,7 @@ static gboolean ensure_time_labels_surface(GraphContext *ctx, cairo_t *cr,
  * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
  * Lưu ý: không lock/unlock, caller phải tự lock.
  */
-static void update_time_labels_if_needed(struct ui_psensor *ui,
+static void update_time_labels_if_needed(UI_psensor *ui,
                                          GraphContext *graph_ctx,
                                          const Psensor *const *graph_enabled_sensors)
 {
@@ -522,7 +522,7 @@ static gboolean has_plot_range_changed(GraphContext *ctx,
  * graph_enabled_sensors: danh sách sensor đã lọc, chỉ đọc.
  * Lưu ý: không lock/unlock, caller phải tự lock.
  */
-static void update_minmax_labels_if_needed(struct ui_psensor *ui,
+static void update_minmax_labels_if_needed(UI_psensor *ui,
                                            GraphContext *graph_ctx)
 {
     if (!graph_ctx->minmax_labels_surface)
@@ -868,7 +868,7 @@ static void free_cairo_resource(void **pointer_to_resource)
     }
 }
 
-void ui_graph_cleanup(struct ui_psensor *ui_psensor)
+void ui_graph_cleanup(UI_psensor *ui_psensor)
 {
     GraphContext *ctx = &ui_psensor->config->graph_ctx;
 

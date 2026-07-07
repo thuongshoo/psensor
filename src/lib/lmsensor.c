@@ -33,18 +33,18 @@ static int init_done;
 
 static const char *PROVIDER_NAME = "lmsensor";
 
-struct lmsensor_data
+typedef struct lmsensor_data
 {
     const sensors_chip_name *chip;
 
     const sensors_feature *feature;
-};
+} Plmsensor_data;
 
 static const sensors_chip_name *get_chip_name(Psensor *s)
 {
     if (s)
     {
-        struct lmsensor_data *provider_data = (struct lmsensor_data *)s->provider_data;
+        Plmsensor_data *provider_data = (Plmsensor_data *)s->provider_data;
         if (provider_data)
             return provider_data->chip;
     }
@@ -55,7 +55,7 @@ static const sensors_feature *get_feature(Psensor *s)
 {
     if (s)
     {
-        struct lmsensor_data *provider_data = (struct lmsensor_data *)s->provider_data;
+        Plmsensor_data *provider_data = (Plmsensor_data *)s->provider_data;
         if (provider_data)
             return provider_data->feature;
     }
@@ -66,7 +66,7 @@ static void lmsensor_data_set(Psensor *s,
                               const struct sensors_chip_name *chip,
                               const struct sensors_feature *feature)
 {
-    struct lmsensor_data *data = malloc(sizeof(struct lmsensor_data));
+    Plmsensor_data *data = malloc(sizeof(Plmsensor_data));
     if (data != nullptr)
     {
         data->chip = chip;

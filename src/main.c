@@ -114,7 +114,7 @@ static int update_measures_unlock(pthread_mutex_t *m)
  * configuration.
  */
 static void
-update_psensor_values_size(Psensor **sensors, const struct config *cfg)
+update_psensor_values_size(Psensor **sensors, const Pconfig *cfg)
 {
     for (Psensor **cur = sensors; *cur; cur++)
     {
@@ -134,7 +134,7 @@ update_psensor_values_size(Psensor **sensors, const struct config *cfg)
 
 static void *sensor_data_collector(void *data)
 {
-    struct ui_psensor *ui = (struct ui_psensor *)data;
+    UI_psensor *ui = (UI_psensor *)data;
     Pconfig *cfg = ui->config;
 
     pthread_setname_np(pthread_self(), "collector");
@@ -179,7 +179,7 @@ static void *sensor_data_collector(void *data)
     return nullptr;
 }
 
-static void indicators_update(struct ui_psensor *ui)
+static void indicators_update(UI_psensor *ui)
 {
     bool attention = false;
     Psensor **ss = ui->sensors;
@@ -204,7 +204,7 @@ static void indicators_update(struct ui_psensor *ui)
 }
 
 static gboolean ui_refresh_thread(gpointer data);
-static void queue_another_execution(struct ui_psensor *ui)
+static void queue_another_execution(UI_psensor *ui)
 {
     g_timeout_add(ONE_SECOND * ui->graph_update_interval,
                   ui_refresh_thread, ui);
@@ -229,7 +229,7 @@ static void update_sensor_list_thread(gpointer data, gpointer user_data)
 {
     pthread_setname_np(pthread_self(), "list-update");
 
-    struct ui_psensor *ui = (struct ui_psensor *)data;
+    UI_psensor *ui = (UI_psensor *)data;
 
     ui_refresh_thread_lock(&ui->sensors_mutex);
     ui_sensorlist_update(ui, false);
@@ -260,7 +260,7 @@ static gboolean ui_refresh_thread(gpointer data)
 {
     pthread_setname_np(pthread_self(), "ui-timer");
 
-    struct ui_psensor *ui = (struct ui_psensor *)data;
+    UI_psensor *ui = (UI_psensor *)data;
     gboolean ret = TRUE;
     const Pconfig *config = ui->config;
 
@@ -305,13 +305,13 @@ static void cb_alarm_raised(Psensor *sensor, void *data)
 {
     if (config_get_sensor_alarm_enabled(sensor->id))
     {
-        ui_notify(sensor, (struct ui_psensor *)data);
+        ui_notify(sensor, (UI_psensor *)data);
         notify_cmd(sensor);
     }
 }
 
 static void
-associate_cb_alarm_raised(Psensor **sensors, struct ui_psensor *ui)
+associate_cb_alarm_raised(Psensor **sensors, UI_psensor *ui)
 {
     bool ret;
     Psensor *s;
@@ -422,10 +422,10 @@ static struct option long_options[] = {
 
 static gboolean initial_window_show(gpointer data)
 {
-    struct ui_psensor *ui;
+    UI_psensor *ui;
 
     log_debug("initial_window_show()");
-    ui = (struct ui_psensor *)data;
+    ui = (UI_psensor *)data;
 
     log_debug("is_status_supported: %d", (int)is_status_supported());
     log_debug("is_appindicator_supported: %d", (int)is_appindicator_supported());
@@ -455,7 +455,7 @@ static void log_glib_info(void)
 static void cb_activate(GApplication *application,
                         gpointer data)
 {
-    ui_window_show((struct ui_psensor *)data);
+    ui_window_show((UI_psensor *)data);
 }
 
 static int cleanup_lock(pthread_mutex_t *m)
@@ -469,7 +469,7 @@ static int cleanup_unlock(pthread_mutex_t *m)
 /*
  * Release memory for Valgrind.
  */
-static void cleanup(struct ui_psensor *ui)
+static void cleanup(UI_psensor *ui)
 {
     cleanup_lock(&ui->sensors_mutex);
 
@@ -503,7 +503,7 @@ static void cleanup(struct ui_psensor *ui)
  *
  * 'url': remote psensor server url, null for local monitoring.
  */
-static Psensor **create_sensors_list(const char *url, const struct config *config)
+static Psensor **create_sensors_list(const char *url, const Pconfig *config)
 {
     Psensor **sensors;
 

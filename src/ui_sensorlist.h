@@ -23,10 +23,10 @@
 
 #include "psensor.h"
 
-void ui_sensorlist_create(struct ui_psensor *);
+void ui_sensorlist_create(UI_psensor *);
 
 /* Update values current/min/max */
-void ui_sensorlist_update(struct ui_psensor *ui, bool complete);
+void ui_sensorlist_update(UI_psensor *ui, bool complete);
 
 void ui_sensorlist_cb_graph_toggled(GtkCellRendererToggle *, const gchar *, gpointer);
 

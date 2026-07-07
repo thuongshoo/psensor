@@ -43,21 +43,21 @@ static const Psensor **sensors;
 static GtkMenuItem **menu_items;
 static bool appindicator_supported = true;
 static AppIndicator *indicator;
-static struct ui_psensor *ui_psensor;
+static UI_psensor *ui_psensor;
 
 void ui_appindicator_menu_show_cb(GtkMenuItem *mi, gpointer data)
 {
-    ui_window_show((struct ui_psensor *)data);
+    ui_window_show((UI_psensor *)data);
 }
 
 void ui_appindicator_cb_preferences(GtkMenuItem *mi, gpointer data)
 {
-    ui_pref_dialog_run((struct ui_psensor *)data);
+    ui_pref_dialog_run((UI_psensor *)data);
 }
 
 void ui_appindicator_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
 {
-    struct ui_psensor *ui = data;
+    UI_psensor *ui = data;
 
     if (ui->sensors && *ui->sensors)
         ui_sensorpref_dialog_run(*ui->sensors, ui);
@@ -86,7 +86,7 @@ static void update_menu_items(Temperature_Unit temperature_unit)
 }
 
 static void
-create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
+create_sensor_menu_items(const UI_psensor *ui, GtkMenu *menu)
 {
     const Psensor **sorted_sensors = ui_get_sensors_ordered_by_position((const Psensor *const *)ui->sensors);
     size_t n = psensor_list_size((const Psensor *const *)sorted_sensors);
@@ -129,7 +129,7 @@ create_sensor_menu_items(const struct ui_psensor *ui, GtkMenu *menu)
     free((void *)sorted_sensors);
 }
 
-static GtkMenu *load_menu(struct ui_psensor *ui)
+static GtkMenu *load_menu(UI_psensor *ui)
 {
     GError *error;
     GtkMenu *menu;
@@ -232,7 +232,7 @@ static int append_sensor_to_strings(char **label, char **guide,
     return 0;
 }
 
-static void update_label(const struct ui_psensor *ui)
+static void update_label(const UI_psensor *ui)
 {
     const Psensor **sensorList = ui_get_sensors_ordered_by_position((const Psensor *const *)ui->sensors);
     const Psensor **original_sensors = sensorList;
@@ -271,7 +271,7 @@ static void update_label(const struct ui_psensor *ui)
     free((void *)original_sensors);
 }
 
-void ui_appindicator_update(const struct ui_psensor *ui, bool is_attention)
+void ui_appindicator_update(const UI_psensor *ui, bool is_attention)
 {
     AppIndicatorStatus status;
 
@@ -312,7 +312,7 @@ static void remove_sensor_menu_items(GtkMenu *menu)
     free((void *)sensors);
 }
 
-void ui_appindicator_update_menu(struct ui_psensor *ui)
+void ui_appindicator_update_menu(UI_psensor *ui)
 {
     GtkMenu *menu;
 
@@ -338,7 +338,7 @@ void ui_appindicator_update_menu(struct ui_psensor *ui)
         gtk_widget_show_all(GTK_WIDGET(menu));
 }
 
-void ui_appindicator_init(struct ui_psensor *ui)
+void ui_appindicator_init(UI_psensor *ui)
 {
     ui_psensor = ui;
     log_debug("ui_appindicator_init()");

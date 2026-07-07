@@ -451,13 +451,13 @@ void config_cleanup(void)
     slog_enabled_cbk = nullptr;
 }
 
-struct config *config_load(void)
+Pconfig *config_load(void)
 {
-    struct config *c;
+    Pconfig *c;
 
     init();
 
-    c = calloc(1, sizeof(struct config));
+    c = calloc(1, sizeof(Pconfig));
 
     c->graph_bgcolor = get_background_color();
     c->graph_fgcolor = get_foreground_color();
@@ -506,7 +506,7 @@ struct config *config_load(void)
     return c;
 }
 
-void config_save_to_g_file(const struct config *c)
+void config_save_to_g_file(const Pconfig *c)
 {
     set_alpha_channeld_enabled(c->alpha_channel_enabled);
     set_background_color(&c->graph_bgcolor);

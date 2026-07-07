@@ -75,7 +75,7 @@ static Psensor *get_selected_sensor(void)
     return s;
 }
 
-static void apply_config(struct ui_psensor *ui)
+static void apply_config(UI_psensor *ui)
 {
     config_sync();
 
@@ -100,7 +100,7 @@ void ui_sensorpref_name_changed_cb(GtkEntry *entry, gpointer data)
         s->name = strdup(str);
         config_set_sensor_name(s->id, str);
 
-        apply_config((struct ui_psensor *)data);
+        apply_config((UI_psensor *)data);
     }
 }
 
@@ -135,7 +135,7 @@ void ui_sensorpref_display_toggled_cb(GtkToggleButton *btn, gpointer data)
     gboolean active = gtk_toggle_button_get_active(btn);
     config_set_sensor_enabled(s->id, gboolean_to_bool(active));
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 void ui_sensorpref_alarm_toggled_cb(GtkToggleButton *btn, gpointer data)
@@ -151,7 +151,7 @@ void ui_sensorpref_alarm_toggled_cb(GtkToggleButton *btn, gpointer data)
     gboolean active = gtk_toggle_button_get_active(btn);
     config_set_sensor_alarm_enabled(s->id, gboolean_to_bool(active));
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 void ui_sensorpref_appindicator_menu_toggled_cb(GtkToggleButton *btn, gpointer data)
@@ -167,7 +167,7 @@ void ui_sensorpref_appindicator_menu_toggled_cb(GtkToggleButton *btn, gpointer d
     gboolean active = gtk_toggle_button_get_active(btn);
     config_set_appindicator_enabled(s->id, gboolean_to_bool(active));
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 void ui_sensorpref_appindicator_label_toggled_cb(GtkToggleButton *btn, gpointer data)
@@ -183,7 +183,7 @@ void ui_sensorpref_appindicator_label_toggled_cb(GtkToggleButton *btn, gpointer 
     gboolean active = gtk_toggle_button_get_active(btn);
     config_set_appindicator_label_enabled(s->id, gboolean_to_bool(active));
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 void ui_sensorpref_color_set_cb(GtkColorButton *widget, gpointer data)
@@ -200,7 +200,7 @@ void ui_sensorpref_color_set_cb(GtkColorButton *widget, gpointer data)
     gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(widget), &color);
     config_set_sensor_color(s->id, &color);
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 void ui_sensorpref_alarm_high_threshold_changed_cb(GtkSpinButton *btn, gpointer data)
@@ -219,7 +219,7 @@ void ui_sensorpref_alarm_high_threshold_changed_cb(GtkSpinButton *btn, gpointer 
     config_set_sensor_alarm_high_threshold(s->id, (int)v);
     s->alarm_high_threshold = v;
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 void ui_sensorpref_alarm_low_threshold_changed_cb(GtkSpinButton *btn, gpointer data)
@@ -238,7 +238,7 @@ void ui_sensorpref_alarm_low_threshold_changed_cb(GtkSpinButton *btn, gpointer d
     config_set_sensor_alarm_low_threshold(s->id, (int)v);
     s->alarm_low_threshold = v;
 
-    apply_config((struct ui_psensor *)data);
+    apply_config((UI_psensor *)data);
 }
 
 static void update_pref(Psensor *s)
@@ -418,7 +418,7 @@ void ui_sensorpref_close_clicked_cb(GtkButton *btn, gpointer data)
     quit();
 }
 
-static GtkBuilder *load_ui(struct ui_psensor *ui)
+static GtkBuilder *load_ui(UI_psensor *ui)
 {
     GError *error = nullptr;
 
@@ -494,7 +494,7 @@ static void populate(Psensor *sensor, Psensor **sensors)
     free((void *)ordered_sensors);
 }
 
-void ui_sensorpref_dialog_run(Psensor *sensor, struct ui_psensor *ui)
+void ui_sensorpref_dialog_run(Psensor *sensor, UI_psensor *ui)
 {
     if (w_dialog == nullptr)
     {

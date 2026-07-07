@@ -43,7 +43,7 @@ enum
 
 struct cb_data
 {
-    struct ui_psensor *ui;
+    UI_psensor *ui;
     Psensor *sensor;
 };
 
@@ -58,7 +58,7 @@ static int col_index_to_col(int idx)
     return idx;
 }
 
-static void populate(struct ui_psensor *ui)
+static void populate(UI_psensor *ui)
 {
     const Psensor **ordered_sensors = ui_get_sensors_ordered_by_position((const Psensor *const *)ui->sensors);
     GtkListStore *store = ui->sensors_store;
@@ -90,7 +90,7 @@ static void populate(struct ui_psensor *ui)
     free((void *)ordered_sensors);
 }
 
-void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
+void ui_sensorlist_update(UI_psensor *ui, bool complete)
 {
     if (complete)
         populate(ui);
@@ -145,7 +145,7 @@ void ui_sensorlist_update(struct ui_psensor *ui, bool complete)
  * <null> if none.
  */
 static Psensor *
-get_sensor_at_pos(GtkTreeView *view, int x, int y, struct ui_psensor *ui)
+get_sensor_at_pos(GtkTreeView *view, int x, int y, UI_psensor *ui)
 {
     GtkTreePath *path;
     GtkTreeModel *model;
@@ -244,7 +244,7 @@ static void hide_activated_cbk(GtkWidget *menu_item, gpointer data)
 }
 
 static GtkWidget *
-create_sensor_popup(struct ui_psensor *ui, Psensor *sensor)
+create_sensor_popup(UI_psensor *ui, Psensor *sensor)
 {
     GtkWidget *menu, *item, *separator;
     struct cb_data *data;
@@ -296,11 +296,11 @@ create_sensor_popup(struct ui_psensor *ui, Psensor *sensor)
 
 static int clicked_cbk(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
-    struct ui_psensor *ui;
+    UI_psensor *ui;
     GtkTreeView *view;
     Psensor *s;
 
-    ui = (struct ui_psensor *)data;
+    ui = (UI_psensor *)data;
     view = ui->sensors_tree;
 
     s = get_sensor_at_pos(view, (int)event->x, (int)event->y, ui);
@@ -343,7 +343,7 @@ void ui_sensorlist_cb_graph_toggled(GtkCellRendererToggle *cell,
                                     gpointer data)
 {
 
-    struct ui_psensor *ui = (struct ui_psensor *)data;
+    UI_psensor *ui = (UI_psensor *)data;
     GtkTreeModel *fmodel = gtk_tree_view_get_model(ui->sensors_tree);
 
     GtkTreePath *path = gtk_tree_path_new_from_string(path_str);
@@ -381,7 +381,7 @@ void ui_sensorlist_cb_graph_toggled(GtkCellRendererToggle *cell,
     }
 }
 
-void ui_sensorlist_create(struct ui_psensor *ui)
+void ui_sensorlist_create(UI_psensor *ui)
 {
     GtkTreeModel *fmodel, *model;
 

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <errno.h>
 
-void color_set(struct color *c, color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b)
+void color_set(Pcolor *c, color_channel_datatype_t r, color_channel_datatype_t g, color_channel_datatype_t b)
 {
     c->red = r;
     c->green = g;
@@ -94,7 +94,7 @@ static inline color_channel_datatype_t clamp_color_channel_datatype_t(color_chan
     return value;
 }
 
-char *color_to_str(const struct color *color)
+char *color_to_str(const Pcolor *color)
 {
     if (color == nullptr)
         return nullptr;

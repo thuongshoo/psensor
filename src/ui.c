@@ -80,7 +80,7 @@ static int calculate_slider_position_level_2(int old_width_or_height,
     return new_width_or_height;
 }
 
-static void calculate_slider_position(struct ui_psensor *ui, enum sensorlist_position sensorlist_pos)
+static void calculate_slider_position(UI_psensor *ui, enum sensorlist_position sensorlist_pos)
 {
     GtkAllocation paned_alloc;
     gtk_widget_get_allocation(GTK_WIDGET(w_sensor_box), &paned_alloc);
@@ -117,7 +117,7 @@ static void pack_widgets_with_new_layout()
     }
 }
 
-static void update_layout(struct ui_psensor *ui)
+static void update_layout(UI_psensor *ui)
 {
     // printf("pos1=%s slider=%d lastV=%d lastH=%d \n",
     // 	config_get_sensorlist_position_str(last_sensorlist_position),
@@ -203,10 +203,10 @@ menu_bar_changed_cbk(GSettings *settings, gchar *key, gpointer data)
 static void
 sensorlist_position_changed_cbk(GSettings *settings, gchar *key, gpointer data)
 {
-    update_layout((struct ui_psensor *)data);
+    update_layout((UI_psensor *)data);
 }
 
-static void connect_cbks(GtkWindow *win, GtkWidget *menu_bar, struct ui_psensor *ui)
+static void connect_cbks(GtkWindow *win, GtkWidget *menu_bar, UI_psensor *ui)
 {
     log_functionname_enter();
 
@@ -233,7 +233,7 @@ static void connect_cbks(GtkWindow *win, GtkWidget *menu_bar, struct ui_psensor 
     log_functionname_exit();
 }
 
-static void save_window_position_to_config(struct ui_psensor *ui)
+static void save_window_position_to_config(UI_psensor *ui)
 {
     gboolean visible = gtk_widget_get_visible(ui->main_window);
     log_debug("Window visible: %d", visible);
@@ -268,7 +268,7 @@ static void save_window_position_to_config(struct ui_psensor *ui)
 static gboolean
 on_delete_event_cb(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-    struct ui_psensor *ui = data;
+    UI_psensor *ui = data;
 
     save_window_position_to_config(ui);
 
@@ -311,10 +311,10 @@ static void ui_show_about_dialog(GtkWindow *parent)
 
 void ui_cb_about(GtkAction *a, gpointer data)
 {
-    struct ui_psensor *ui;
+    UI_psensor *ui;
     GtkWidget *parent;
 
-    ui = (struct ui_psensor *)data;
+    ui = (UI_psensor *)data;
 
     log_functionname("ui=%p", ui);
 
@@ -328,17 +328,17 @@ void ui_cb_about(GtkAction *a, gpointer data)
 
 void ui_cb_menu_quit(GtkMenuItem *mi, gpointer data)
 {
-    ui_psensor_quit((struct ui_psensor *)data);
+    ui_psensor_quit((UI_psensor *)data);
 }
 
 void ui_cb_preferences(GtkMenuItem *mi, gpointer data)
 {
-    ui_pref_dialog_run((struct ui_psensor *)data);
+    ui_pref_dialog_run((UI_psensor *)data);
 }
 
 void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
 {
-    struct ui_psensor *ui = data;
+    UI_psensor *ui = data;
 #if ENABLE_DEBUG_PRINT
     time_t mytimenow = time(nullptr);
     char *mynow = time_to_str3(&mytimenow);
@@ -351,7 +351,7 @@ void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
         ui_sensorpref_dialog_run(*ui->sensors, ui);
 }
 
-void ui_psensor_quit(struct ui_psensor *ui)
+void ui_psensor_quit(UI_psensor *ui)
 {
     save_window_position_to_config(ui);
 
@@ -360,11 +360,11 @@ void ui_psensor_quit(struct ui_psensor *ui)
     gtk_main_quit();
 }
 
-void ui_enable_alpha_channel(struct ui_psensor *ui)
+void ui_enable_alpha_channel(UI_psensor *ui)
 {
     GdkScreen *screen;
     GdkVisual *visual;
-    struct config *cfg;
+    Pconfig *cfg;
 
     cfg = ui->config;
 
@@ -394,11 +394,11 @@ void ui_enable_alpha_channel(struct ui_psensor *ui)
 
 static void slog_enabled_cbk(void *data)
 {
-    struct ui_psensor *ui;
+    UI_psensor *ui;
     Psensor **sensors;
     pthread_mutex_t *mutex;
 
-    ui = (struct ui_psensor *)data;
+    ui = (UI_psensor *)data;
     sensors = ui->sensors;
     mutex = &ui->sensors_mutex;
 
@@ -410,7 +410,7 @@ static void slog_enabled_cbk(void *data)
         slog_close();
 }
 
-void ui_window_create(struct ui_psensor *ui)
+void ui_window_create(UI_psensor *ui)
 {
     log_functionname("ui=%p", ui);
 
@@ -496,11 +496,11 @@ void ui_window_create(struct ui_psensor *ui)
     log_debug("ui_window_create() ends");
 }
 
-void ui_window_update(struct ui_psensor *ui)
+void ui_window_update(UI_psensor *ui)
 {
 }
 
-void ui_window_show(struct ui_psensor *ui)
+void ui_window_show(UI_psensor *ui)
 {
     log_debug("ui_window_show()");
     ui_window_update(ui);

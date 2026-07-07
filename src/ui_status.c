@@ -20,17 +20,17 @@
 #include "ui_status.h"
 #include <plog.h>
 
-//static const char *ICON = "psensor-fork_normal";
-//static const char *ATTENTION_ICON = "psensor-fork_hot";
+// static const char *ICON = "psensor-fork_normal";
+// static const char *ATTENTION_ICON = "psensor-fork_hot";
 
 static GtkStatusIcon *status;
-//static unsigned int status_attention;
+// static unsigned int status_attention;
 
 // static void cb_activate(GtkStatusIcon *icon,
 // 			gpointer data)
 // {
 // 	log_debug("cb_activate()");
-// 	ui_window_show((struct ui_psensor *)data);
+// 	ui_window_show((UI_psensor *)data);
 // }
 
 // static void cb_popup_menu(GtkStatusIcon *icon,
@@ -41,7 +41,7 @@ static GtkStatusIcon *status;
 // 	log_debug("cb_popup_menu()");
 // }
 
-void ui_status_init(struct ui_psensor *ui)
+void ui_status_init(UI_psensor *ui)
 {
 	// if (status)
 	// 	return;
@@ -65,20 +65,21 @@ void ui_status_init(struct ui_psensor *ui)
 
 bool is_status_supported(void)
 {
-	return false;//status;// && gtk_status_icon_is_embedded(status);
+	return false; // status;// && gtk_status_icon_is_embedded(status);
 }
 
 void ui_status_cleanup(void)
 {
 	log_debug("ui_status_cleanup()");
 
-	if (status) {
+	if (status)
+	{
 		g_object_unref(G_OBJECT(status));
 		status = nullptr;
 	}
 }
 
-void ui_status_update(struct ui_psensor *ui, bool attention)
+void ui_status_update(UI_psensor *ui, bool attention)
 {
 	log_debug("ui_status_update()");
 
@@ -90,7 +91,7 @@ void ui_status_update(struct ui_psensor *ui, bool attention)
 	// status_attention = attention;
 }
 
-GtkStatusIcon *ui_status_get_icon(struct ui_psensor *ui)
+GtkStatusIcon *ui_status_get_icon(UI_psensor *ui)
 {
 	// if (!status)
 	// 	ui_status_init(ui);

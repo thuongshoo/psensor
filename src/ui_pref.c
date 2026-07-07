@@ -76,7 +76,7 @@ void ui_pref_sensorlist_position_changed_cbk(GtkComboBox *combo, gpointer data)
             gtk_combo_box_get_active(combo)));
 }
 
-GdkRGBA color_to_GdkRGBA(const struct color *color)
+GdkRGBA color_to_GdkRGBA(const Pcolor *color)
 {
     GdkRGBA c;
 
@@ -153,7 +153,7 @@ static void setup_color_chooser(GtkBuilder *builder, const char *name, const Pco
 }
 
 // === HELPER: Save color from chooser ===
-static void save_color_from_chooser(GtkBuilder *builder, const char *name, struct color *dest)
+static void save_color_from_chooser(GtkBuilder *builder, const char *name, Pcolor *dest)
 {
     GdkRGBA color;
     GtkColorChooser *chooser = GTK_COLOR_CHOOSER(gtk_builder_get_object(builder, name));
@@ -183,7 +183,7 @@ static void save_provider_toggle(GtkBuilder *builder, const ProviderConfig *p)
 }
 
 // === SETUP FUNCTION ===
-static void setup_pref_dialog_widgets(GtkBuilder *builder, const struct config *cfg)
+static void setup_pref_dialog_widgets(GtkBuilder *builder, const Pconfig *cfg)
 {
     // Notification script
     GtkEntry *w_notif_script = GTK_ENTRY(gtk_builder_get_object(builder, "notif_script"));
@@ -251,8 +251,8 @@ static void setup_pref_dialog_widgets(GtkBuilder *builder, const struct config *
 }
 
 // === SAVE FUNCTION ===
-static void save_pref_dialog_settings(GtkBuilder *builder, struct config *cfg,
-                                      struct ui_psensor *ui)
+static void save_pref_dialog_settings(GtkBuilder *builder, Pconfig *cfg,
+                                      UI_psensor *ui)
 {
     double value;
 
@@ -322,11 +322,11 @@ static void save_pref_dialog_settings(GtkBuilder *builder, struct config *cfg,
     ui_window_update(ui);
 }
 
-void ui_pref_dialog_run(struct ui_psensor *ui)
+void ui_pref_dialog_run(UI_psensor *ui)
 {
     GtkBuilder *builder;
     GError *error = nullptr;
-    struct config *cfg = ui->config;
+    Pconfig *cfg = ui->config;
 
     // Build dialog
     builder = gtk_builder_new();

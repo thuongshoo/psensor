@@ -27,9 +27,9 @@
 
 bool is_appindicator_supported(void);
 
-void ui_appindicator_init(struct ui_psensor *ui);
-void ui_appindicator_update(const struct ui_psensor *ui, bool is_attention);
-void ui_appindicator_update_menu(struct ui_psensor *ui);
+void ui_appindicator_init(UI_psensor *ui);
+void ui_appindicator_update(const UI_psensor *ui, bool is_attention);
+void ui_appindicator_update_menu(UI_psensor *ui);
 void ui_appindicator_cleanup(void);
 void ui_appindicator_menu_show_cb(GtkMenuItem *, gpointer);
 void ui_appindicator_cb_preferences(GtkMenuItem *mi, gpointer data);
@@ -38,9 +38,9 @@ void ui_appindicator_cb_sensor_preferences(GtkMenuItem *mi, gpointer data);
 
 static inline bool is_appindicator_supported(void) { return false; }
 
-static inline void ui_appindicator_init(struct ui_psensor *ui) {}
-static inline void ui_appindicator_update(const struct ui_psensor *ui, bool is_attention) {}
-static inline void ui_appindicator_update_menu(struct ui_psensor *ui) {}
+static inline void ui_appindicator_init(UI_psensor *ui) {}
+static inline void ui_appindicator_update(const UI_psensor *ui, bool is_attention) {}
+static inline void ui_appindicator_update_menu(UI_psensor *ui) {}
 static inline void ui_appindicator_cleanup(void) {}
 static inline void ui_appindicator_menu_show_cb(GtkMenuItem *m, gpointer d) {}
 void ui_appindicator_cb_preferences(GtkMenuItem *mi, gpointer data) {}

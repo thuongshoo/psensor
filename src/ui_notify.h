@@ -23,11 +23,11 @@
 
 #if defined(HAVE_LIBNOTIFY) && HAVE_LIBNOTIFY
 
-void ui_notify(Psensor *, struct ui_psensor *);
+void ui_notify(Psensor *, UI_psensor *);
 
 #else
 
-static inline void ui_notify(Psensor *s, struct ui_psensor *u) {}
+static inline void ui_notify(Psensor *s, UI_psensor *u) {}
 
 #endif
 
