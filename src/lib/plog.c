@@ -18,7 +18,7 @@
  * 02110-1301 USA
  */
 #ifndef _LARGEFILE_SOURCE
-	#define _LARGEFILE_SOURCE 1
+#define _LARGEFILE_SOURCE 1
 #endif
 #include "bool.h"
 
@@ -40,143 +40,135 @@ int log_level = LOG_WARN;
 
 void log_open(const char *path)
 {
-	file = fopen(path, "a");
+    file = fopen(path, "a");
 
-	if (!file)
-		log_printf(LOG_ERR, _("Cannot open log file: %s"), path);
+    if (!file)
+        log_printf(LOG_ERR, _("Cannot open log file: %s"), path);
 }
 
 void log_close(void)
 {
-	if (!file)
-		return;
+    if (!file)
+        return;
 
-	fclose(file);
+    fclose(file);
 
-	file = nullptr;
+    file = nullptr;
 }
 
 #define LOG_BUFFER 4096U
 static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
 {
-	if (lvl > LOG_INFO && (!file || lvl > log_level))
-		return;
+    if (lvl > LOG_INFO && (!file || lvl > log_level))
+        return;
 
-	char buffer[1 + LOG_BUFFER];
-	vsnprintf(buffer, LOG_BUFFER, fmt, ap);
-	buffer[LOG_BUFFER] = '\0';
+    char buffer[1 + LOG_BUFFER];
+    vsnprintf(buffer, LOG_BUFFER, fmt, ap);
+    buffer[LOG_BUFFER] = '\0';
 
-	const char *lvl_str;
-	
-	switch (lvl)
-	{
-	case LOG_WARN:
-		lvl_str = "[WARN]";
-		break;
-	case LOG_ERR:
-		lvl_str = "[ERR]";
-		break;
-	case LOG_DEBUG:
-		lvl_str = "[DEBUG]";
-		break;
-	case LOG_INFO:
-		lvl_str = "[INFO]";
-		break;
-	default:
-		lvl_str = "[??]";
-	}
+    const char *lvl_str;
 
-	char *t = get_current_ISO8601_time();
-	if (!t)
-		return;
+    switch (lvl)
+    {
+    case LOG_WARN:
+        lvl_str = "[WARN]";
+        break;
+    case LOG_ERR:
+        lvl_str = "[ERR]";
+        break;
+    case LOG_DEBUG:
+        lvl_str = "[DEBUG]";
+        break;
+    case LOG_INFO:
+        lvl_str = "[INFO]";
+        break;
+    default:
+        lvl_str = "[??]";
+    }
 
-	char *original_t = t; // Save original pointer to free later
+    char t[ISO8601_TIME_LENGTH];
+    if (!get_current_ISO8601_time(t))
+        return;
 
-	if (file && lvl <= log_level)
-	{
-		if (fct)
-			fprintf(file,
-					"[%s] %s %s(): %s\n", t, lvl_str, fct, buffer);
-		else
-			fprintf(file, "[%s] %s %s\n", t, lvl_str, buffer);
-		fflush(file);
-	}
-	else
-	{
-		t = nullptr;
-	}
+    if (file && lvl <= log_level)
+    {
+        if (fct)
+            fprintf(file,
+                    "[%s] %s %s(): %s\n", t, lvl_str, fct, buffer);
+        else
+            fprintf(file, "[%s] %s %s\n", t, lvl_str, buffer);
+        fflush(file);
+    }
 
-	if (lvl <= LOG_INFO)
-	{
-		FILE *stdf;
-		if (lvl == LOG_WARN || lvl == LOG_ERR)
-			stdf = stderr;
-		else
-			stdf = stdout;
+    if (lvl <= LOG_INFO)
+    {
+        FILE *stdf;
+        if (lvl == LOG_WARN || lvl == LOG_ERR)
+            stdf = stderr;
+        else
+            stdf = stdout;
 
-		if (fct)
-			fprintf(file,
-					"[%s] %s %s(): %s\n", t, lvl_str, fct, buffer);
-		else
-			fprintf(stdf, "[%s] %s %s\n", t, lvl_str, buffer);
-	}
-
-	free(original_t);
+        if (fct)
+            fprintf(file,
+                    "[%s] %s %s(): %s\n", t, lvl_str, fct, buffer);
+        else
+            fprintf(stdf, "[%s] %s %s\n", t, lvl_str, buffer);
+    }
 }
 
 void log_printf(int lvl, const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
-	vlogf(lvl, nullptr, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vlogf(lvl, nullptr, fmt, ap);
+    va_end(ap);
 }
 
 void log_debug(const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	if (log_level < LOG_DEBUG)
-		return;
+    if (log_level < LOG_DEBUG)
+        return;
 
-	va_start(ap, fmt);
-	vlogf(LOG_DEBUG, nullptr, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vlogf(LOG_DEBUG, nullptr, fmt, ap);
+    va_end(ap);
 }
 
 void log_err(const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
-	vlogf(LOG_ERR, nullptr, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vlogf(LOG_ERR, nullptr, fmt, ap);
+    va_end(ap);
 }
 
 void log_warn(const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
-	vlogf(LOG_WARN, nullptr, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vlogf(LOG_WARN, nullptr, fmt, ap);
+    va_end(ap);
 }
 
 void log_info(const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
-	vlogf(LOG_INFO, nullptr, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vlogf(LOG_INFO, nullptr, fmt, ap);
+    va_end(ap);
 }
 
 void psensor_log(const char *fct, const char *fmt, ...)
 {
-	va_list ap;
+    va_list ap;
 
-	va_start(ap, fmt);
-	vlogf(LOG_DEBUG, fct, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vlogf(LOG_DEBUG, fct, fmt, ap);
+    va_end(ap);
 }

@@ -31,13 +31,14 @@ enum ptime_string_lengths
 {
     TIME_STR_MAX_LEN = 8,
     TIME_STR_2_MAX_LEN = 16,
+    ISO8601_TIME_LENGTH = 20, /* YYYY-MM-DDThh:mm:ss */
 };
 
 #endif
 
-char *get_current_ISO8601_time();
+bool get_current_ISO8601_time(char *stringBuffer);
 
-char *time_to_ISO8601_time(time_t *);
+void time_to_ISO8601_time(char *stringBuffer, time_t *t);
 char *time_to_ISO8601_date(time_t *);
 
 char *tm_to_ISO8601_date(const struct tm *);

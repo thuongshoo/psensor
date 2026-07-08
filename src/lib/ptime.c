@@ -22,18 +22,19 @@
 #include <string.h>
 const int P_TIME_VER = 3;
 
-static const int ISO8601_TIME_LENGTH = 19; /* YYYY-MM-DDThh:mm:ss */
 static const int ISO8601_DATE_LENGTH = 10; /* YYYY-MM-DD */
 
-char *time_to_ISO8601_time(time_t *t)
+static bool time_to_ISO8601_string(char *stringBuffer, time_t *t)
 {
-    struct tm lt;
+    struct tm local_time;
 
-    memset(&lt, 0, sizeof(struct tm));
-    if (!gmtime_r(t, &lt))
-        return nullptr;
+    memset(&local_time, 0, sizeof(struct tm));
+    if (!gmtime_r(t, &local_time))
+        return false;
 
-    return tm_to_ISO8601_time(&lt);
+    strftime(stringBuffer, ISO8601_TIME_LENGTH, "%FT%T", &local_time);
+
+    return true;
 }
 
 char *time_to_ISO8601_date(time_t *t)
@@ -60,23 +61,10 @@ char *tm_to_ISO8601_date(const struct tm *tm)
     return nullptr;
 }
 
-char *tm_to_ISO8601_time(const struct tm *tm)
-{
-    char *str = malloc(ISO8601_TIME_LENGTH + 1);
-    if (str == nullptr)
-        return nullptr;
-
-    if (strftime(str, ISO8601_TIME_LENGTH + 1, "%FT%T", tm))
-        return str;
-
-    free(str);
-    return nullptr;
-}
-
-char *get_current_ISO8601_time(void)
+bool get_current_ISO8601_time(char *stringBuffer)
 {
     time_t t = time(nullptr);
-    return time_to_ISO8601_time(&t);
+    return time_to_ISO8601_string(stringBuffer, &t);
 }
 
 void time_to_string_buffer(time_t s, char *buffer, size_t buffer_size)
