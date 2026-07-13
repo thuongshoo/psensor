@@ -33,9 +33,7 @@ static const char *KEY_GNOME_AUTOSTART = "X-GNOME-Autostart-enabled";
 
 static char *get_user_autostart_dir(void)
 {
-    const char *xdg_cfg_dir;
-
-    xdg_cfg_dir = g_get_user_config_dir();
+    const char *xdg_cfg_dir = g_get_user_config_dir();
 
     log_functionname("g_user_config_dir(): %s", xdg_cfg_dir);
 
@@ -44,10 +42,8 @@ static char *get_user_autostart_dir(void)
 
 static char *get_user_desktop_file(void)
 {
-    char *dir, *path;
-
-    dir = get_user_autostart_dir();
-    path = path_append(dir, PSENSOR_DESKTOP_FILE);
+    char *dir = get_user_autostart_dir();
+    char *path = path_append(dir, PSENSOR_DESKTOP_FILE);
 
     free(dir);
 
@@ -56,7 +52,7 @@ static char *get_user_desktop_file(void)
 
 static const char *get_desktop_file(void)
 {
-    return DATADIR"/applications/"PSENSOR_DESKTOP_FILE;
+    return DATADIR "/applications/" PSENSOR_DESKTOP_FILE;
 }
 
 static int is_file_exists(const char *path)
@@ -68,15 +64,11 @@ static int is_file_exists(const char *path)
 
 static GKeyFile *get_key_file(const char *path)
 {
-    GKeyFile *kfile;
-    int ret;
-
-    kfile = g_key_file_new();
-    ret = g_key_file_load_from_file(kfile,
-                    path,
-                    G_KEY_FILE_KEEP_COMMENTS
-                    | G_KEY_FILE_KEEP_TRANSLATIONS,
-                    nullptr);
+    GKeyFile *kfile = g_key_file_new();
+    int ret = g_key_file_load_from_file(kfile,
+                                        path,
+                                        G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS,
+                                        nullptr);
 
     if (ret)
         return kfile;
@@ -90,41 +82,39 @@ static GKeyFile *get_key_file(const char *path)
 static int is_user_desktop_autostarted(GKeyFile *f)
 {
     return (!g_key_file_has_key(f,
-                    G_KEY_FILE_DESKTOP_GROUP,
-                    KEY_GNOME_AUTOSTART,
-                    nullptr))
-        || g_key_file_get_boolean(f,
-                      G_KEY_FILE_DESKTOP_GROUP,
-                      KEY_GNOME_AUTOSTART,
-                      nullptr);
+                                G_KEY_FILE_DESKTOP_GROUP,
+                                KEY_GNOME_AUTOSTART,
+                                nullptr)) ||
+           g_key_file_get_boolean(f,
+                                  G_KEY_FILE_DESKTOP_GROUP,
+                                  KEY_GNOME_AUTOSTART,
+                                  nullptr);
 }
 
 int pxdg_is_autostarted(void)
 {
-    char *user_desktop;
-    int ret;
-    GKeyFile *kfile;
-
     log_functionname_enter();
 
-    user_desktop = get_user_desktop_file();
+    char *user_desktop = get_user_desktop_file();
 
     log_functionname("user desktop file: %s", user_desktop);
 
-    ret = is_file_exists(user_desktop);
+    int ret = is_file_exists(user_desktop);
 
-    if (!ret) {
+    if (!ret)
+    {
         log_functionname("user desktop file does not exist.");
-    } else {
+    }
+    else
+    {
         log_functionname("user desktop file exist.");
-        
-        kfile = get_key_file(user_desktop);
+
+        GKeyFile *kfile = get_key_file(user_desktop);
         if (kfile)
             ret = is_user_desktop_autostarted(kfile);
         else
             ret = -1;
         g_key_file_free(kfile);
-        
     }
 
     free(user_desktop);
@@ -136,49 +126,51 @@ int pxdg_is_autostarted(void)
 
 static void enable_gnome_autostart(const char *path)
 {
-    GKeyFile *f;
-    char *data;
-
-    f = get_key_file(path);
-    if (f) {
+    GKeyFile *f = get_key_file(path);
+    if (f)
+    {
         if (g_key_file_has_key(f,
-                       G_KEY_FILE_DESKTOP_GROUP,
-                       KEY_GNOME_AUTOSTART,
-                       nullptr))
+                               G_KEY_FILE_DESKTOP_GROUP,
+                               KEY_GNOME_AUTOSTART,
+                               nullptr))
             g_key_file_set_boolean(f,
-                           G_KEY_FILE_DESKTOP_GROUP,
-                           KEY_GNOME_AUTOSTART,
-                           TRUE);
-        data = g_key_file_to_data(f, nullptr, nullptr);
+                                   G_KEY_FILE_DESKTOP_GROUP,
+                                   KEY_GNOME_AUTOSTART,
+                                   TRUE);
+        char *data = g_key_file_to_data(f, nullptr, nullptr);
         g_file_set_contents(path, data, -1, nullptr);
-        g_free(data);					
+        g_free(data);
         g_key_file_free(f);
-    } else {
+    }
+    else
+    {
         log_err("Fail to enable %s", KEY_GNOME_AUTOSTART);
     }
 }
 
 void pxdg_set_autostart(gboolean enable)
 {
-    char *user_desktop, *dir;
-
     log_functionname_enter();
 
-    user_desktop = get_user_desktop_file();
+    char *user_desktop = get_user_desktop_file();
 
     log_functionname("user desktop file: %s", user_desktop);
 
     log_functionname("desktop file: %s", get_desktop_file());
 
-    if (enable) {
-        if (!is_file_exists(user_desktop)) {
-            dir = get_user_autostart_dir();
+    if (enable)
+    {
+        if (!is_file_exists(user_desktop))
+        {
+            char *dir = get_user_autostart_dir();
             mkdirs(dir, 0700);
             free(dir);
             file_copy(get_desktop_file(), user_desktop);
         }
         enable_gnome_autostart(user_desktop);
-    } else {
+    }
+    else
+    {
         /* because X-GNOME-Autostart-enabled does not turn off
          * autostart on all Desktop Envs.
          */

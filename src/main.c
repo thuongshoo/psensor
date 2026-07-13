@@ -59,7 +59,7 @@
 #include <glib.h>
 #include "copyright.h"
 
-#define ONE_SECOND 1000U
+static const uint32_t ONE_SECOND = 1000U;
 
 static void print_version(void)
 {
@@ -313,20 +313,16 @@ static void cb_alarm_raised(Psensor *sensor, void *data)
 static void
 associate_cb_alarm_raised(Psensor **sensors, UI_psensor *ui)
 {
-    bool ret;
-    Psensor *s;
-    double high_temp;
-
-    high_temp = config_get_default_high_threshold_temperature();
+    double high_temp = config_get_default_high_threshold_temperature();
 
     while (sensors && *sensors)
     {
-        s = *sensors;
+        Psensor *s = *sensors;
 
         s->cb_alarm_raised = cb_alarm_raised;
         s->cb_alarm_raised_data = ui;
 
-        ret = config_get_sensor_alarm_high_threshold(s->id, &s->alarm_high_threshold);
+        bool ret = config_get_sensor_alarm_high_threshold(s->id, &s->alarm_high_threshold);
 
         if (!ret)
         {
@@ -568,11 +564,11 @@ typedef struct
 /* Định nghĩa ở đầu file hoặc trong header */
 typedef struct
 {
-    AppOptions options;      // Options từ command line
-    UI_psensor ui;           // UI state
     GApplication *app;       // GTK application
     pthread_t update_thread; // Background thread
     guint timer_id;          // Timer ID
+    UI_psensor ui;           // UI state
+    AppOptions options;      // Options từ command line
 } AppContext;
 
 /* Helper: parse integer an toàn */

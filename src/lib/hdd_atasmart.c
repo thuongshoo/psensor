@@ -16,9 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _LARGEFILE_SOURCE
-	#define _LARGEFILE_SOURCE 1
-#endif
+
 #include "bool.h"
 
 #include <locale.h>
@@ -64,13 +62,13 @@ create_sensor(char *id, const char *name, SkDisk *disk, unsigned int values_max_
 {
     unsigned int t = SENSOR_TYPE_ATASMART | SENSOR_TYPE_HDD | SENSOR_TYPE_TEMP;
 
-    char* chip = strdup(name);
-    char* new_name = strdup(_("Disk"));
+    char *chip = strdup(name);
+    char *new_name = strdup(_("Disk"));
     Psensor *s = psensor_create(id,
-               chip,
-               new_name,
-               t,
-               values_max_length);
+                                chip,
+                                new_name,
+                                t,
+                                values_max_length);
     if (s == nullptr)
     {
         free(new_name);
@@ -94,41 +92,45 @@ static void analyze_disk(const char *dname)
 
     log_functionname("Analyze %s", dname);
 
-    f = open(dname, O_RDONLY|O_NOCTTY|O_NONBLOCK|O_CLOEXEC);
+    f = open(dname, O_RDONLY | O_NOCTTY | O_NONBLOCK | O_CLOEXEC);
 
-    if (f < 0) {
+    if (f < 0)
+    {
         log_functionname("Could not open file %s: %s", dname, strerror(errno));
         goto fail;
     }
 
-    if (fstat(f, &st) < 0) {
+    if (fstat(f, &st) < 0)
+    {
         log_functionname("fstat fails %s: %s", dname, strerror(errno));
         goto fail;
     }
 
-    if (!S_ISBLK(st.st_mode)) {
+    if (!S_ISBLK(st.st_mode))
+    {
         log_functionname("!S_ISBLK fails %s", dname);
         goto fail;
     }
 
     size = (uint64_t)-1;
     /* So, it's a block device. Let's make sure the ioctls work */
-    if (ioctl(f, BLKGETSIZE64, &size) < 0) {
+    if (ioctl(f, BLKGETSIZE64, &size) < 0)
+    {
         log_functionname("ioctl fails %s: %s", dname, strerror(errno));
         goto fail;
     }
 
-    if (size == 0 || size == (uint64_t) -1) {
+    if (size == 0 || size == (uint64_t)-1)
+    {
         log_functionname("ioctl wrong size %s: %ld", dname, size);
         goto fail;
     }
 
- fail:
+fail:
     close(f);
 }
 
-void
-atasmart_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
+void atasmart_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
 {
     char **paths, **tmp, *id;
     SkDisk *disk;
@@ -139,21 +141,19 @@ atasmart_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
     paths = dir_list("/dev", filter_sd);
 
     tmp = paths;
-    while (*tmp) {
+    while (*tmp)
+    {
         log_functionname("Open %s", *tmp);
 
         if (!sk_disk_open(*tmp, &disk))
         {
-            id = malloc(strlen(PROVIDER_NAME)
-                    + 1
-                    + strlen(*tmp)
-                    + 1);
+            id = malloc(strlen(PROVIDER_NAME) + 1 + strlen(*tmp) + 1);
             sprintf(id, "%s %s", PROVIDER_NAME, *tmp);
 
             sensor = create_sensor(id,
-                           *tmp,
-                           disk,
-                           values_max_length);
+                                   *tmp,
+                                   disk,
+                                   values_max_length);
             if (sensor != nullptr)
             {
                 psensor_list_append(sensors, sensor);
@@ -166,8 +166,8 @@ atasmart_psensor_list_append(Psensor ***sensors, unsigned int values_max_length)
         else
         {
             log_err(_("%s: sk_disk_open() failure: %s."),
-                PROVIDER_NAME,
-                *tmp);
+                    PROVIDER_NAME,
+                    *tmp);
             analyze_disk(*tmp);
         }
 
@@ -190,19 +190,22 @@ void atasmart_psensor_list_update(Psensor **sensors)
         return;
 
     cur = sensors;
-    while (*cur) {
+    while (*cur)
+    {
         s = *cur;
-        if (!(s->type & SENSOR_TYPE_REMOTE)
-            && s->type & SENSOR_TYPE_ATASMART) {
+        if (!(s->type & SENSOR_TYPE_REMOTE) && s->type & SENSOR_TYPE_ATASMART)
+        {
             disk = get_disk(s);
 
             ret = sk_disk_smart_read_data(disk);
 
-            if (!ret) {
+            if (!ret)
+            {
                 ret = sk_disk_smart_get_temperature(disk,
-                                    &kelvin);
+                                                    &kelvin);
 
-                if (!ret) {
+                if (!ret)
+                {
                     double c = (kelvin - 273150) / 1000.0;
                     psensor_set_current_value(s, c);
                     log_functionname("%s %.2f", s->id, c);

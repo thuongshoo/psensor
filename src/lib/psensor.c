@@ -262,9 +262,6 @@ psensor_list_add(Psensor **all_sensors,
     return new_sensor_list;
 }
 
-/// @brief append sensor to sensors list
-/// @param list_sensors
-/// @param new_sensor
 void
 // ANALYZER_TAKES_MALLOC(1)
 // ANALYZER_HOLDS_MALLOC(2)

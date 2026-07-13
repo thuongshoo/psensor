@@ -26,16 +26,14 @@
 
 void notify_cmd(Psensor *s)
 {
-	char *script, *cmd;
-	int ret;
-
-	script = config_get_notif_script();
+	char *script = config_get_notif_script();
 
 	if (script)
 	{
 		char v[PSENSOR_MAX_VALUE_LEN];
 		psensor_current_value_to_str(s, 1, v, sizeof(v));
 
+		char *cmd;
 		int result = asprintf(&cmd, "%s \"%s\" %s", script, s->id, v);
 		if (result == -1)
 		{
@@ -47,7 +45,7 @@ void notify_cmd(Psensor *s)
 
 		log_functionname("execute cmd: %s", cmd);
 
-		ret = system(cmd);
+		int ret = system(cmd);
 
 		log_functionname("cmd returns: %d", ret);
 

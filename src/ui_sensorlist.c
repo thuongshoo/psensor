@@ -175,16 +175,12 @@ get_sensor_at_pos(GtkTreeView *view, int x, int y, UI_psensor *ui)
  */
 static int get_col_index_at_pos(GtkTreeView *view, int x)
 {
-    GList *cols, *node;
-    int colx, coli;
-    GtkTreeViewColumn *checkcol;
-
-    cols = gtk_tree_view_get_columns(view);
-    colx = 0;
-    coli = 0;
-    for (node = cols; node; node = node->next)
+    GList *cols = gtk_tree_view_get_columns(view);
+    int colx = 0;
+    int coli = 0;
+    for (GList *node = cols; node; node = node->next)
     {
-        checkcol = (GtkTreeViewColumn *)node->data;
+        GtkTreeViewColumn *checkcol = (GtkTreeViewColumn *)node->data;
 
         if (x >= colx && x < (colx + gtk_tree_view_column_get_width(checkcol)))
         {
@@ -209,24 +205,20 @@ static void preferences_activated_cbk(GtkWidget *menu_item, gpointer data)
 
 static void hide_activated_cbk(GtkWidget *menu_item, gpointer data)
 {
-    Psensor *s, *s2;
-    GtkTreeModel *model, *fmodel;
-    GtkTreeIter iter;
-    struct cb_data *cb_data;
-    gboolean valid;
-
     log_functionname_enter();
 
-    cb_data = data;
-    s = cb_data->sensor;
+    struct cb_data *cb_data = data;
+    Psensor *s = cb_data->sensor;
     config_set_sensor_enabled(s->id, false);
     config_sync();
 
-    fmodel = gtk_tree_view_get_model(cb_data->ui->sensors_tree);
-    model = gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(fmodel));
-    valid = gtk_tree_model_get_iter_first(model, &iter);
+    GtkTreeModel *fmodel = gtk_tree_view_get_model(cb_data->ui->sensors_tree);
+    GtkTreeModel *model = gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(fmodel));
+    GtkTreeIter iter;
+    gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
     while (valid)
     {
+        Psensor *s2;
         gtk_tree_model_get(model, &iter, COL_SENSOR, &s2, -1);
 
         if (s == s2)

@@ -22,7 +22,7 @@
 
 #include <bool.h>
 
-#define P_IO_VER 6
+// #define P_IO_VER 6
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -51,7 +51,8 @@ long file_get_size(const char *path);
 /* Returns file content (must be freed with free()), or NULL on error */
 char *file_get_content(const char *path);
 
-enum file_copy_error {
+enum file_copy_error
+{
     FILE_COPY_ERROR_NONE = 0,
     FILE_COPY_ERROR_OPEN_SRC,
     FILE_COPY_ERROR_OPEN_DST,

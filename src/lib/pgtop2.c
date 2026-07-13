@@ -85,7 +85,7 @@ static double get_usage(void)
     double cpu_rate;
 
     if (dt)
-        cpu_rate = 100.0 * (used - last_used) / dt;
+        cpu_rate = 100.0 * ((double)(used - last_used) / (double)dt);
     else
         cpu_rate = UNKNOWN_DOUBLE_VALUE;
 

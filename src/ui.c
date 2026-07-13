@@ -362,20 +362,16 @@ void ui_psensor_quit(UI_psensor *ui)
 
 void ui_enable_alpha_channel(UI_psensor *ui)
 {
-    GdkScreen *screen;
-    GdkVisual *visual;
-    Pconfig *cfg;
+    Pconfig *cfg = ui->config;
 
-    cfg = ui->config;
-
-    screen = gtk_widget_get_screen(ui->main_window);
+    GdkScreen *screen = gtk_widget_get_screen(ui->main_window);
 
     log_debug("Config alpha channel enabled: %d",
               cfg->alpha_channel_enabled);
     if (cfg->alpha_channel_enabled && gdk_screen_is_composited(screen))
     {
         log_debug("Screen is composited");
-        visual = gdk_screen_get_rgba_visual(screen);
+        GdkVisual *visual = gdk_screen_get_rgba_visual(screen);
         if (visual)
         {
             gtk_widget_set_visual(ui->main_window, visual);
@@ -394,13 +390,9 @@ void ui_enable_alpha_channel(UI_psensor *ui)
 
 static void slog_enabled_cbk(void *data)
 {
-    UI_psensor *ui;
-    Psensor **sensors;
-    pthread_mutex_t *mutex;
-
-    ui = (UI_psensor *)data;
-    sensors = ui->sensors;
-    mutex = &ui->sensors_mutex;
+    UI_psensor *ui = (UI_psensor *)data;
+    Psensor **sensors = ui->sensors;
+    pthread_mutex_t *mutex = &ui->sensors_mutex;
 
     log_debug("slog_enabled_cbk");
 
@@ -520,9 +512,7 @@ static int cmp_sensors(const void *p1, const void *p2)
 
 const Psensor **ui_get_sensors_ordered_by_position(const Psensor *const *sensors)
 {
-    const Psensor **result;
-
-    result = psensor_list_copy(sensors);
+    const Psensor **result = psensor_list_copy(sensors);
     qsort((void *)result,
           psensor_list_size(result),
           sizeof(Psensor *),

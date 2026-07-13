@@ -109,24 +109,24 @@ static const char *KEY_PROVIDER_UDISKS2_ENABLED = "provider-udisks2-enabled";
 static const char *KEY_DEFAULT_HIGH_THRESHOLD_TEMPERATURE = "default-high-threshold-temperature";
 static const char *KEY_DEFAULT_SENSOR_ALARM_ENABLED = "default-sensor-alarm-enabled";
 
-static GSettings *settings;
+static GSettings *s_settings;
 
-static char *user_dir;
+static char *s_user_dir;
 
-static GKeyFile *key_file;
+static GKeyFile *s_key_file;
 
-static char *sensor_config_path;
+static char *s_sensor_config_path;
 
 static void (*slog_enabled_cbk)(void *);
 
 static char *get_string(const char *key)
 {
-    return g_settings_get_string(settings, key);
+    return g_settings_get_string(s_settings, key);
 }
 
 static void set_string(const char *key, const char *str)
 {
-    g_settings_set_string(settings, key, str);
+    g_settings_set_string(s_settings, key, str);
 }
 
 gboolean bool_to_gboolean(bool b)
@@ -153,13 +153,13 @@ char gboolean_to_char(gboolean b)
 
 static void set_bool(const char *k, bool b)
 {
-    g_settings_set_boolean(settings, k,
+    g_settings_set_boolean(s_settings, k,
                            bool_to_gboolean(b));
 }
 
 static bool get_bool(const char *k)
 {
-    int temp = g_settings_get_boolean(settings, k);
+    int temp = g_settings_get_boolean(s_settings, k);
     if (temp > 0)
         return true;
 
@@ -168,32 +168,32 @@ static bool get_bool(const char *k)
 
 static void set_int(const char *k, int i)
 {
-    g_settings_set_int(settings, k, i);
+    g_settings_set_int(s_settings, k, i);
 }
 
 static void set_uint(const char *k, unsigned int i)
 {
-    g_settings_set_uint(settings, k, i);
+    g_settings_set_uint(s_settings, k, i);
 }
 
 static unsigned int get_uint(const char *k)
 {
-    return g_settings_get_uint(settings, k);
+    return g_settings_get_uint(s_settings, k);
 }
 
 static double get_double(const char *k)
 {
-    return g_settings_get_double(settings, k);
+    return g_settings_get_double(s_settings, k);
 }
 
 static void set_double(const char *k, double d)
 {
-    g_settings_set_double(settings, k, d);
+    g_settings_set_double(s_settings, k, d);
 }
 
 static int get_int(const char *k)
 {
-    return g_settings_get_int(settings, k);
+    return g_settings_get_int(s_settings, k);
 }
 
 char *config_get_notif_script(void)
@@ -351,7 +351,7 @@ void config_set_slog_enabled_changed_cbk(void (*cbk)(void *), void *data)
 
     slog_enabled_cbk = cbk;
 
-    g_signal_connect_after(settings,
+    g_signal_connect_after(s_settings,
                            "changed::slog-enabled",
                            G_CALLBACK(slog_enabled_changed_cbk),
                            data);
@@ -413,8 +413,8 @@ static void init(void)
 {
     log_functionname_enter();
 
-    if (nullptr == settings)
-        settings = g_settings_new(PACKAGE_GSETTING);
+    if (nullptr == s_settings)
+        s_settings = g_settings_new(PACKAGE_GSETTING);
 
     log_functionname_exit();
 }
@@ -423,29 +423,29 @@ void config_cleanup(void)
 {
     config_sync();
 
-    if (settings)
+    if (s_settings)
     {
         g_settings_sync();
-        g_object_unref(settings);
-        settings = nullptr;
+        g_object_unref(s_settings);
+        s_settings = nullptr;
     }
 
-    if (user_dir)
+    if (s_user_dir)
     {
-        free(user_dir);
-        user_dir = nullptr;
+        free(s_user_dir);
+        s_user_dir = nullptr;
     }
 
-    if (key_file)
+    if (s_key_file)
     {
-        g_key_file_free(key_file);
-        key_file = nullptr;
+        g_key_file_free(s_key_file);
+        s_key_file = nullptr;
     }
 
-    if (sensor_config_path)
+    if (s_sensor_config_path)
     {
-        free(sensor_config_path);
-        sensor_config_path = nullptr;
+        free(s_sensor_config_path);
+        s_sensor_config_path = nullptr;
     }
 
     slog_enabled_cbk = nullptr;
@@ -537,63 +537,56 @@ void config_save_to_g_file(const Pconfig *c)
 
 const char *get_psensor_user_dir(void)
 {
-    const char *home;
-
     log_functionname_enter();
 
-    if (nullptr == user_dir)
+    if (nullptr == s_user_dir)
     {
-        home = getenv("HOME");
+        const char *home = getenv("HOME");
 
         if (nullptr == home)
             return nullptr;
 
-        user_dir = path_append(home, PACKAGE_USER_FOLDER);
+        s_user_dir = path_append(home, PACKAGE_USER_FOLDER);
 
-        if (mkdir(user_dir, 0700) == -1 && errno != EEXIST)
+        if (mkdir(s_user_dir, 0700) == -1 && errno != EEXIST)
         {
             log_err(_("Failed to create the directory %s: %s"),
-                    user_dir,
+                    s_user_dir,
                     strerror(errno));
 
-            free(user_dir);
-            user_dir = nullptr;
+            free(s_user_dir);
+            s_user_dir = nullptr;
         }
     }
 
     log_functionname_exit();
 
-    return user_dir;
+    return s_user_dir;
 }
 
 static const char *get_sensor_config_path(void)
 {
-    const char *dir;
-
-    if (nullptr == sensor_config_path)
+    if (nullptr == s_sensor_config_path)
     {
-        dir = get_psensor_user_dir();
+        const char *dir = get_psensor_user_dir();
 
         if (dir)
-            sensor_config_path = path_append(dir, PACKAGE_CONFIGURATION_FILENAME);
+            s_sensor_config_path = path_append(dir, PACKAGE_CONFIGURATION_FILENAME);
     }
 
-    return sensor_config_path;
+    return s_sensor_config_path;
 }
 
 static GKeyFile *get_sensor_key_file(void)
 {
-    GError *err;
-    const char *path;
-
-    if (nullptr == key_file)
+    if (nullptr == s_key_file)
     {
-        path = get_sensor_config_path();
+        const char *path = get_sensor_config_path();
 
-        key_file = g_key_file_new();
+        s_key_file = g_key_file_new();
 
-        err = nullptr;
-        int ret = g_key_file_load_from_file(key_file,
+        GError *err = nullptr;
+        int ret = g_key_file_load_from_file(s_key_file,
                                             path,
                                             G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS,
                                             &err);
@@ -607,22 +600,18 @@ static GKeyFile *get_sensor_key_file(void)
         }
     }
 
-    return key_file;
+    return s_key_file;
 }
 
 static void save_sensor_key_file(void)
 {
-    GKeyFile *kfile;
-    const char *path;
-    char *data;
-
     log_functionname_enter();
 
-    kfile = get_sensor_key_file();
+    GKeyFile *kfile = get_sensor_key_file();
 
-    data = g_key_file_to_data(kfile, nullptr, nullptr);
+    char *data = g_key_file_to_data(kfile, nullptr, nullptr);
 
-    path = get_sensor_config_path();
+    const char *path = get_sensor_config_path();
 
     if (!g_file_set_contents(path, data, -1, nullptr))
         log_err(_("Failed to save configuration file %s."), path);
@@ -635,7 +624,7 @@ static void save_sensor_key_file(void)
 void config_sync(void)
 {
     log_functionname_enter();
-    if (settings)
+    if (s_settings)
         g_settings_sync();
     save_sensor_key_file();
     log_functionname_exit();
@@ -926,7 +915,7 @@ void config_set_appindicator_label_enabled(const char *sid, bool enabled)
 
 GSettings *config_get_GSettings(void)
 {
-    return settings;
+    return s_settings;
 }
 
 bool config_is_lmsensor_enabled(void)

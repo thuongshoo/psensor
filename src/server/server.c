@@ -16,9 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _LARGEFILE_SOURCE
-	#define _LARGEFILE_SOURCE 1
-#endif
+
 #include "config.h"
 
 #include <locale.h>
@@ -58,14 +56,14 @@
 static const char *DEFAULT_LOG_FILE = "/var/log/psensor-server.log";
 
 #define HTML_STOP_REQUESTED \
-(_("<html><body><p>Server stop requested</p></body></html>"))
+	(_("<html><body><p>Server stop requested</p></body></html>"))
 
 static const char *program_name;
 
 static const int DEFAULT_PORT = 3131;
 
-#define PAGE_NOT_FOUND (_("<html><body><p>"\
-"Page not found - Go to <a href='/'>Main page</a></p></body>"))
+#define PAGE_NOT_FOUND (_("<html><body><p>" \
+						  "Page not found - Go to <a href='/'>Main page</a></p></body>"))
 
 static struct option long_options[] = {
 	{"version", no_argument, nullptr, 'v'},
@@ -76,8 +74,7 @@ static struct option long_options[] = {
 	{"log-file", required_argument, nullptr, 'l'},
 	{"sensor-log-file", required_argument, nullptr, 0},
 	{"sensor-log-interval", required_argument, nullptr, 0},
-	{nullptr, 0, nullptr, 0}
-};
+	{nullptr, 0, nullptr, 0}};
 
 static struct server_data server_data;
 
@@ -87,14 +84,14 @@ static int server_stop_requested;
 
 static void print_version(void)
 {
-    printf("%s %s\n", PSENSOR_FORK_SERVER_NAME, VERSION);
-    /* 
-     * gettext() nhận toàn bộ format string
-     * printf nhận 4 tham số: năm cũ, email cũ, năm mới, email mới
-     */
-    printf(_(PSENSOR_COPYRIGHT_CLI),
-           PSENSOR_ORIGINAL_YEARS, PSENSOR_ORIGINAL_EMAIL,
-           PSENSOR_CURRENT_YEARS, PSENSOR_CURRENT_EMAIL);
+	printf("%s %s\n", PSENSOR_FORK_SERVER_NAME, VERSION);
+	/*
+	 * gettext() nhận toàn bộ format string
+	 * printf nhận 4 tham số: năm cũ, email cũ, năm mới, email mới
+	 */
+	printf(_(PSENSOR_COPYRIGHT_CLI),
+		   PSENSOR_ORIGINAL_YEARS, PSENSOR_ORIGINAL_EMAIL,
+		   PSENSOR_CURRENT_YEARS, PSENSOR_CURRENT_EMAIL);
 }
 
 static void print_help(void)
@@ -102,24 +99,24 @@ static void print_help(void)
 	printf(_("Usage: %s [OPTION]...\n"), program_name);
 
 	puts(_("psensor-fork-server is an HTTP server for monitoring hardware "
-	       "sensors remotely."));
+		   "sensors remotely."));
 
 	puts("");
 	puts("Options:");
 	puts(_("  -h, --help		display this help and exit\n"
-	       "  -v, --version		display version information and exit"));
+		   "  -v, --version		display version information and exit"));
 
 	puts("");
 	puts(_("  -p,--port=PORT	webserver port\n"
-	       "  -w,--wdir=DIR		directory containing webserver pages"));
+		   "  -w,--wdir=DIR		directory containing webserver pages"));
 
 	puts("");
 	puts(_("  -d, --debug=LEVEL     "
-	       "set the debug level, integer between 0 and 3"));
+		   "set the debug level, integer between 0 and 3"));
 	puts(_("  -l, --log-file=PATH   set the log file to PATH"));
 	puts(_("  --sensor-log-file=PATH set the sensor log file to PATH"));
 	puts(_("  --sensor-log-interval=S "
-	       "set the sensor log interval to S (seconds)"));
+		   "set the sensor log interval to S (seconds)"));
 
 	puts("");
 	printf(_("Report bugs to: %s\n"), PACKAGE_BUGREPORT);
@@ -132,26 +129,25 @@ static void print_help(void)
  */
 static char *get_path(const char *url, const char *www_dir)
 {
-    const char *p = "/index.html";
-    
-    if (   0 < strlen(url) 
-	   && (0 != strcmp(url, "."))
-	   && (0 != strcmp(url, "/")))
-        p = url;
-    
-    size_t www_len = strlen(www_dir);
-    size_t p_len = strlen(p);
-    char *res = malloc(www_len + p_len + 1);
-    
-    if (!res) return nullptr;
-    
-    // Manual concatenation - safe and portable
-    char *ptr = res;
-    memcpy(ptr, www_dir, www_len);
-    ptr += www_len;
-    memcpy(ptr, p, p_len + 1); // +1 : copy null terminator
-    
-    return res;
+	const char *p = "/index.html";
+
+	if (0 < strlen(url) && (0 != strcmp(url, ".")) && (0 != strcmp(url, "/")))
+		p = url;
+
+	size_t www_len = strlen(www_dir);
+	size_t p_len = strlen(p);
+	char *res = malloc(www_len + p_len + 1);
+
+	if (!res)
+		return nullptr;
+
+	// Manual concatenation - safe and portable
+	char *ptr = res;
+	memcpy(ptr, www_dir, www_len);
+	ptr += www_len;
+	memcpy(ptr, p, p_len + 1); // +1 : copy null terminator
+
+	return res;
 }
 
 #if MHD_VERSION >= 0x00090200
@@ -175,40 +171,49 @@ create_response_api(const char *nurl, const char *method, unsigned int *rp_code)
 	const Psensor *s;
 	char *page = nullptr;
 
-	if (!strcmp(nurl, URL_BASE_API_1_1_SENSORS))  {
-		page = sensors_to_json_string((const Psensor*const *)server_data.sensors);
+	if (!strcmp(nurl, URL_BASE_API_1_1_SENSORS))
+	{
+		page = sensors_to_json_string((const Psensor *const *)server_data.sensors);
 #ifdef HAVE_GTOP
-	} else if (!strcmp(nurl, URL_API_1_1_SYSINFO)) {
+	}
+	else if (!strcmp(nurl, URL_API_1_1_SYSINFO))
+	{
 		page = sysinfo_to_json_string(&server_data.psysinfo);
-	} else if (!strcmp(nurl, URL_API_1_1_CPU_USAGE)) {
+	}
+	else if (!strcmp(nurl, URL_API_1_1_CPU_USAGE))
+	{
 		page = sensor_to_json_string(server_data.cpu_usage);
 #endif
-	} else if (!strncmp(nurl, URL_BASE_API_1_1_SENSORS,
-			    strlen(URL_BASE_API_1_1_SENSORS))
-		   && nurl[strlen(URL_BASE_API_1_1_SENSORS)] == '/') {
+	}
+	else if (!strncmp(nurl, URL_BASE_API_1_1_SENSORS,
+					  strlen(URL_BASE_API_1_1_SENSORS)) &&
+			 nurl[strlen(URL_BASE_API_1_1_SENSORS)] == '/')
+	{
 
 		const char *sid = nurl + strlen(URL_BASE_API_1_1_SENSORS) + 1;
 
-		s = psensor_list_get_by_id((const Psensor*const*)server_data.sensors, sid);
+		s = psensor_list_get_by_id((const Psensor *const *)server_data.sensors, sid);
 
 		if (s)
 			page = sensor_to_json_string(s);
-
-	} else if (!strcmp(nurl, URL_API_1_1_SERVER_STOP)) {
+	}
+	else if (!strcmp(nurl, URL_API_1_1_SERVER_STOP))
+	{
 
 		server_stop_requested = 1;
 		page = strdup(HTML_STOP_REQUESTED);
 	}
 
-	if (page) {
+	if (page)
+	{
 		*rp_code = MHD_HTTP_OK;
 
 		resp = MHD_create_response_from_buffer(strlen(page),
-						       page,
-						       MHD_RESPMEM_MUST_FREE);
+											   page,
+											   MHD_RESPMEM_MUST_FREE);
 
 		MHD_add_response_header(resp, MHD_HTTP_HEADER_CONTENT_TYPE,
-					"application/json");
+								"application/json");
 
 		return resp;
 	}
@@ -217,33 +222,33 @@ create_response_api(const char *nurl, const char *method, unsigned int *rp_code)
 }
 
 static struct MHD_Response *create_response_file(const char *nurl,
-						 const char *method,
-						 unsigned int *rp_code,
-						 const char *fpath)
+												 const char *method,
+												 unsigned int *rp_code,
+												 const char *fpath)
 {
 	struct stat st;
 
 	int ret = stat(fpath, &st);
 
-	if (!ret && (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode))) {
+	if (!ret && (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)))
+	{
 		FILE *file = fopen(fpath, "rb");
 
-		if (file) {
+		if (file)
+		{
 			*rp_code = MHD_HTTP_OK;
 
-			if (!st.st_size) {
+			if (!st.st_size)
+			{
 				fclose(file);
-				return MHD_create_response_from_buffer
-					(0, nullptr, 0);
+				return MHD_create_response_from_buffer(0, nullptr, 0);
 			}
 
-			return MHD_create_response_from_callback
-				(st.st_size,
-				 32U * 1024U,
-				 &file_reader,
-				 file,
-				 (MHD_ContentReaderFreeCallback)&fclose);
-
+			return MHD_create_response_from_callback(st.st_size,
+													 32U * 1024U,
+													 &file_reader,
+													 file,
+													 (MHD_ContentReaderFreeCallback)&fclose);
 		}
 
 		log_err("Failed to open: %s.", fpath);
@@ -258,22 +263,27 @@ static int is_access_allowed(char *path)
 	int ret;
 
 	rpath = realpath(path, nullptr);
-	if (rpath) {
+	if (rpath)
+	{
 		size_t n = strlen(server_data.www_dir);
-		if (!strncmp(server_data.www_dir, rpath, n)
-		    || !strcmp(rpath,
-			       "/usr/share/javascript/jquery/jquery.js")) {
+		if (!strncmp(server_data.www_dir, rpath, n) || !strcmp(rpath,
+															   "/usr/share/javascript/jquery/jquery.js"))
+		{
 			ret = 1;
-		} else {
+		}
+		else
+		{
 			ret = 0;
 
 			log_err(_("Resource access refused %s real path is %s"),
-				path,
-				rpath);
+					path,
+					rpath);
 		}
 
 		free(rpath);
-	} else {
+	}
+	else
+	{
 		log_err(_("Cannot get real path of %s"), path);
 
 		ret = 0;
@@ -288,16 +298,19 @@ create_response(const char *nurl, const char *method, unsigned int *rp_code)
 	char *page, *fpath;
 	struct MHD_Response *resp = nullptr;
 
-	if (!strncmp(nurl, URL_BASE_API_1_1, strlen(URL_BASE_API_1_1))) {
+	if (!strncmp(nurl, URL_BASE_API_1_1, strlen(URL_BASE_API_1_1)))
+	{
 		resp = create_response_api(nurl, method, rp_code);
-	} else {
+	}
+	else
+	{
 		fpath = get_path(nurl, server_data.www_dir);
 
 		if (is_access_allowed(fpath))
 			resp = create_response_file(nurl,
-						    method,
-						    rp_code,
-						    fpath);
+										method,
+										rp_code,
+										fpath);
 
 		free(fpath);
 	}
@@ -309,18 +322,18 @@ create_response(const char *nurl, const char *method, unsigned int *rp_code)
 	*rp_code = MHD_HTTP_NOT_FOUND;
 
 	return MHD_create_response_from_buffer(strlen(page),
-					       page,
-					       MHD_RESPMEM_MUST_FREE);
+										   page,
+										   MHD_RESPMEM_MUST_FREE);
 }
 
 static enum MHD_Result cbk_http_request(void *cls,
-			    struct MHD_Connection *connection,
-			    const char *url,
-			    const char *method,
-			    const char *version,
-			    const char *upload_data,
-			    size_t *upload_data_size,
-			    void **ptr)
+										struct MHD_Connection *connection,
+										const char *url,
+										const char *method,
+										const char *version,
+										const char *upload_data,
+										size_t *upload_data_size,
+										void **ptr)
 {
 	static int dummy;
 	struct MHD_Response *response;
@@ -331,7 +344,8 @@ static enum MHD_Result cbk_http_request(void *cls,
 	if (0 != strcmp(method, "GET"))
 		return MHD_NO;
 
-	if (&dummy != *ptr) {
+	if (&dummy != *ptr)
+	{
 		/* The first time only the headers are valid, do not
 		 * respond in the first round...
 		 */
@@ -342,7 +356,7 @@ static enum MHD_Result cbk_http_request(void *cls,
 	if (*upload_data_size)
 		return MHD_NO;
 
-	*ptr = nullptr;		/* clear context pointer */
+	*ptr = nullptr; /* clear context pointer */
 
 	log_debug(_("HTTP Request: %s"), url);
 
@@ -386,11 +400,13 @@ int main(int argc, char *argv[])
 	cmdok = 1;
 
 	while ((optc = getopt_long(argc,
-				   argv,
-				   "vhp:w:d:l:",
-				   long_options,
-				   &opti)) != -1) {
-		switch (optc) {
+							   argv,
+							   "vhp:w:d:l:",
+							   long_options,
+							   &opti)) != -1)
+	{
+		switch (optc)
+		{
 		case 'w':
 			if (optarg)
 				server_data.www_dir = realpath(optarg, nullptr);
@@ -417,7 +433,7 @@ int main(int argc, char *argv[])
 			if (!strcmp(long_options[opti].name, "sensor-log-file"))
 				slog_file = strdup(optarg);
 			else if (!strcmp(long_options[opti].name,
-					 "sensor-log-interval"))
+							 "sensor-log-interval"))
 				slog_interval = atoi(optarg);
 			break;
 		default:
@@ -426,17 +442,20 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if (!cmdok || optind != argc) {
+	if (!cmdok || optind != argc)
+	{
 		fprintf(stderr, _("Try `%s --help' for more information.\n"),
-			program_name);
+				program_name);
 		exit(EXIT_FAILURE);
 	}
 
-	if (!server_data.www_dir) {
+	if (!server_data.www_dir)
+	{
 		server_data.www_dir = realpath(DEFAULT_WWW_DIR, nullptr);
-		if (!server_data.www_dir) {
+		if (!server_data.www_dir)
+		{
 			fprintf(stderr,
-				_("Webserver directory does not exist.\n"));
+					_("Webserver directory does not exist.\n"));
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -460,13 +479,14 @@ int main(int argc, char *argv[])
 		log_err(_("No sensors detected."));
 
 	d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION,
-			     port,
-			     nullptr,
-				 nullptr,
-				 (void*)&cbk_http_request,
-				 (void*)server_data.sensors,
-			     MHD_OPTION_END);
-	if (!d) {
+						 port,
+						 nullptr,
+						 nullptr,
+						 (void *)&cbk_http_request,
+						 (void *)server_data.sensors,
+						 MHD_OPTION_END);
+	if (!d)
+	{
 		log_err(_("Failed to create Web server."));
 		exit(EXIT_FAILURE);
 	}
@@ -475,18 +495,20 @@ int main(int argc, char *argv[])
 	log_info(_("WWW directory: %s"), server_data.www_dir);
 	log_info(_("URL: http://localhost:%d"), port);
 
-	if (slog_file) {
+	if (slog_file)
+	{
 		if (slog_interval <= 0)
 			slog_interval = 300;
 		ret = slog_activate(slog_file,
-				    (const Psensor* const *) server_data.sensors,
-				    &mutex,
-				    slog_interval);
+							(const Psensor *const *)server_data.sensors,
+							&mutex,
+							slog_interval);
 		if (!ret)
 			log_err(_("Failed to activate logging of sensors."));
 	}
 
-	while (!server_stop_requested) {
+	while (!server_stop_requested)
+	{
 		pmutex_lock(&mutex);
 
 #ifdef HAVE_GTOP

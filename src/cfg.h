@@ -38,6 +38,7 @@ const char *config_get_sensorlist_position_str(enum sensorlist_position pos);
 
 typedef struct config
 {
+    pthread_mutex_t graph_enabled_mutex;
     Pcolor graph_bgcolor;
     Pcolor graph_fgcolor;
     /* Last saved position of the window. */
@@ -64,9 +65,6 @@ typedef struct config
     bool hide_on_startup;
 
     bool is_smooth_curves_enabled;
-
-    pthread_mutex_t graph_enabled_mutex;
-
 } Pconfig;
 
 /* Loads psensor configuration */

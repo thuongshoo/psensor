@@ -17,9 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _LARGEFILE_SOURCE
-#define _LARGEFILE_SOURCE 1
-#endif
+
 #include "bool.h"
 
 #include <locale.h>
@@ -62,7 +60,7 @@ static void vlogf(int lvl, const char *fct, const char *fmt, va_list ap)
     if (lvl > LOG_INFO && (!file || lvl > log_level))
         return;
 
-    char buffer[1 + LOG_BUFFER];
+    char buffer[LOG_BUFFER + 1];
     vsnprintf(buffer, LOG_BUFFER, fmt, ap);
     buffer[LOG_BUFFER] = '\0';
 

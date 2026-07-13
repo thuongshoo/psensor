@@ -368,8 +368,8 @@ static gboolean save_order_foreach(GtkTreeModel *model, GtkTreePath *path,
     if (depth > 0 && sensor != NULL)
     {
         // Lấy thứ tự từ path
-        gint *indices = gtk_tree_path_get_indices(path);
-        guint order = indices[0]; // Thứ tự từ 0
+        const gint *indices = gtk_tree_path_get_indices(path);
+        gint order = indices[0]; // Thứ tự từ 0
 
         // Lưu vị trí mới cho sensor này
         config_set_sensor_position(sensor->id, order);
@@ -473,16 +473,13 @@ static GtkBuilder *load_ui(UI_psensor *ui)
 
 static void populate(Psensor *sensor, Psensor **sensors)
 {
-    GtkTreeIter iter;
-    const Psensor **s_cur;
-    const Psensor *s;
-
     gtk_list_store_clear(store);
 
     const Psensor **ordered_sensors = ui_get_sensors_ordered_by_position((const Psensor *const *)sensors);
-    for (s_cur = ordered_sensors; *s_cur; s_cur++)
+    for (const Psensor **s_cur = ordered_sensors; *s_cur; s_cur++)
     {
-        s = *s_cur;
+        const Psensor *s = *s_cur;
+        GtkTreeIter iter;
         gtk_list_store_append(store, &iter);
         gtk_list_store_set(store, &iter,
                            COL_NAME, s->name,

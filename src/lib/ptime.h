@@ -32,6 +32,7 @@ enum ptime_string_lengths
     TIME_STR_MAX_LEN = 8,
     TIME_STR_2_MAX_LEN = 16,
     ISO8601_TIME_LENGTH = 20, /* YYYY-MM-DDThh:mm:ss */
+    NUMBER_OF_SECONDS_SINCE_THE_EPOCH_MAX_LENGTH = 64
 };
 
 #endif
@@ -48,6 +49,6 @@ char *time_to_str(time_t s);
 void time_to_string_buffer(time_t s, char *buffer, size_t buffer_size);
 
 char *time_to_str2(const time_t *t);
-char *time_to_str3(const time_t *t);
+bool time_to_str3(const time_t *t, char *stringBuffer, size_t bufferSize);
 
 #endif

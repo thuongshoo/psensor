@@ -1,6 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#ifndef _LARGEFILE_SOURCE
+	#define _LARGEFILE_SOURCE 1
+#endif
+
 #cmakedefine HAVE_APPINDICATOR
 #cmakedefine HAVE_ATASMART
 #cmakedefine HAVE_CURL
@@ -58,5 +62,6 @@
 
 #define _GNU_SOURCE
 #include <stddef.h>
+
 
 #endif /* CONFIG_H */

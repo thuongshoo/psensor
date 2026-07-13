@@ -16,9 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#ifndef _LARGEFILE_SOURCE
-#define _LARGEFILE_SOURCE 1
-#endif
+
 #include <io.h>
 
 #include <dirent.h>
@@ -38,7 +36,7 @@
 #define DIRSEP '/'
 #endif
 
-#define FCOPY_BUF_SZ 4096U
+static const size_t FCOPY_BUF_SZ = 4096U;
 
 /* ================================================================
  * Path checking

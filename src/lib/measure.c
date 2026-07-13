@@ -24,12 +24,11 @@
 
 Pmeasure *measures_double_create(size_t size)
 {
-	size_t i;
 	Pmeasure *result = (Pmeasure *)malloc(size * sizeof(Pmeasure));
 
 	if (result != nullptr)
 	{
-		for (i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			result[i].value = UNKNOWN_DOUBLE_VALUE;
 			timerclear(&result[i].time);

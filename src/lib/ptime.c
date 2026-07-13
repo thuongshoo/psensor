@@ -93,19 +93,21 @@ char *time_to_str2(const time_t *t)
     return str;
 }
 
-char *time_to_str3(const time_t *t)
+bool time_to_str3(const time_t *t, char *stringBuffer, size_t bufferSize)
 {
-    struct tm lt;
-    char *str;
+    struct tm localTime;
 
-    if (!localtime_r(t, &lt))
-        return nullptr;
+    if (!localtime_r(t, &localTime))
+        return false;
 
-    str = malloc(64);
+#ifdef _WIN32
+    // Windows approach: format the standard text, then append the timestamp manually
+    size_t len = strftime(stringBuffer, bufferSize, "%Y-%m-%d", t);
+    snprintf(stringBuffer + len, bufferSize - len, "%lld", (long long)localTime);
+#else
+    // Linux/POSIX approach
+    strftime(stringBuffer, bufferSize, "%s", &localTime);
+#endif
 
-    if (strftime(str, 64, "%s", &lt))
-        return str;
-
-    free(str);
-    return nullptr;
+    return true;
 }
