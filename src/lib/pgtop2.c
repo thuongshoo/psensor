@@ -95,13 +95,34 @@ static double get_usage(void)
     return cpu_rate;
 }
 
+/*
+ * Convert memory values to MB using integer division to avoid overflow
+ * when casting guint64 to double.
+ *
+ * Since we divide by 1,048,576 (2^20), each value loses at most 1 MB.
+ *
+ * Error propagation (for division p = (a/b) * 100):
+ *   Δp/p = Δa/a + Δb/b
+ *
+ * For example, on a 16 GB system:
+ *   a ≈ 8192 MB (free), b ≈ 16384 MB (total)
+ *   Δa ≤ 1 MB, Δb ≤ 1 MB
+ *   Relative error = 1/8192 + 1/16384 ≈ 0.000183 = 0.0183%
+ *   Absolute error in percentage ≈ 50% * 0.000183 ≈ 0.009%
+ *
+ * This error is negligible for displaying memory usage percentage.
+ * For systems with larger RAM, the error is even smaller.
+ */
+
 static double get_mem_free(void)
 {
     glibtop_mem mem;
-
     glibtop_get_mem(&mem);
-    double v = ((double)mem.free) * 100.0 / mem.total;
 
+    double free_mb = (double)(mem.free / 1048576);
+    double total_mb = (double)(mem.total / 1048576);
+
+    double v = (free_mb / total_mb) * 100.0;
     return v;
 }
 
