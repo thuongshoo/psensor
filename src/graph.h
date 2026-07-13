@@ -91,7 +91,7 @@ void draw_bottom_labels(GraphContext *ctx,
 /*
  * Tính số pixel mỗi data point chiếm.
  */
-double calculate_pixels_per_point(const Pconfig *cfg, int plot_width);
+int calculate_pixels_per_point(const Pconfig *cfg, int plot_width);
 
 /*
  * Tính ngưỡng dịch tối thiểu từ DPI (1mm).

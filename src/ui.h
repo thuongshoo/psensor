@@ -43,21 +43,20 @@ typedef struct ui_psensor
     Psensor **sensors;
     /* mutex which MUST be used for accessing sensors.*/
     pthread_mutex_t sensors_mutex;
-
-    Pconfig *config;
+    pthread_mutex_t graph_mutex;
 
     // Cache cho danh sách graph
-    pthread_mutex_t graph_mutex;
+    Pconfig *config;
     const Psensor **graph_cache;
-    guint graph_version;
 
     GtkWidget *main_window;
-    GtkWidget *popup_menu;
 
     GtkListStore *sensors_store;
     GtkTreeView *sensors_tree;
 
+    uint32_t graph_version;
     uint32_t graph_update_interval;
+    GtkWidget *popup_menu;
     bool should_exit;
 } UI_psensor;
 

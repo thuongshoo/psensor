@@ -209,7 +209,6 @@ static gboolean ensure_graph_surface(GraphContext *ctx, cairo_t *cr,
     ctx->graph_surface_height = h;
 
     ctx->cache_valid = FALSE;
-    // ctx->pixels_per_point = 0;
 
     return (ctx->graph_surface != nullptr);
 }
@@ -365,7 +364,9 @@ typedef struct
     double *display_max;
     gboolean *initialized;
     double margin;
+#if ENABLE_DEBUG_PRINT
     char *name;
+#endif
 } RangeChecker;
 
 static gboolean check_single_range(RangeChecker *rc, gboolean *changed)
@@ -401,9 +402,10 @@ typedef struct
     double all_min, all_max;
     double *display_min;
     double *display_max;
-    gboolean *initialized;
+
     double min_range;
     double fallback_min, fallback_max;
+    gboolean *initialized;
 } RangeCalculator;
 
 static void calc_single_range(RangeCalculator *rc)
@@ -436,17 +438,38 @@ static void calc_single_range(RangeCalculator *rc)
 static void calculate_display_range(GraphContext *ctx)
 {
     RangeCalculator calcs[] = {
-        {ctx->all_minmax.temperature.min, ctx->all_minmax.temperature.max,
-         &ctx->display_range.temp_min, &ctx->display_range.temp_max,
-         &ctx->display_range.temp_initialized, MIN_TEMPERATURE_RANGE, 0.0, 100.0},
+        {
+            ctx->all_minmax.temperature.min,
+            ctx->all_minmax.temperature.max,
+            &ctx->display_range.temp_min,
+            &ctx->display_range.temp_max,
+            MIN_TEMPERATURE_RANGE,
+            0.0,
+            100.0,
+            &ctx->display_range.temp_initialized,
+        },
 
-        {ctx->all_minmax.revolutions_per_minute.min, ctx->all_minmax.revolutions_per_minute.max,
-         &ctx->display_range.rpm_min, &ctx->display_range.rpm_max,
-         &ctx->display_range.rpm_initialized, MIN_RPM_RANGE, 0.0, 3000.0},
+        {
+            ctx->all_minmax.revolutions_per_minute.min,
+            ctx->all_minmax.revolutions_per_minute.max,
+            &ctx->display_range.rpm_min,
+            &ctx->display_range.rpm_max,
+            MIN_RPM_RANGE,
+            0.0,
+            3000.0,
+            &ctx->display_range.rpm_initialized,
+        },
 
-        {ctx->all_minmax.percent.min, ctx->all_minmax.percent.max,
-         &ctx->display_range.percent_min, &ctx->display_range.percent_max,
-         &ctx->display_range.percent_initialized, 0.0, 0.0, 100.0},
+        {
+            ctx->all_minmax.percent.min,
+            ctx->all_minmax.percent.max,
+            &ctx->display_range.percent_min,
+            &ctx->display_range.percent_max,
+            0.0,
+            0.0,
+            100.0,
+            &ctx->display_range.percent_initialized,
+        },
     };
 
     for (size_t i = 0; i < ARRAY_SIZE(calcs); i++)
@@ -479,17 +502,32 @@ static gboolean has_plot_range_changed(GraphContext *ctx,
         {has_temp ? &ctx->all_minmax.temperature.min : nullptr,
          has_temp ? &ctx->all_minmax.temperature.max : nullptr,
          &ctx->display_range.temp_min, &ctx->display_range.temp_max,
-         &ctx->display_range.temp_initialized, 0.0, "temperature"},
+         &ctx->display_range.temp_initialized, 0.0
+#if ENABLE_DEBUG_PRINT
+         ,
+         "temperature"
+#endif
+        },
 
         {has_rpm ? &ctx->all_minmax.revolutions_per_minute.min : nullptr,
          has_rpm ? &ctx->all_minmax.revolutions_per_minute.max : nullptr,
          &ctx->display_range.rpm_min, &ctx->display_range.rpm_max,
-         &ctx->display_range.rpm_initialized, 0.0, "rpm"},
+         &ctx->display_range.rpm_initialized, 0.0
+#if ENABLE_DEBUG_PRINT
+         ,
+         "rpm"
+#endif
+        },
 
         {has_percent ? &ctx->all_minmax.percent.min : nullptr,
          has_percent ? &ctx->all_minmax.percent.max : nullptr,
          &ctx->display_range.percent_min, &ctx->display_range.percent_max,
-         &ctx->display_range.percent_initialized, 0.0, "percent"},
+         &ctx->display_range.percent_initialized, 0.0
+#if ENABLE_DEBUG_PRINT
+         ,
+         "percent"
+#endif
+        },
     };
 
     for (size_t i = 0; i < ARRAY_SIZE(checkers); i++)
@@ -632,7 +670,7 @@ static void calculate_plot_area_layout(
     const FontMetrics *fm = &ctx->font_metrics;
 
     double max_label_width = (fm->digit_width * ctx->max_unit_chars) + ctx->h_padding;
-    double time_label_height = fm->font_height + ctx->v_padding;
+    int time_label_height = (int)(fm->font_height + ctx->v_padding + 0.5); // Làm tròn lên
 
     ctx->plot_x = (int)((2 * ctx->h_padding) + max_label_width);
     ctx->plot_y = ctx->v_padding;
@@ -653,14 +691,14 @@ static void calculate_plot_area_layout(
     int width = ctx->graph_surface_width;
 
     if (ctx->min_shift_pixels <= 0)
-        ctx->min_shift_pixels = (double)calculate_min_shift_pixels(widget);
+        ctx->min_shift_pixels = calculate_min_shift_pixels(widget);
 
     if (ctx->pixels_per_point <= 0)
         ctx->pixels_per_point = calculate_pixels_per_point(ui->config, width);
 
-    int shift_pixels = (int)(ctx->pixels_per_point + 0.5);
-    if (shift_pixels < (int)ctx->min_shift_pixels)
-        shift_pixels = (int)ctx->min_shift_pixels;
+    int shift_pixels = ctx->pixels_per_point;
+    if (shift_pixels < ctx->min_shift_pixels)
+        shift_pixels = ctx->min_shift_pixels;
 
     if (shift_pixels < 1)
         shift_pixels = 1;
@@ -771,7 +809,7 @@ static gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer user_data
     update_minmax_labels_if_needed(ui, ctx);
     update_time_labels_if_needed(ui, ctx, graph_enabled_sensors);
     draw_background(ctx, cfg);
-    DEBUG_PRINT("|PPP=%g min=%g shift=%d WxH=%dx%d|",
+    DEBUG_PRINT("|PPP=%g min=%d shift=%d WxH=%dx%d|",
                 // ctx->cache_valid, cfg->is_new_data,
                 ctx->pixels_per_point,
                 ctx->min_shift_pixels,

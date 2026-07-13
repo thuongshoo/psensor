@@ -586,24 +586,24 @@ void calculate_fixed_plot_range(GraphContext *ctx,
 /*
  * Tính pixels_per_point.
  */
-double calculate_pixels_per_point(const Pconfig *cfg, int plot_width)
+int calculate_pixels_per_point(const Pconfig *cfg, int plot_width)
 {
     unsigned int duration_seconds = cfg->graph_monitoring_duration * 60U;
     unsigned int update_interval = cfg->sensor_update_interval;
 
     if (update_interval == 0)
         update_interval = 1;
-
     if (duration_seconds == 0)
         duration_seconds = 60;
 
     double total_points = (double)duration_seconds / (double)update_interval;
 
     if (total_points <= 0)
-        return 1.0;
+        return 1;
 
+    // Tính và làm tròn ngay
     double ret = (double)plot_width / total_points;
-    return ret;
+    return (int)(ret + 0.5); // Làm tròn thông thường
 }
 
 /*
@@ -724,11 +724,11 @@ void draw_left_labels(GraphContext *ctx,
 {
     Temperature_Unit temperature_unit = config_get_temperature_unit();
 
-    psensor_value_to_string_buffer(SENSOR_TYPE_TEMP, ctx->display_range.temp_max, temperature_unit, &ctx->str_max, sizeof(ctx->str_max));
+    psensor_value_to_string_buffer(SENSOR_TYPE_TEMP, ctx->display_range.temp_max, temperature_unit, (char *)ctx->str_max, sizeof(ctx->str_max));
 
-    psensor_value_to_string_buffer(SENSOR_TYPE_TEMP, ctx->display_range.temp_min, temperature_unit, &ctx->str_min, sizeof(ctx->str_min));
+    psensor_value_to_string_buffer(SENSOR_TYPE_TEMP, ctx->display_range.temp_min, temperature_unit, (char *)ctx->str_min, sizeof(ctx->str_min));
 
-    psensor_unit_to_str(SENSOR_TYPE_TEMP, temperature_unit, &ctx->str_unit, UNIT_STR_MAX_LEN);
+    psensor_unit_to_str(SENSOR_TYPE_TEMP, temperature_unit, (char *)ctx->str_unit, UNIT_STR_MAX_LEN);
 
     cairo_select_font_face(cr, BEGIN_END_TIME_FONT,
                            CAIRO_FONT_SLANT_NORMAL,
@@ -740,9 +740,9 @@ void draw_left_labels(GraphContext *ctx,
                          ctx->theme_fg_color.blue);
 
     cairo_text_extents_t extents_max, extents_min, extents_unit;
-    estimate_text_extents(&ctx->font_metrics, ctx->str_max, &extents_max);
-    estimate_text_extents(&ctx->font_metrics, ctx->str_min, &extents_min);
-    estimate_text_extents(&ctx->font_metrics, &ctx->str_unit, &extents_unit);
+    estimate_text_extents(&ctx->font_metrics, (char *)ctx->str_max, &extents_max);
+    estimate_text_extents(&ctx->font_metrics, (char *)ctx->str_min, &extents_min);
+    estimate_text_extents(&ctx->font_metrics, (char *)ctx->str_unit, &extents_unit);
 
     double max_width = extents_max.width;
     if (extents_min.width > max_width)
@@ -758,14 +758,14 @@ void draw_left_labels(GraphContext *ctx,
     cairo_show_text(cr, ctx->str_max);
 
     cairo_move_to(cr, max_width / 2.0, 2.0 * line_height);
-    cairo_show_text(cr, &ctx->str_unit);
+    cairo_show_text(cr, (char *)ctx->str_unit);
 
     /* Draw bottom‑aligned: min value + unit */
     cairo_move_to(cr, max_width / 2.0, surf_height - (2.0 * line_height));
-    cairo_show_text(cr, ctx->str_min);
+    cairo_show_text(cr, (char *)ctx->str_min);
 
     cairo_move_to(cr, max_width / 2.0, surf_height - line_height);
-    cairo_show_text(cr, &ctx->str_unit);
+    cairo_show_text(cr, (char *)ctx->str_unit);
 }
 
 /* ── Getter: trả về min/max theo loại sensor ── */
@@ -986,18 +986,18 @@ void graph_shift_and_append(GraphContext *ctx,
 
         cairo_surface_flush(surface);
         unsigned char *pixels = cairo_image_surface_get_data(surface); // Con trỏ đến buffer pixel
-        int row_bytes = cairo_image_surface_get_stride(surface);
-        int bytes_per_pixel = 4;                                             // Bytes per pixel (ARGB32)
-        int shift_bytes = total_columns_to_shift * bytes_per_pixel;          // Số byte cần dịch
-        int keep_bytes = (width - total_columns_to_shift) * bytes_per_pixel; // Số byte giữ lại sau dịch
+        ptrdiff_t row_bytes = (ptrdiff_t)cairo_image_surface_get_stride(surface);
+        size_t bytes_per_pixel = 4;                                                     // Bytes per pixel (ARGB32)
+        size_t shift_bytes = (size_t)total_columns_to_shift * bytes_per_pixel;          // Số byte cần dịch
+        size_t keep_bytes = (size_t)(width - total_columns_to_shift) * bytes_per_pixel; // Số byte giữ lại sau dịch
         if (pixels && row_bytes > 0)
         {
             for (int y = 0; y < height; y++)
             {
-                unsigned char *row = pixels + (y * row_bytes); // Đầu hàng y
-                memmove(row,                                   // Đích: đầu hàng
-                        row + shift_bytes,                     // Nguồn: bỏ qua total_columns_to_shift pixel đầu
-                        keep_bytes);                           // Số byte giữ lại
+                unsigned char *row = pixels + ((ptrdiff_t)y * row_bytes); // Đầu hàng y
+                memmove(row,                                              // Đích: đầu hàng
+                        row + shift_bytes,                                // Nguồn: bỏ qua total_columns_to_shift pixel đầu
+                        keep_bytes);                                      // Số byte giữ lại
 
                 memset(row + keep_bytes, // Ngay sau cột giữ lại
                        0,                // Giá trị 0 = trong suốt

@@ -107,8 +107,6 @@ typedef struct psensor
     /* Name of the chip. */
     char *chip;
 
-    /* see psensor_type */
-    PsensorType type;
     /*
      * Last registered measures of the sensor.  Index 0 for the
      * oldest measure.
@@ -120,10 +118,6 @@ typedef struct psensor
 
     void *provider_data;
     void (*provider_data_free_fct)(void *);
-#ifdef HAVE_LIBATIADL
-    /* AMD id for the aticonfig */
-    int amd_id;
-#endif
 
     /* maximium value in duration */
     double max;
@@ -140,6 +134,15 @@ typedef struct psensor
     size_t measures_count; // current number of items
     size_t measures_head;  // Index of newest measurement
     size_t measures_tail;  // oldest measurement
+
+#ifdef HAVE_LIBATIADL
+    /* AMD id for the aticonfig */
+    int amd_id;
+#endif
+
+    /* see psensor_type */
+    PsensorType type;
+
     bool measures_full;
 
     /* Whether an alarm is raised for this sensor */
@@ -162,9 +165,9 @@ typedef enum
 // Iterator để vẽ từ OLDEST đến NEWEST
 typedef struct measure_iterator
 {
-    const Psensor *sensor;
     size_t current_pos;
     size_t remaining;
+    const Psensor *sensor;
     iter_direction_t direction;
 } Pmeasure_iterator;
 

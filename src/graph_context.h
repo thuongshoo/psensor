@@ -53,35 +53,28 @@ typedef struct
 /* Master context: all graph state in one place */
 typedef struct
 {
-    // === DPI-based constants ===
-    int h_padding, v_padding;
-    int max_unit_chars;
-    double font_size;
-    double min_shift_pixels;
-    double min_temp_range;
-    double line_width;
-    // === Theme (cached from GTK) ===
-    GtkWidget *window;
-    GtkStyleContext *style;
-    GdkRGBA theme_fg_color;
-    GdkRGBA theme_bg_color;
-    gboolean theme_valid;
+    int last_width, last_height;
+    gboolean cache_valid, background_valid;
 
-    // === Font ===
-    FontMetrics font_metrics;
+    gboolean minmax_labels_valid, time_labels_valid;
+    GtkWidget *window;
+    int shift_pixels;
+    gboolean layout_valid;
+    cairo_surface_t *graph_surface;
+    cairo_surface_t *grid_surface;
+    cairo_surface_t *minmax_labels_surface;
+    cairo_surface_t *time_labels_surface;
+    // === DPI-based constants ===
+    int v_padding;
+    double line_width;
 
     // === Layout cache ===
     int plot_x, plot_y, plot_width, plot_height;
-    gboolean layout_valid;
 
     // === Surfaces + dimensions ===
-    cairo_surface_t *graph_surface;
     int graph_surface_width, graph_surface_height;
-    cairo_surface_t *grid_surface;
     int grid_surface_width, grid_surface_height;
-    cairo_surface_t *minmax_labels_surface;
     int minmax_labels_surface_width, minmax_labels_surface_height;
-    cairo_surface_t *time_labels_surface;
     int time_labels_surface_width, time_labels_surface_height;
 
     // === Data cache ===
@@ -89,9 +82,13 @@ typedef struct
     DisplayRange display_range;      // Range hiển thị hiện tại
     DisplayRange last_display_range; // Range đã dùng để vẽ lần trước (cho shift khớp)
     time_t begin_time, end_time;
+    size_t last_sensors_count;
 
+    double font_size;
+    GdkRGBA theme_fg_color;
+    GdkRGBA theme_bg_color;
+    int h_padding;
     // === Label state ===
-    gboolean minmax_labels_valid, time_labels_valid;
     char str_min[PSENSOR_MAX_VALUE_LEN];
     char str_max[PSENSOR_MAX_VALUE_LEN];
     char str_unit[UNIT_STR_MAX_LEN];
@@ -99,18 +96,25 @@ typedef struct
     char str_etime[TIME_STR_MAX_LEN];
     int minmax_labels_width;
 
+    GtkStyleContext *style;
     // === Shift state ===
-    double pixels_per_point;
-    size_t last_sensors_count;
+    int pixels_per_point;
+
     gboolean last_values_initialized;
-    int shift_pixels;
+
+    int min_shift_pixels;
 
     // === Cache ===
-    gboolean cache_valid, background_valid;
-    int last_width, last_height;
+
     SKIPPED_REDRAWS_DATATYPE skipped_redraws;
     size_t last_measures_count;
 
+    int max_unit_chars;
+    gboolean theme_valid;
+    // === Font ===
+    FontMetrics font_metrics;
+
+    double min_temp_range;
 } GraphContext;
 
 void graph_context_init(GraphContext *ctx, GtkWidget *widget);
