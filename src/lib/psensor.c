@@ -45,8 +45,6 @@ void psensor_value_to_string_buffer(unsigned int type, double value, Temperature
     }
 
     snprintf(buffer, buffer_size, "%.0f", value);
-
-    //    return buffer;
 }
 
 char *psensor_value_to_str(unsigned int type, double value, Temperature_Unit temperature_unit)
@@ -154,27 +152,57 @@ psensor_create(char *id,
 
 void psensor_values_resize(Psensor *psensor, unsigned int new_size)
 {
-    Pmeasure *cur_ms = psensor->measures;
+    if (psensor == nullptr || new_size == 0)
+        return;
+
     Pmeasure *new_ms = measures_double_create(new_size);
+    if (new_ms == nullptr)
+        return;
 
-    if (cur_ms)
+    // Nếu có dữ liệu cũ
+    if (psensor->measures && psensor->measures_count > 0)
     {
-        size_t cur_size = psensor->measures_size;
-        size_t i;
-        // copy the old circle buffer to the new one
-        for (i = 0; i < new_size - 1 && i < cur_size - 1; i++)
-            measure_copy(&cur_ms[cur_size - i - 1],
-                         &new_ms[new_size - i - 1]);
+        // Lấy số lượng dữ liệu cần copy (tối đa new_size)
+        // Ưu tiên dữ liệu mới nhất
+        unsigned int count_to_copy = (psensor->measures_count < new_size) ? psensor->measures_count : new_size;
 
+        // Dùng reverse iterator để lấy dữ liệu mới nhất trước
+        Pmeasure_iterator it;
+        measure_iterator_init_reverse(&it, psensor); // Bắt đầu từ head (mới nhất)
+
+        // Copy count_to_copy phần tử từ mới đến cũ
+        // Nhưng lưu vào mảng mới từ cuối lên để giữ thứ tự thời gian
+        unsigned int i = count_to_copy;
+        Pmeasure *current_measure;
+
+        while (i > 0 && measure_iterator_prev(&it, &current_measure))
+        {
+            i--;
+            measure_copy(current_measure, &new_ms[i]);
+        }
+
+        // Giải phóng bộ nhớ cũ
         measures_free(psensor->measures);
+
+        // Cập nhật cấu trúc mới
+        psensor->measures = new_ms;
+        psensor->measures_size = new_size;
+        psensor->measures_tail = 0;             // Phần tử cũ nhất ở đầu mảng mới
+        psensor->measures_head = count_to_copy; // Vị trí tiếp theo để ghi
+        psensor->measures_count = count_to_copy;
+        psensor->measures_full = (count_to_copy == new_size);
     }
-
-    psensor->measures = new_ms;
-
-    psensor->measures_size = new_size;
-    psensor->measures_head = 0;
-    psensor->measures_count = 0;
-    psensor->measures_full = false;
+    else
+    {
+        // Không có dữ liệu cũ
+        measures_free(psensor->measures);
+        psensor->measures = new_ms;
+        psensor->measures_size = new_size;
+        psensor->measures_tail = 0;
+        psensor->measures_head = 0;
+        psensor->measures_count = 0;
+        psensor->measures_full = false;
+    }
 }
 
 void
@@ -447,6 +475,8 @@ static void process_measure_values_per_sensor(const Psensor *sensor, MINMAX *min
     for (size_t measure_index = 0; measure_index < total_measures; measure_index++)
     {
         Pmeasure measure = sensor->measures[measure_index];
+        if (measure.value == UNKNOWN_DOUBLE_VALUE)
+            continue;
         if (local_max < measure.value)
             local_max = measure.value;
 

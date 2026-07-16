@@ -287,7 +287,16 @@ static void save_pref_dialog_settings(GtkBuilder *builder, Pconfig *cfg,
 
     gint graph_monitoring_duration = save_spin_button_value(builder, "monitoring_duration", 0);
     if (graph_monitoring_duration > 0)
-        cfg->graph_monitoring_duration = (u_int32_t)graph_monitoring_duration;
+    {
+        u_int32_t temp = (u_int32_t)graph_monitoring_duration;
+        if (cfg->graph_monitoring_duration != temp)
+        {
+            cfg->graph_monitoring_duration = temp;
+            // force to full redraw
+            cfg->graph_ctx.layout_valid = FALSE;
+            cfg->graph_ctx.cache_valid = FALSE;
+        }
+    }
     else
         cfg->graph_monitoring_duration = 10U;
 

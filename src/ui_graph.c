@@ -58,11 +58,11 @@ on_graph_clicked(GtkWidget *widget, GdkEventButton *event, gpointer data)
         return FALSE;
 #if ENABLE_DEBUG_PRINT
     time_t mytimenow = time(nullptr);
-    char *mynow = time_to_str3(&mytimenow);
+    char mynow[NUMBER_OF_SECONDS_SINCE_THE_EPOCH_MAX_LENGTH];
+    time_to_str3(&mytimenow, mynow, sizeof(mynow));
     char *mynow2 = time_to_str2(&mytimenow);
     DEBUG_PRINT("show popup menu %s|%s threadID=%ld\n", mynow, mynow2, gettid());
     free(mynow2);
-    free(mynow);
 #endif
     gtk_menu_popup_at_pointer(GTK_MENU(((UI_psensor *)data)->popup_menu),
                               (const GdkEvent *)event);
@@ -693,8 +693,8 @@ static void calculate_plot_area_layout(
     if (ctx->min_shift_pixels <= 0)
         ctx->min_shift_pixels = calculate_min_shift_pixels(widget);
 
-    if (ctx->pixels_per_point <= 0)
-        ctx->pixels_per_point = calculate_pixels_per_point(ui->config, width);
+    // if (ctx->pixels_per_point <= 0)
+    ctx->pixels_per_point = calculate_pixels_per_point(ui->config, width);
 
     int shift_pixels = ctx->pixels_per_point;
     if (shift_pixels < ctx->min_shift_pixels)
@@ -714,11 +714,11 @@ static gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer user_data
 #if ENABLE_DEBUG_PRINT
     static uint64_t count = 0;
     time_t mytimenow = time(nullptr);
-    char *mynow = time_to_str3(&mytimenow);
+    char mynow[NUMBER_OF_SECONDS_SINCE_THE_EPOCH_MAX_LENGTH];
+    time_to_str3(&mytimenow, mynow, sizeof(mynow));
     char *mynow2 = time_to_str2(&mytimenow);
     DEBUG_PRINT("%3lu|%s|%s theadID=%ld ", count, mynow, mynow2, gettid());
     free(mynow2);
-    free(mynow);
     ++count;
 #endif
 
@@ -809,7 +809,7 @@ static gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer user_data
     update_minmax_labels_if_needed(ui, ctx);
     update_time_labels_if_needed(ui, ctx, graph_enabled_sensors);
     draw_background(ctx, cfg);
-    DEBUG_PRINT("|PPP=%g min=%d shift=%d WxH=%dx%d|",
+    DEBUG_PRINT("|PPP=%d min=%d shift=%d WxH=%dx%d|",
                 // ctx->cache_valid, cfg->is_new_data,
                 ctx->pixels_per_point,
                 ctx->min_shift_pixels,
@@ -830,8 +830,6 @@ static gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer user_data
     else if (cfg->is_new_data)
     {
         DEBUG_PRINT(">>SHIFTGRAPH ");
-        // if (get_skipped_draw(ctx) == 0)
-        //     increase_skipped_draw(ctx);
 
         try_shift_graph(ui, ctx, widget, graph_enabled_sensors);
         ctx->last_display_range = ctx->display_range;

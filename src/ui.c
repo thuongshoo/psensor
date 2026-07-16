@@ -311,13 +311,11 @@ static void ui_show_about_dialog(GtkWindow *parent)
 
 void ui_cb_about(GtkAction *a, gpointer data)
 {
-    UI_psensor *ui;
-    GtkWidget *parent;
-
-    ui = (UI_psensor *)data;
+    UI_psensor *ui = (UI_psensor *)data;
 
     log_functionname("ui=%p", ui);
 
+    GtkWidget *parent;
     if (ui)
         parent = ui->main_window;
     else
@@ -339,14 +337,14 @@ void ui_cb_preferences(GtkMenuItem *mi, gpointer data)
 void ui_cb_sensor_preferences(GtkMenuItem *mi, gpointer data)
 {
     UI_psensor *ui = data;
-#if ENABLE_DEBUG_PRINT
-    time_t mytimenow = time(nullptr);
-    char *mynow = time_to_str3(&mytimenow);
-    char *mynow2 = time_to_str2(&mytimenow);
-    DEBUG_PRINT("show sensor_preferences dialog %s|%s threadID=%ld\n", mynow, mynow2, gettid());
-    free(mynow2);
-    free(mynow);
-#endif
+    // #if ENABLE_DEBUG_PRINT
+    //     time_t mytimenow = time(nullptr);
+    //     char mynow[NUMBER_OF_SECONDS_SINCE_THE_EPOCH_MAX_LENGTH];
+    //     time_to_str3(&mytimenow, mynow, sizeof(mynow));
+    //     char *mynow2 = time_to_str2(&mytimenow);
+    //     DEBUG_PRINT("show sensor_preferences dialog %s|%s threadID=%ld\n", mynow, mynow2, gettid());
+    //     free(mynow2);
+    // #endif
     if (ui->sensors && *ui->sensors)
         ui_sensorpref_dialog_run(*ui->sensors, ui);
 }

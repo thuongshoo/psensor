@@ -844,11 +844,11 @@ static void draw_new_data(GraphContext *ctx,
             sensor_idx++;
             continue;
         }
-        DEBUG_PRINT("|measures_count=%zu ", s->measures_count);
-#if ENABLE_DEBUG_PRINT
-        for (int i = 0; i < s->measures_size; i++)
-            DEBUG_PRINT("%ld ", s->measures[i].time);
-#endif
+        //         DEBUG_PRINT("|measures_count=%zu ", s->measures_count);
+        // #if ENABLE_DEBUG_PRINT
+        //         for (int i = 0; i < s->measures_size; i++)
+        //             DEBUG_PRINT("%ld ", s->measures[i].time);
+        // #endif
         double new_min, new_max, old_min, old_max;
         ctx_display_range_get(ctx, s->type, &new_min, &new_max);
         ctx_last_display_range_get(ctx, s->type, &old_min, &old_max);
