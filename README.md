@@ -1,6 +1,8 @@
 psensor-fork
-- adjustment to avoid too small sensorlist area
+- adjustment to avoid too small sensorlist area.
 - fix memory leak.
+- optimize to reduce CPU usage.
+- open menu only on left-click, not on right-click.
 - support CMakefile.
 
 psensor-fork — CMake build
