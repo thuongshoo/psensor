@@ -1,19 +1,19 @@
-name: 'Setup Build Environment'
-description: 'Set up build environment for specific Linux distribution'
+name: "Setup Build Environment"
+description: "Set up build environment for specific Linux distribution"
 
 inputs:
   distro:
-    description: 'Distribution name (ubuntu, debian, fedora)'
+    description: "Distribution name (ubuntu, debian, fedora)"
     required: true
-    default: 'ubuntu'
+    default: "ubuntu"
   distro-version:
-    description: 'Distribution version'
+    description: "Distribution version"
     required: true
-    default: '24.04'
+    default: "24.04"
   architecture:
-    description: 'Target architecture'
+    description: "Target architecture"
     required: true
-    default: 'amd64'
+    default: "amd64"
 
 runs:
   using: composite
@@ -29,7 +29,7 @@ runs:
               libcurl4-openssl-dev libglib2.0-dev libgtk-3-dev \
               libgtop2-dev libjson-c-dev libmicrohttpd-dev \
               libnotify-dev libsensors-dev libudisks2-dev \
-              libx11-dev libxnvctrl-dev pkg-config dpkg-dev
+              libx11-dev libxnvctrl-dev pkg-config dpkg-dev bison flex
             ;;
           fedora)
             sudo dnf install -y gcc-c++ cmake gettext help2man \
@@ -37,7 +37,7 @@ runs:
               libcurl-devel glib2-devel gtk3-devel \
               libgtop2-devel json-c-devel libmicrohttpd-devel \
               libnotify-devel lm_sensors-devel udisks2-devel \
-              libX11-devel libxnvctrl-devel pkg-config rpm-build
+              libX11-devel libxnvctrl-devel pkg-config rpm-build bison flex
             ;;
           *)
             echo "Unsupported distribution: ${{ inputs.distro }}"

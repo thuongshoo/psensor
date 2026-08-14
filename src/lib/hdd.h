@@ -22,7 +22,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-#if defined(HAVE_ATASMART) && HAVE_ATASMART
+#ifdef HAVE_ATASMART
 
 static inline bool atasmart_is_supported(void) { return true; }
 

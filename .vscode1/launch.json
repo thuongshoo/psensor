@@ -1,0 +1,81 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Psensor",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/mydata/psensor/build/src/psensorfork",
+            "args": [
+                //"-d3"
+            ],
+            "stopAtEntry": true,
+            "cwd": "/mydata/psensor",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":0"
+                },
+                //{"name": "LANG", "value":"en_US.UTF-8"}
+                //{"name": "LANG", "value":"zh_CN.utf8"},
+                //{"name": "LC_ALL", "value":"zh_CN.utf8"}
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "QUAN TRỌNG: Tắt debuginfod",
+                    "text": "set debuginfod enabled off",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Tắt tải symbol tự động",
+                    "text": "set auto-load safe-path /",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Clear debuginfod URLs",
+                    "text": "set debuginfod urls ",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Psensor-server",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/mydata/psensor/build/src/psensorfork-server",
+            "args": [
+                //"-d3"
+            ],
+            "stopAtEntry": true,
+            "cwd": "/mydata/psensor",
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": ":0"
+                },
+                //{"name": "LANG", "value":"en_US.UTF-8"}
+                //{"name": "LANG", "value":"zh_CN.utf8"},
+                //{"name": "LC_ALL", "value":"zh_CN.utf8"}
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

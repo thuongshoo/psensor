@@ -54,8 +54,8 @@ msgid "Sensor Preferences"
 msgstr "Algılayıcı Tercihleri"
 
 #: src/glade/psensor.glade:99
-msgid "Psensor-fork - Temperature Monitor"
-msgstr "Psensor - Sıcaklık Gözlemleyici"
+msgid "psensorfork - Temperature Monitor"
+msgstr "psensorfork- Sıcaklık Gözlemleyici"
 
 #: src/glade/psensor.glade:114
 msgid "_Psensor"
@@ -133,7 +133,7 @@ msgstr "Unity Başlatıcı sayacını etkinleştir"
 
 #: src/glade/psensor-pref.glade:190
 #, fuzzy
-msgid "Psensor has not been build with Unity Launcher support"
+msgid "psensorfork has not been build with Unity Launcher support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/psensor-pref.glade:215
@@ -258,7 +258,7 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:974
 #, fuzzy
-msgid "Psensor has not been build with NVCtrl support"
+msgid "psensorfork has not been build with NVCtrl support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/psensor-pref.glade:989
@@ -267,7 +267,7 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:993
 #, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
+msgid "psensorfork has not been build with ATI ADL support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/psensor-pref.glade:1008
@@ -276,7 +276,7 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1012
 #, fuzzy
-msgid "Psensor has not been build with gtop2 support"
+msgid "psensorfork has not been build with gtop2 support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/psensor-pref.glade:1027
@@ -289,7 +289,7 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1049
 #, fuzzy
-msgid "Psensor has not been build with libatasmart support"
+msgid "psensorfork has not been build with libatasmart support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/psensor-pref.glade:1064
@@ -298,7 +298,7 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1068
 #, fuzzy
-msgid "Psensor has not been build with udisks2 support"
+msgid "psensorfork has not been build with udisks2 support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/psensor-pref.glade:1090
@@ -414,7 +414,7 @@ msgstr "Algılayıcıları menüde göster"
 
 #: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
 #, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
+msgid "psensorfork has not been build with AppIndicator support"
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/glade/sensor-edit.glade:719
@@ -617,7 +617,7 @@ msgstr "Kullanım: %s [SEÇENEK]...\n"
 
 #: src/main.c:77
 msgid ""
-"Psensor is a GTK+ application for monitoring hardware sensors, including "
+"psensorfork is a GTK+ application for monitoring hardware sensors, including "
 "temperatures and fan speeds."
 msgstr ""
 "Psensor, sıcaklık ve fan hızı da dahil olmak üzere donanım algılayıcılarını "
@@ -644,9 +644,9 @@ msgstr ""
 "                      example: http://hostname:3131"
 
 #: src/main.c:91
-msgid "  -n, --new-instance  force the creation of a new Psensor application"
+msgid "  -n, --new-instance  force the creation of a new psensorfork application"
 msgstr ""
-"  -n, --new-instance  yeni bir Psensor uygulaması oluşturulmasını zorla"
+"  -n, --new-instance  yeni bir psensorforkuygulaması oluşturulmasını zorla"
 
 #: src/main.c:94
 msgid "  -d, --debug=LEVEL   set the debug level, integer between 0 and 3"
@@ -664,7 +664,7 @@ msgid "%s home page: <%s>\n"
 msgstr "%s ana sayfa: <%s>\n"
 
 #: src/main.c:460
-msgid "Psensor has not been compiled with remote sensor support."
+msgid "psensorfork has not been compiled with remote sensor support."
 msgstr "Psensor, uzaktan algılayıcı desteği ile derlenmemiştir."
 
 #: src/main.c:556
@@ -677,8 +677,8 @@ msgid "Try `%s --help' for more information.\n"
 msgstr "Daha fazla bilgi için `%s --help' yazın.\n"
 
 #: src/main.c:585
-msgid "A Psensor instance already exists."
-msgstr "Bir Psensor örneği zaten mevcut."
+msgid "A psensorfork instance already exists."
+msgstr "Bir psensorforkörneği zaten mevcut."
 
 #: src/main.c:632
 #, fuzzy
@@ -815,7 +815,7 @@ msgstr "Algılayıcıların günlük kaydı etkinleştirilemedi."
 #: src/ui.c:325
 #, fuzzy
 msgid ""
-"Psensor-Fork is a maintained GTK application for monitoring hardware "
+"psensorfork is a maintained GTK application for monitoring hardware "
 "sensors, based on the original psensor by Jean-François Wauthy."
 msgstr ""
 "Psensor, sıcaklık ve fan hızı da dahil olmak üzere donanım algılayıcılarını "
@@ -829,8 +829,8 @@ msgstr ""
 
 #: src/ui.c:334
 #, fuzzy
-msgid "About Psensor-Fork"
-msgstr "Psensor Hakkında"
+msgid "About psensorfork"
+msgstr "psensorforkHakkında"
 
 #: src/ui.c:335
 msgid "translator-credits"
@@ -845,8 +845,8 @@ msgid "Project Page & Issue Tracker"
 msgstr ""
 
 #: src/ui.c:493
-msgid "Failed to load Psensor icon."
-msgstr "Psensor simgesi yüklenemedi."
+msgid "Failed to load psensorfork icon."
+msgstr "psensorforksimgesi yüklenemedi."
 
 #: src/ui_sensorlist.c:251
 msgid "Hide"
@@ -879,7 +879,7 @@ msgstr "Fan uyarısı"
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
-#~ msgid "Psensor is a GTK+ application for monitoring hardware sensors"
+#~ msgid "psensorfork is a GTK+ application for monitoring hardware sensors"
 #~ msgstr ""
 #~ "Psensor, donanım algılayıcılarının gözlenmesi amaçlı bir GTK+ "
 #~ "uygulamasıdır"
@@ -888,8 +888,8 @@ msgstr "Bilinmeyen"
 #~ msgid "Copyright(c) 2010-2016 jeanfi@gmail.com"
 #~ msgstr "Telif Hakkı(c) 2010-2014 jeanfi@gmail.com"
 
-#~ msgid "Psensor Homepage"
-#~ msgstr "Psensor Anasayfası"
+#~ msgid "psensorforkHomepage"
+#~ msgstr "psensorforkAnasayfası"
 
 #~ msgid "lmsensor: lmsensor_psensor_create failure: wrong feature type."
 #~ msgstr "lmsensor: lmsensor_psensor_create hatası: yanlış özellik tipi."

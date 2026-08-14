@@ -20,8 +20,8 @@
 #include "ui_status.h"
 #include <plog.h>
 
-// static const char *ICON = "psensor-fork_normal";
-// static const char *ATTENTION_ICON = "psensor-fork_hot";
+// static const char *ICON = "psensorfork_normal";
+// static const char *ATTENTION_ICON = "psensorfork_hot";
 
 static GtkStatusIcon *status;
 // static unsigned int status_attention;

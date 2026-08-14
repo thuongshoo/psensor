@@ -34,7 +34,7 @@ enum string_lengths
 {
     SENSOR_NAME_MAX_LEN = 64,
     UNIT_STR_MAX_LEN = 4,
-    PSENSOR_MAX_VALUE_LEN = 16,
+    PSENSOR_MAX_VALUE_LEN = 64, // to cover all languages
     VALUE_STR_MAX_LEN = 32,
     LABEL_MAX_LEN = 128
 };

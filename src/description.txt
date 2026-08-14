@@ -16,7 +16,7 @@ It can monitor:
   * the rotation speed of the fans (using lm\-sensors).
   * the sensors of a remote computer (using psensor\-fork\-server).
 
-Psensor requires lm\-sensors to be correctly installed and configured,
+psensorforkrequires lm\-sensors to be correctly installed and configured,
 it can be checked by running the command 'sensors'. If it has never be
 done, you may need to run the command 'sensors\-detect' and follow the
 instruction. See the manpages of sensors(1) and sensors\-detect(8) for

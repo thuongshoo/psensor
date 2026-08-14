@@ -1,4 +1,4 @@
-noinst_LIBRARIES = libpsensor-fork.a
+noinst_LIBRARIES = libpsensorfork.a
 
 libpsensor_fork_a_SOURCES = \
 	amd.h\

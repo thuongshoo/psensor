@@ -373,7 +373,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libpsensor-fork.a
+noinst_LIBRARIES = libpsensorfork.a
 libpsensor_fork_a_SOURCES = amd.h bool.h color.h color.c hdd.h \
 	hdd_hddtemp.c lmsensor.h measure.h measure.c nvidia.h parray.h \
 	pgtop2.h plog.h plog.c pmutex.h pmutex.c psensor.h psensor.c \
@@ -428,10 +428,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libpsensor-fork.a: $(libpsensor_fork_a_OBJECTS) $(libpsensor_fork_a_DEPENDENCIES) $(EXTRA_libpsensor_fork_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libpsensor-fork.a
-	$(AM_V_AR)$(libpsensor_fork_a_AR) libpsensor-fork.a $(libpsensor_fork_a_OBJECTS) $(libpsensor_fork_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libpsensor-fork.a
+libpsensorfork.a: $(libpsensor_fork_a_OBJECTS) $(libpsensor_fork_a_DEPENDENCIES) $(EXTRA_libpsensor_fork_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libpsensorfork.a
+	$(AM_V_AR)$(libpsensor_fork_a_AR) libpsensorfork.a $(libpsensor_fork_a_OBJECTS) $(libpsensor_fork_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libpsensorfork.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

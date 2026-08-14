@@ -21,7 +21,7 @@
 
 #include <ui.h>
 
-#if defined(HAVE_LIBNOTIFY) && HAVE_LIBNOTIFY
+#ifdef HAVE_LIBNOTIFY
 
 void ui_notify(Psensor *, UI_psensor *);
 

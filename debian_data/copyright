@@ -1,5 +1,5 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: psensor-fork
+Upstream-Name: psensorfork
 Source: https://github.com/thuongshoo/psensor
 
 Files: *

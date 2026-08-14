@@ -23,7 +23,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-#if defined(HAVE_LIBATIADL) && HAVE_LIBATIADL
+#ifdef HAVE_LIBATIADL
 
 static inline bool amd_is_supported(void) { return true; }
 

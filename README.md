@@ -1,21 +1,23 @@
-psensor-fork
+psensorfork
 - adjustment to avoid too small sensorlist area.
 - fix memory leak.
 - optimize to reduce CPU usage.
 - open menu only on left-click, not on right-click.
 - support CMakefile.
 
-psensor-fork — CMake build
+psensorfork — CMake build
 
 This repository has been migrated from autotools to CMake. The CMake build
 produces two targets:
 
-- psensor-fork — the GUI application
-- psensor-fork-server — the HTTP server
+- psensorfork — the GUI application
+- psensorfork-server — the HTTP server
 
 Quick build
 
 ```bash
+git clone --recursive https://github.com/thuongshoo/psensorfork
+cd psensorfork
 mkdir -p build
 cd build
 cmake ..
@@ -56,4 +58,9 @@ Build .deb for Ubuntu:
 ```bash
 make-deb.sh
 ``` 
+
+Build Flatpak:
+```bash
+./make-flatpak.sh
+```
 

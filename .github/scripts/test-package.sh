@@ -82,14 +82,14 @@ test_package() {
     fi
     
     print_step "5. Verifying installation"
-    if docker exec "$CONTAINER_NAME" which psensor-fork; then
-        print_success "psensor-fork installed successfully"
+    if docker exec "$CONTAINER_NAME" which psensorfork; then
+        print_success "psensorfork installed successfully"
         
         # Test version
         print_step "Testing version command"
-        docker exec "$CONTAINER_NAME" psensor-fork --version || true
+        docker exec "$CONTAINER_NAME" psensorfork --version || true
     else
-        print_error "psensor-fork not found after installation"
+        print_error "psensorfork not found after installation"
         
         # Debug: check installed packages
         print_step "Checking installed packages"
@@ -99,7 +99,7 @@ test_package() {
     
     # Test cơ bản
     print_step "6. Running basic test"
-    docker exec "$CONTAINER_NAME" timeout 5 psensor-fork --help || \
+    docker exec "$CONTAINER_NAME" timeout 5 psensorfork --help || \
         echo "Help command failed or timed out"
     
     print_success "All tests passed!"
@@ -111,7 +111,7 @@ main() {
     # Kiểm tra arguments
     if [ $# -lt 4 ]; then
         echo "Usage: $0 <package_file> <distro> <distro_version> <arch>"
-        echo "Example: $0 ./psensor-fork_1.2.3_ubuntu24.04_amd64.deb ubuntu 24.04 amd64"
+        echo "Example: $0 ./psensorfork_1.2.3_ubuntu24.04_amd64.deb ubuntu 24.04 amd64"
         exit 1
     fi
     

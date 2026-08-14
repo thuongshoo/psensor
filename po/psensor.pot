@@ -70,7 +70,7 @@ msgstr ""
 
 #: src/main.c:74
 msgid ""
-"Psensor is a GTK+ application for monitoring hardware sensors, including "
+"psensorfork is a GTK+ application for monitoring hardware sensors, including "
 "temperatures and fan speeds."
 msgstr ""
 
@@ -91,7 +91,7 @@ msgid ""
 msgstr ""
 
 #: src/main.c:88
-msgid "  -n, --new-instance  force the creation of a new Psensor application"
+msgid "  -n, --new-instance  force the creation of a new psensorforkapplication"
 msgstr ""
 
 #: src/main.c:91
@@ -109,7 +109,7 @@ msgid "%s home page: <%s>\n"
 msgstr ""
 
 #: src/main.c:390
-msgid "Psensor has not been compiled with remote sensor support."
+msgid "psensorforkhas not been compiled with remote sensor support."
 msgstr ""
 
 #: src/main.c:460
@@ -122,7 +122,7 @@ msgid "Try `%s --help' for more information.\n"
 msgstr ""
 
 #: src/main.c:485
-msgid "A Psensor instance already exists."
+msgid "A psensorforkinstance already exists."
 msgstr ""
 
 #: src/main.c:527
@@ -403,7 +403,7 @@ msgid "Failed to activate logging of sensors."
 msgstr ""
 
 #: src/ui.c:213
-msgid "Psensor is a GTK+ application for monitoring hardware sensors"
+msgid "psensorfork is a GTK+ application for monitoring hardware sensors"
 msgstr ""
 
 #: src/ui.c:216
@@ -419,11 +419,11 @@ msgid "translator-credits"
 msgstr ""
 
 #: src/ui.c:226
-msgid "Psensor Homepage"
+msgid "psensorforkHomepage"
 msgstr ""
 
 #: src/ui.c:367
-msgid "Failed to load Psensor icon."
+msgid "Failed to load psensorforkicon."
 msgstr ""
 
 #: src/graph.c:460

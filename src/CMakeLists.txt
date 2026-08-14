@@ -13,6 +13,7 @@ include_directories(
     ${UDISKS2_INCLUDE_DIRS}
     ${ATASMART_INCLUDE_DIRS}
     ${APPINDICATOR_INCLUDE_DIRS}
+    ${SENSORS_INCLUDE_DIR}
 )
 
 # Source files
@@ -33,7 +34,7 @@ if(NOT GTOP_INCLUDE_DIRS)
     list(REMOVE_ITEM SERVER_SOURCES "${CMAKE_SOURCE_DIR}/src/lib/pgtop2.c")
 else()
     include_directories(${GTOP_INCLUDE_DIRS})
-    add_compile_definitions(HAVE_GTOP=1)
+    set(HAVE_GTOP 1)
 endif()
 
 if(NOT UDISKS2_INCLUDE_DIRS)
@@ -41,19 +42,18 @@ if(NOT UDISKS2_INCLUDE_DIRS)
     list(REMOVE_ITEM SERVER_SOURCES "${CMAKE_SOURCE_DIR}/src/lib/pudisks2.c")
 else()
     include_directories(${UDISKS2_INCLUDE_DIRS})
-    add_compile_definitions(HAVE_LIBUDISKS2=1)
+    set(HAVE_LIBUDISKS2 1)
 endif()
 
-#if(APPINDICATOR3_LIBRARIES)
-if(APPINDICATOR_LIBRARIES)
-    add_compile_definitions(HAVE_APPINDICATOR=1)
-else()
-    list(REMOVE_ITEM PSENSOR_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_appindicator.c")
-    list(REMOVE_ITEM SERVER_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_appindicator.c")
-endif()
+    if(APPINDICATOR_LIBRARIES)
+        set(HAVE_APPINDICATOR 1)
+    else()
+        list(REMOVE_ITEM PSENSOR_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_appindicator.c")
+        list(REMOVE_ITEM SERVER_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_appindicator.c")
+    endif()
 
 if(UNITY_LIBRARIES)
-    add_compile_definitions(HAVE_UNITY=1)
+    set(HAVE_UNITY 1)
 else()
     list(REMOVE_ITEM PSENSOR_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_unity.c")
     list(REMOVE_ITEM SERVER_SOURCES "${CMAKE_SOURCE_DIR}/src/ui_unity.c")
@@ -64,7 +64,7 @@ find_path(LIBATIADL_INCLUDE adl_sdk.h PATHS /usr/include /usr/local/include)
 find_library(LIBATIADL_LIB atiadlxx)
 find_library(LIB_RT rt)
 if(LIBATIADL_INCLUDE AND LIBATIADL_LIB)
-    add_definitions(-DHAVE_LIBATIADL)
+    add_compile_definitions(HAVE_LIBATIADL)
     include_directories(${LIBATIADL_INCLUDE})
     set(PSENSOR_EXTRA_LIBS ${LIBATIADL_LIB})
 else()
@@ -111,7 +111,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}-server
     ${LIBNOTIFY_LIBRARIES}
     ${UDISKS2_LIBRARIES}
     ${ATASMART_LIBRARIES}
-    ${APPINDICATOR3_LIBRARIES}
+    ${APPINDICATOR_LIBRARIES}
     ${GTOP_LIBRARIES}
     ${SENSORS_LIB}
     ${PSENSOR_EXTRA_LIBS}
@@ -121,6 +121,11 @@ target_link_libraries(${CMAKE_PROJECT_NAME}-server
 
 if(SENSORS_LIB)
     target_link_libraries(${CMAKE_PROJECT_NAME} ${SENSORS_LIB})
+endif()
+
+if(TARGET lm-sensors-static)
+    add_dependencies(${CMAKE_PROJECT_NAME} lm-sensors-static)
+    add_dependencies(${CMAKE_PROJECT_NAME}-server lm-sensors-static)
 endif()
 
 if(GTOP_FOUND)

@@ -1,0 +1,163 @@
+id: com.github.thuongshoo.psensorfork
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: psensorfork
+separate-locales: false
+# rename-desktop-file: psensorfork.desktop
+# rename-icon: psensorfork
+
+finish-args:
+  - --filesystem=/sys/class/hwmon:ro
+  - --filesystem=/sys/class/thermal:ro
+  - --filesystem=/dev:ro
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --share=network
+  - --device=dri
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=com.canonical.indicator.application
+  - --env=SENSORS_SYSFS_ROOT=/sys
+
+modules:
+  - name: json-c
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DBUILD_SHARED_LIBS=ON
+      - -DBUILD_STATIC_LIBS=OFF
+      - -DBUILD_TESTING=OFF
+    sources:
+      - type: git
+        url: https://github.com/json-c/json-c.git
+        tag: json-c-0.19-20260627
+        commit: aa716cd8d663c976b99b0f30f102ee1d8ef63146
+
+  - name: libmicrohttpd
+    buildsystem: autotools
+    config-opts:
+      - --prefix=/app
+      - --disable-doc
+      - --disable-examples
+      - --disable-static
+    sources:
+      - type: archive
+        url: https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-1.0.6.tar.gz
+        sha256: bb5cfcadfc52dbd5eb512d6e2995e0361351c33e97a87aba426d3a4a7ba6cf70
+
+  # - name: lm-sensors
+  #   buildsystem: simple
+  #   build-commands:
+  #     - make PREFIX=/app ETCDIR=/app/etc BUILD_STATIC_LIB=0 user
+  #     - make PREFIX=/app ETCDIR=/app/etc BUILD_STATIC_LIB=0 user_install
+  #   sources:
+  #     - type: archive
+  #       url: https://github.com/lm-sensors/lm-sensors/archive/refs/tags/V3-6-0.tar.gz
+  #       sha256: 0591f9fa0339f0d15e75326d0365871c2d4e2ed8aa1ff759b3a55d3734b7d197
+
+  - name: libgtop
+    buildsystem: autotools
+    config-opts:
+      - --prefix=/app
+      - --disable-static
+      - --disable-gtk-doc
+      - --enable-introspection=no
+    sources:
+      - type: archive
+        url: https://download.gnome.org/sources/libgtop/2.41/libgtop-2.41.3.tar.xz
+        sha256: 775676df958e2ea2452f7568f28b2ea581063d312773dd5c0b7624c1b9b2da8c
+
+  # Dependency chỉ dùng lúc build cho libdbusmenu, tự dọn dẹp sau khi build xong
+  - name: intltool
+    cleanup:
+      - "*"
+    sources:
+      - type: archive
+        url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+        sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+      - type: shell
+        commands:
+          - sed -i 's/\\\${/\\\$\\{/g' intltool-update.in
+
+  - name: libdbusmenu
+    buildsystem: autotools
+    build-options:
+      cflags: -Wno-error
+      env:
+        HAVE_VALGRIND_FALSE: "#"
+        HAVE_VALGRIND_TRUE: ""
+    config-opts:
+      - --prefix=/app
+      - --disable-static
+      - --disable-gtk-doc
+      - --enable-introspection=no
+      - --disable-vala
+      - --disable-dumper
+      - --disable-tests
+      - --with-gtk=3
+    sources:
+      - type: archive
+        url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
+        sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
+
+  # Dùng tag 0.6.1 vì đã bỏ hoàn toàn phụ thuộc vào libayatana-indicator & ayatana-ido
+  - name: libayatana-appindicator
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DENABLE_GTKDOC=OFF
+      - -DENABLE_BINDINGS_VALA=OFF
+      - -DENABLE_BINDINGS_MONO=OFF
+      - -DENABLE_TESTS=OFF
+      - -DENABLE_WERROR=OFF
+      - -DFLAVOUR_GTK3=ON
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+        tag: "0.6.1"
+        #commit: 836356daa20c833cbc051c77c6b4f97c94de5e61
+
+  - name: libatasmart
+    buildsystem: autotools
+    config-opts:
+      - --prefix=/app
+      - --disable-static
+    sources:
+      - type: archive
+        url: https://deb.debian.org/debian/pool/main/liba/libatasmart/libatasmart_0.19.orig.tar.xz
+        sha256: 61f0ea345f63d28ab2ff0dc352c22271661b66bf09642db3a4049ac9dbdb0f8d
+
+  - name: libxnvctrl
+    buildsystem: simple
+    build-commands:
+      - make -C src/libXNVCtrl
+      - mkdir -p /app/include/NVCtrl /app/lib
+      - cp src/libXNVCtrl/*.h /app/include/NVCtrl/
+      - cp src/libXNVCtrl/_out/*/libXNVCtrl.a /app/lib/
+    sources:
+      - type: git
+        url: https://github.com/NVIDIA/nvidia-settings.git
+        tag: 555.42.02
+
+  - name: psensorfork
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DFLATPAK_BUILD=ON
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DWITH_UDISKS2=OFF
+      - -DENABLE_CPPCHECK=OFF
+      - -DUSE_SYSTEM_LIBSENSORS=OFF
+    sources:
+      - type: dir
+        path: /mydata/psensor # Đường dẫn tuyệt đối tới source code
+        skip:
+          - third_party/lm-sensors/.git
+    build-options:
+      env:
+        PKG_CONFIG_PATH: "/app/lib/pkgconfig:/app/lib64/pkgconfig:/app/share/pkgconfig:${PKG_CONFIG_PATH}"
+        LD_LIBRARY_PATH: "/app/lib:/app/lib64:${LD_LIBRARY_PATH}"

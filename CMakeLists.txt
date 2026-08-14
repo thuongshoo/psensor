@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
-project(psensor-fork VERSION 1.4.0 LANGUAGES C)
+project(psensorfork VERSION 1.4.0 LANGUAGES C)
 
 set(PACKAGE_BUGREPORT "yuyoonshoo@gmail.com")
+set(PACKAGE_ORIGINAL_NAME "psensorfork")
 set(PACKAGE_URL "https://github.com/thuongshoo/psensor")
-set(PACKAGE_NAME "psensor-fork")
+set(PACKAGE_APP_ID "com.github.thuongshoo.${PACKAGE_ORIGINAL_NAME}")
+# if(FLATPAK_BUILD)
+    set(PACKAGE_NAME ${PACKAGE_APP_ID})
+#     message(STATUS "PACKAGE_NAME: ${PACKAGE_NAME}")
+# else()
+#     set(PACKAGE_NAME ${PACKAGE_ORIGINAL_NAME})
+#     message(STATUS "PACKAGE_NAME: ${PACKAGE_NAME}")
+# endif()
 
 # enable compile commands database
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,7 +19,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # 
 set(DESIRED_C_STANDARDS 23 17 11)
 
-# 
+#
+set(HIGHEST_SUPPORTED_STANDARD 11)
 foreach(STANDARD IN LISTS DESIRED_C_STANDARDS)
     # 
     list(FIND CMAKE_C_COMPILE_FEATURES "c_std_${STANDARD}" FEATURE_INDEX)
@@ -45,12 +54,14 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
 option(WITH_GTOP "Build with libgtop support" ON)
 option(WITH_NVIDIA "Build with NVIDIA support" ON)
 option(WITH_ATI "Build with ATI support" OFF)
+option(WITH_UDISKS2 "Build with udisks2 support" ON)
 option(ENABLE_NLS "Enable Native Language Support" ON)
 option(ENABLE_CPPCHECK "Enable cppcheck analysis" ON)
 option(ENABLE_COLOR_USE_DOUBLE "Use double precision for color" ON)
 if(ENABLE_COLOR_USE_DOUBLE)
-    add_compile_definitions(COLOR_USE_DOUBLE)
+    set(COLOR_USE_DOUBLE 1)
 endif()
+option(USE_SYSTEM_LIBSENSORS "Use system libsensors instead of building from source" OFF)
 # Find required tools
 find_program(HELP2MAN help2man)
 find_program(ASCIIDOC asciidoc)
@@ -71,10 +82,10 @@ add_compile_options(-Wall)
 # Add -rdynamic for GTK signal handlers
 add_link_options(-rdynamic)
 # GTK/GDK flags to ensure proper API usage
-add_definitions(
-    -DGTK_DISABLE_SINGLE_INCLUDES
-    -DGDK_DISABLE_DEPRECATED
-    -DGSEAL_ENABLE
+add_compile_definitions(
+    GTK_DISABLE_SINGLE_INCLUDES
+    GDK_DISABLE_DEPRECATED
+    GSEAL_ENABLE
 )
 
 # Find required packages
@@ -119,17 +130,15 @@ if(ENABLE_NLS)
     endforeach()
     
     add_custom_target(translations ALL DEPENDS ${MO_FILES})
-    add_definitions(-DENABLE_NLS=1)
-    add_definitions(-DGETTEXT_PACKAGE="${PROJECT_NAME}")
-    add_definitions(-DPACKAGE="${PROJECT_NAME}")
+    set(ENABLE_NLS 1)
+    add_compile_definitions(GETTEXT_PACKAGE="${PROJECT_NAME}")
     # Compile LOCALEDIR into the binary so bindtextdomain(PACKAGE, LOCALEDIR)
     # will resolve to an absolute directory under the install prefix. This
     # relies on CMAKE_INSTALL_FULL_LOCALEDIR being defined (above via
     # GNUInstallDirs or our fallback).
-    add_compile_definitions(LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
+    #add_compile_definitions(LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
+    set (LOCALEDIR "${CMAKE_INSTALL_FULL_LOCALEDIR}")
 endif()
-
-# (GNUInstallDirs already included earlier)
 
 # Required dependencies
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0>=3.4)
@@ -143,22 +152,24 @@ pkg_check_modules(DBUS dbus-1)
 
 # Add compilation flags for optional features
 if(CANBERRA_GTK3_FOUND)
-    add_compile_definitions(HAVE_CANBERRA=1)
+    set(HAVE_CANBERRA 1)
 endif()
 
 if(AT_SPI2_CORE_FOUND)
-    add_compile_definitions(HAVE_AT_SPI=1)
+    set(HAVE_AT_SPI 1)
 endif()
 
 if(DBUS_FOUND)
-    add_compile_definitions(HAVE_DBUS=1)
+    set(HAVE_DBUS 1)
 endif()
 pkg_check_modules(JSON REQUIRED json-c>=0.11.99)
 pkg_check_modules(CURL REQUIRED libcurl)
 pkg_check_modules(LIBMICROHTTPD REQUIRED libmicrohttpd)
-pkg_check_modules(LIBNOTIFY REQUIRED libnotify)
-pkg_check_modules(UDISKS2 REQUIRED udisks2)
-pkg_check_modules(ATASMART REQUIRED libatasmart)
+pkg_check_modules(LIBNOTIFY libnotify)
+if(WITH_UDISKS2)
+    pkg_check_modules(UDISKS2  udisks2)
+endif()
+pkg_check_modules(ATASMART libatasmart)
 
 set(APPINDICATOR_INCLUDE_STRING "")
 # 1. Attempt to find the Ubuntu/upstream AppIndicator
@@ -168,7 +179,7 @@ if(APPINDICATOR_UPSTREAM_FOUND)
     set(APPINDICATOR_PC_NAME appindicator3-0.1)
     # Define the exact string to use in the #include directive
     set(APPINDICATOR_INCLUDE_STRING "\"libappindicator/app-indicator.h\"")
-
+    set(HAVE_APPINDICATOR 1)
 else()
     # 2. Attempt to find the Debian/Ayatana variant
     pkg_check_modules(APPINDICATOR_AYATANA ayatana-appindicator3-0.1)
@@ -177,6 +188,7 @@ else()
         set(APPINDICATOR_PC_NAME ayatana-appindicator3-0.1)
         # Define the exact string to use in the #include directive
         set(APPINDICATOR_INCLUDE_STRING "\"libayatana-appindicator/app-indicator.h\"")
+        set(HAVE_APPINDICATOR 1)
     else()
         # 3. If neither is found, error out.
         message(FATAL_ERROR "Could not find either 'appindicator3-0.1' or 'ayatana-appindicator3-0.1' development packages.")
@@ -189,23 +201,23 @@ pkg_check_modules(APPINDICATOR REQUIRED ${APPINDICATOR_PC_NAME})
 # Define HAVE_* macros for pkg-config-found libs so headers that expect
 # autoconf-style macros will choose the real implementations (not inline stubs)
 if(JSON_LIBRARIES)
-    add_compile_definitions(HAVE_JSON=1)
+    set(HAVE_JSON 1)
 endif()
 if(CURL_LIBRARIES)
-    add_compile_definitions(HAVE_CURL=1)
+    set(HAVE_CURL 1)
 endif()
 if(LIBMICROHTTPD_LIBRARIES)
-    add_compile_definitions(HAVE_LIBMICROHTTPD=1)
+    set(HAVE_LIBMICROHTTPD 1)
 endif()
 if(LIBNOTIFY_LIBRARIES)
-    add_compile_definitions(HAVE_LIBNOTIFY=1)
+    set(HAVE_LIBNOTIFY 1)
 endif()
 if(UDISKS2_LIBRARIES)
-    add_compile_definitions(HAVE_LIBUDISKS2=1)
+    set(HAVE_LIBUDISKS2 1)
 endif()
 
 if(ATASMART_LIBRARIES)
-    add_compile_definitions(HAVE_ATASMART=1)
+    set(HAVE_ATASMART 1)
 endif()
 
 check_include_file("stdlib.h" HAVE_STDLIB_H)
@@ -220,21 +232,55 @@ check_include_file("stdbool.h" HAVE_STDBOOL_H)
 
 # Remote monitoring support (JSON + CURL)
 if(JSON_LIBRARIES AND CURL_LIBRARIES)
-    add_compile_definitions(HAVE_REMOTE_SUPPORT=1)
+    set(HAVE_REMOTE_SUPPORT 1)
 endif()
 
 # Optional dependencies
 if(WITH_GTOP)
     pkg_check_modules(GTOP libgtop-2.0)
     if(GTOP_FOUND)
-        add_definitions(-DHAVE_GTOP)
+        set(HAVE_GTOP 1)
     endif()
 endif()
 
-# Check for libsensors
-find_library(SENSORS_LIB sensors)
-if(SENSORS_LIB)
-    add_compile_definitions(HAVE_LIBSENSORS=1)
+# Check for libsensors or build statically from source if not found or requested
+set(HAVE_LIBSENSORS 0)
+if(USE_SYSTEM_LIBSENSORS)
+    find_library(SENSORS_LIB NAMES sensors)
+    find_path(SENSORS_INCLUDE_DIR NAMES sensors/sensors.h)
+    if(SENSORS_LIB AND SENSORS_INCLUDE_DIR)
+        message(STATUS "Found system libsensors: ${SENSORS_LIB}")
+        set(HAVE_LIBSENSORS 1)
+    else()
+        message(STATUS "System libsensors not found, will build lm-sensors from source statically.")
+    endif()
+endif()
+
+if(NOT HAVE_LIBSENSORS)
+    set(LMSENSORS_SOURCE_DIR "${CMAKE_SOURCE_DIR}/third_party/lm-sensors")
+    set(LMSENSORS_STAGING "${CMAKE_BINARY_DIR}/lm-sensors-staging")
+
+    add_custom_command(
+        OUTPUT
+            ${LMSENSORS_STAGING}/lib/libsensors.a
+            ${LMSENSORS_STAGING}/include/sensors/sensors.h
+        COMMENT "Building lm-sensors static library"
+        COMMAND make -d BUILD_STATIC_LIB=1 BUILD_SHARED_LIB=0 PREFIX=${LMSENSORS_STAGING} BUILD_DIR=flatpakbuilđir user
+        COMMENT "Installing lm-sensors static library"
+        COMMAND make -d BUILD_STATIC_LIB=1 BUILD_SHARED_LIB=0 PREFIX=${LMSENSORS_STAGING} BUILD_DIR=flatpakbuilđir user_install
+        WORKING_DIRECTORY "${LMSENSORS_SOURCE_DIR}"
+        COMMENT "Done: Building and installing lm-sensors static library"
+        VERBATIM
+    )
+    add_custom_target(lm-sensors-static ALL
+        DEPENDS
+            ${LMSENSORS_STAGING}/lib/libsensors.a
+            ${LMSENSORS_STAGING}/include/sensors/sensors.h
+    )
+
+    set(SENSORS_INCLUDE_DIR "${LMSENSORS_STAGING}/include")
+    set(SENSORS_LIB "${LMSENSORS_STAGING}/lib/libsensors.a")
+    set(HAVE_LIBSENSORS 1)
 endif()
 
 # NVIDIA support
@@ -245,24 +291,19 @@ if(WITH_NVIDIA)
     )
     find_library(NVIDIA_LIB XNVCtrl)
     if(NVIDIA_INCLUDE_DIR AND NVIDIA_LIB)
-        add_definitions(-DHAVE_NVIDIA)
+        set(HAVE_NVIDIA 1)
     endif()
 endif()
 if(NVIDIA_LIB)
     list(APPEND PSENSOR_EXTRA_LIBS ${NVIDIA_LIB})
 endif()
 
-# Configure header
-configure_file(config.h.cmake ${CMAKE_BINARY_DIR}/config.h)
+
 
 # Set the package data directory variable for paths.h.in
 set(pkgdatadir "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}")
 
-# Find psensor-fork data directory at runtime
-configure_file(
-    ${CMAKE_SOURCE_DIR}/src/paths.h.in
-    ${CMAKE_BINARY_DIR}/paths.h
-    @ONLY)
+
 
 # Set install prefix if not specified
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -274,21 +315,23 @@ include(GNUInstallDirs)
 
 # Desktop file macro and data dir for source use
 set(DESKTOP_FILE "\"${PROJECT_NAME}.desktop\"")
-add_compile_definitions(PSENSOR_DESKTOP_FILE=${DESKTOP_FILE})
+set(PSENSOR_DESKTOP_FILE "${PROJECT_NAME}.desktop")
+message(STATUS "DESKTOP_FILE: ${DESKTOP_FILE}")
+message(STATUS "PSENSOR_DESKTOP_FILE: ${PSENSOR_DESKTOP_FILE}")
 
 set(DATADIR_VAL "\"${CMAKE_INSTALL_FULL_DATADIR}\"")
-add_compile_definitions(DATADIR=${DATADIR_VAL})
+set(DATADIR ${CMAKE_INSTALL_FULL_DATADIR})
 
 set(WWW_DIR_VAL "\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}/www\"")
-add_compile_definitions(DEFAULT_WWW_DIR=${WWW_DIR_VAL})
+set(DEFAULT_WWW_DIR "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}/www")
 
 # Set default PACKAGE_DATA_DIR but allow environment override
 if(NOT DEFINED ENV{PSENSOR_DATA_DIR})
-    set(PACKAGE_DATA_DIR1 "\"${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}\"" )
-    add_compile_definitions(PACKAGE_DATA_DIR=${PACKAGE_DATA_DIR1})
+    set(PACKAGE_DATA_DIR1 "\\"" )
+    set(PACKAGE_DATA_DIR "${CMAKE_INSTALL_FULL_DATADIR}/${PROJECT_NAME}"")
 else()
     set(PACKAGE_DATA_DIR2 "\"$ENV{PSENSOR_DATA_DIR}\"")
-    add_compile_definitions(PACKAGE_DATA_DIR="{PACKAGE_DATA_DIR2}")
+    set(PACKAGE_DATA_DIR "$ENV{PSENSOR_DATA_DIR}")
 endif()
 
 message(STATUS "Installation prefix: ${CMAKE_INSTALL_PREFIX}")
@@ -303,57 +346,113 @@ if(NOT DBUS_FOUND)
     message(STATUS "dbus-1 not found - some features may be limited")
 endif()
 
-add_subdirectory(src)
+# Xác định tên đích tùy môi trường
+if(FLATPAK_BUILD)
+    set(ICON_INSTALL_NAME "${PACKAGE_APP_ID}")
+    set(DESKTOP_INSTALL_NAME "${PACKAGE_APP_ID}.desktop")
+else()
+    set(ICON_INSTALL_NAME "${PACKAGE_NAME}")
+    set(DESKTOP_INSTALL_NAME "${PACKAGE_NAME}.desktop")
+endif()
 
+# Configure header
+configure_file(config.h.cmake ${CMAKE_BINARY_DIR}/config.h)
+# Find psensorfork data directory at runtime
+configure_file(
+    ${CMAKE_SOURCE_DIR}/src/paths.h.in
+    ${CMAKE_BINARY_DIR}/paths.h
+    @ONLY)
 # Installation
 include(GNUInstallDirs)
+add_subdirectory(src)
+
+
 
 # Install binaries
 install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}-server
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# Install desktop file
+# Cài desktop file với tên phù hợp
 install(FILES ${PROJECT_NAME}.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+    RENAME "${DESKTOP_INSTALL_NAME}"
 )
 
-# Install icons for all themes and sizes
-install(DIRECTORY icons/hicolor/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor
-    PATTERN "Makefile*" EXCLUDE    
-)
-install(DIRECTORY icons/ubuntu-mono-dark/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mono-dark
-    PATTERN "Makefile*" EXCLUDE    
-)
-install(DIRECTORY icons/ubuntu-mono-light/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mono-light
-    PATTERN "Makefile*" EXCLUDE
-)
+# Chỉ sửa đổi file .desktop sau khi cài đặt khi build cho Flatpak
+if(FLATPAK_BUILD)
+    install(CODE "
+        file(READ \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/applications/${DESKTOP_INSTALL_NAME}\" DESKTOP_CONTENT)
+        string(REGEX REPLACE \"Icon=psensorfork\" \"Icon=${PACKAGE_APP_ID}\" DESKTOP_CONTENT_MODIFIED \"\${DESKTOP_CONTENT}\")
+        file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/applications/${DESKTOP_INSTALL_NAME}\" \"\${DESKTOP_CONTENT_MODIFIED}\")
+    " COMPONENT Applications)
+endif()
 
-# Ensure icons are also installed into the per-size "apps/" subdirectories
-# so GTK/desktop environments can find the application icon via the
-# hicolor theme (e.g. icons/hicolor/48x48/apps/psensor-fork.png).
-set(PROJECT_ICON_FILENAME psensor-fork)
+# # Install icons for all themes and sizes
+# install(DIRECTORY icons/hicolor/
+#     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor
+#     PATTERN "Makefile*" EXCLUDE    
+# )
+# install(DIRECTORY icons/ubuntu-mono-dark/
+#     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mono-dark
+#     PATTERN "Makefile*" EXCLUDE    
+# )
+# install(DIRECTORY icons/ubuntu-mono-light/
+#     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/ubuntu-mono-light
+#     PATTERN "Makefile*" EXCLUDE
+# )
+
+# Cài icon chính cho tất cả các size (cả hai tên)
 set(HICOLOR_SIZES 14x14 16x16 22x22 24x24 32x32 48x48 64x64)
 foreach(size IN LISTS HICOLOR_SIZES)
-    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/${PROJECT_ICON_FILENAME}.png)
-        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/${PROJECT_ICON_FILENAME}.png
+    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensorfork.png)
+        if(FLATPAK_BUILD)
+            # Tên có tiền tố Application ID (cho Flatpak export)
+        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensorfork.png
             DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/${size}/apps
-            RENAME ${PROJECT_ICON_FILENAME}.png)
+            RENAME "${PACKAGE_APP_ID}.png")
+        else()
+        # Tên gốc cho .deb
+        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/${size}/psensorfork.png
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/${size}/apps
+            RENAME "psensorfork.png")
+        endif()
     endif()
 endforeach()
-
-# Install scalable SVG icons into scalable/apps
-if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}.svg)
-    install(FILES
-        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}.svg
-        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}_normal.svg
-        ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/${PROJECT_ICON_FILENAME}_hot.svg
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
-    )
-endif()
+# Cài icon scalable (chính, hot, normal) — cả hai tên
+foreach(icon_suffix "" "_normal" "_hot")
+    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensorfork${icon_suffix}.svg)
+        if(FLATPAK_BUILD)
+            # Tên có tiền tố Application ID
+            install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensorfork${icon_suffix}.svg
+                DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
+                RENAME "${PACKAGE_APP_ID}${icon_suffix}.svg")
+        else()
+        # Tên gốc
+        install(FILES ${CMAKE_SOURCE_DIR}/icons/hicolor/scalable/psensorfork${icon_suffix}.svg
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
+            RENAME "psensorfork${icon_suffix}.svg")
+        endif()    
+    endif()
+endforeach()
+# Cài icon cho ubuntu-mono-dark và ubuntu-mono-light — cả hai tên
+foreach(theme "ubuntu-mono-dark" "ubuntu-mono-light")
+    foreach(icon_suffix "" "_normal" "_hot")
+        if(EXISTS ${CMAKE_SOURCE_DIR}/icons/${theme}/status/22/psensorfork${icon_suffix}.svg)
+            if(FLATPAK_BUILD)
+                # Tên có tiền tố Application ID
+                install(FILES ${CMAKE_SOURCE_DIR}/icons/${theme}/status/22/psensorfork${icon_suffix}.svg
+                    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/${theme}/status/22
+                    RENAME "${PACKAGE_APP_ID}${icon_suffix}.svg")
+            else()
+                # Tên gốc
+                install(FILES ${CMAKE_SOURCE_DIR}/icons/${theme}/status/22/psensorfork${icon_suffix}.svg
+                    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/${theme}/status/22
+                    RENAME "psensorfork${icon_suffix}.svg")
+            endif()    
+        endif()
+    endforeach()
+endforeach()
 
 # Install glade UI files
 # Main interface first
@@ -364,7 +463,7 @@ install(FILES src/glade/${PROJECT_NAME}.glade
 install(FILES
     src/glade/${PROJECT_NAME}-appindicator.glade
     src/glade/${PROJECT_NAME}-pref.glade
-    src/glade/${PROJECT_NAME}.glade
+    # src/glade/${PROJECT_NAME}.glade
     src/glade/${PROJECT_NAME}-edit.glade
     DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
 
@@ -455,6 +554,7 @@ if(CPPCHECK AND ENABLE_CPPCHECK)
         COMMENT "Running cppcheck analysis"
     )
 endif()
+
 
 # Post-install commands
 install(CODE "

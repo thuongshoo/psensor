@@ -1,5 +1,5 @@
 SUBDIRS = lib glade
-PROJECT_NAME=psensor-fork
+PROJECT_NAME=psensorfork
 psensor_fork_SOURCES = \
 	cfg.h cfg.c \
 	notify_cmd.c notify_cmd.h \
@@ -108,7 +108,7 @@ endif
 endif
 
 if HELP2MAN
-psensor-fork.1: main.c $(top_srcdir)/configure.ac
+psensorfork.1: main.c $(top_srcdir)/configure.ac
 	$(MAKE) $(AM_MAKEFLAGS) $(PROJECT_NAME)$(EXEEXT)
 	help2man --include=description.txt -N --name="Temperature monitoring application" --output=$(PROJECT_NAME).1 ./$(PROJECT_NAME)$(EXEEXT)
 endif

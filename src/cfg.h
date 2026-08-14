@@ -166,7 +166,7 @@ void config_set_sensorlist_position(enum sensorlist_position pos);
 /*
  * Returns the user directory containing psensor data (configuration
  * and log).
- * Corresponds to $HOME/.psensor-fork/
+ * Corresponds to $HOME/.psensorfork/
  * Creates the directory if it does not exist;
  * Returns NULL if it cannot be determined.
  */

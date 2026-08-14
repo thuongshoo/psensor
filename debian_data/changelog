@@ -1,4 +1,4 @@
-psensor-fork (1.4.0-1) noble; urgency=medium
+psensorfork (1.4.0-1) noble; urgency=medium
 
   * You can now easily customize the display order of your sensors!
   * Simply open the Sensor Preferences window and drag any sensor up
@@ -9,7 +9,7 @@ psensor-fork (1.4.0-1) noble; urgency=medium
 
  -- thuongshoo <yuyoonshoo@gmail.com>  Tue, 28 Jun 2026 10:30:00 +0000
 
-psensor-fork (1.3.0-1) noble; urgency=medium
+psensorfork (1.3.0-1) noble; urgency=medium
 
   * Implement intelligent graph rendering: only draw new values, shift existing graph left
   * Refactor codebase to follow modern coding conventions
@@ -17,7 +17,7 @@ psensor-fork (1.3.0-1) noble; urgency=medium
 
  -- thuongshoo <yuyoonshoo@gmail.com>  Tue, 28 Jun 2026 10:30:00 +0000
 
-psensor-fork (1.2.1-1) noble; urgency=medium
+psensorfork (1.2.1-1) noble; urgency=medium
 
   * Adjustment to avoid too small sensorlist area
   * Moved temperature units (C/F) below graph to maximize chart width

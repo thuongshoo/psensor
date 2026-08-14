@@ -54,8 +54,8 @@ msgid "Sensor Preferences"
 msgstr "Preferenze Sensore"
 
 #: src/glade/psensor.glade:99
-msgid "Psensor-fork - Temperature Monitor"
-msgstr "Psensor - Monitor temperatura"
+msgid "psensorfork - Temperature Monitor"
+msgstr "psensorfork - Monitor temperatura"
 
 #: src/glade/psensor.glade:114
 msgid "_Psensor"
@@ -133,8 +133,8 @@ msgstr "Abilita contatore nel Launcher Unity"
 
 #: src/glade/psensor-pref.glade:190
 #, fuzzy
-msgid "Psensor has not been build with Unity Launcher support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with Unity Launcher support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/psensor-pref.glade:215
 msgid "Celsius"
@@ -258,8 +258,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:974
 #, fuzzy
-msgid "Psensor has not been build with NVCtrl support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with NVCtrl support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/psensor-pref.glade:989
 msgid "Enable support of ATI ADL"
@@ -267,8 +267,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:993
 #, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with ATI ADL support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/psensor-pref.glade:1008
 msgid "Enable support of gtop2"
@@ -276,8 +276,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1012
 #, fuzzy
-msgid "Psensor has not been build with gtop2 support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with gtop2 support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/psensor-pref.glade:1027
 msgid "Enable support of hddtemp daemon"
@@ -289,8 +289,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1049
 #, fuzzy
-msgid "Psensor has not been build with libatasmart support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with libatasmart support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/psensor-pref.glade:1064
 msgid "Enable support of udisks2"
@@ -298,8 +298,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1068
 #, fuzzy
-msgid "Psensor has not been build with udisks2 support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with udisks2 support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/psensor-pref.glade:1090
 msgid "The changes are applied after the restart of psensor."
@@ -414,8 +414,8 @@ msgstr "Mostra sensore nel menu"
 
 #: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
 #, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been build with AppIndicator support"
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/glade/sensor-edit.glade:719
 #, fuzzy
@@ -617,10 +617,10 @@ msgstr "Uso: %s [OPZIONE]...\n"
 
 #: src/main.c:77
 msgid ""
-"Psensor is a GTK+ application for monitoring hardware sensors, including "
+"psensorfork is a GTK+ application for monitoring hardware sensors, including "
 "temperatures and fan speeds."
 msgstr ""
-"Psensor è un'applicazione GTK+ per monitorare i sensori dell'hardware, "
+"psensorfork è un'applicazione GTK+ per monitorare i sensori dell'hardware, "
 "incluse temperature e velocità delle ventole."
 
 #: src/main.c:81
@@ -644,9 +644,9 @@ msgstr ""
 "                      esempio: http://hostname:3131"
 
 #: src/main.c:91
-msgid "  -n, --new-instance  force the creation of a new Psensor application"
+msgid "  -n, --new-instance  force the creation of a new psensorfork application"
 msgstr ""
-"  -n, --new-instance forza la creazione di una nuova applicazione Psensor"
+"  -n, --new-instance forza la creazione di una nuova applicazione psensorfork"
 
 #: src/main.c:94
 msgid "  -d, --debug=LEVEL   set the debug level, integer between 0 and 3"
@@ -664,8 +664,8 @@ msgid "%s home page: <%s>\n"
 msgstr "%s home page: <%s>\n"
 
 #: src/main.c:460
-msgid "Psensor has not been compiled with remote sensor support."
-msgstr "Psensor è stato compilato senza il supporto per sensori remoti."
+msgid "psensorfork has not been compiled with remote sensor support."
+msgstr "psensorfork è stato compilato senza il supporto per sensori remoti."
 
 #: src/main.c:556
 msgid "Enables debug mode."
@@ -677,8 +677,8 @@ msgid "Try `%s --help' for more information.\n"
 msgstr "Usare '%s --help' per maggiori informazioni.\n"
 
 #: src/main.c:585
-msgid "A Psensor instance already exists."
-msgstr "Esiste già un'istanza di Psensor"
+msgid "A psensorfork instance already exists."
+msgstr "Esiste già un'istanza di psensorfork"
 
 #: src/main.c:632
 #, fuzzy
@@ -814,10 +814,10 @@ msgstr "Attivazione registro dei sensori fallita."
 #: src/ui.c:325
 #, fuzzy
 msgid ""
-"Psensor-Fork is a maintained GTK application for monitoring hardware "
+"psensorfork is a maintained GTK application for monitoring hardware "
 "sensors, based on the original psensor by Jean-François Wauthy."
 msgstr ""
-"Psensor è un'applicazione GTK+ per monitorare i sensori dell'hardware, "
+"psensorfork è un'applicazione GTK+ per monitorare i sensori dell'hardware, "
 "incluse temperature e velocità delle ventole."
 
 #: src/ui.c:327
@@ -828,8 +828,8 @@ msgstr ""
 
 #: src/ui.c:334
 #, fuzzy
-msgid "About Psensor-Fork"
-msgstr "Informazioni su Psensor"
+msgid "About psensorfork"
+msgstr "Informazioni su psensorfork"
 
 #: src/ui.c:335
 msgid "translator-credits"
@@ -845,8 +845,8 @@ msgid "Project Page & Issue Tracker"
 msgstr ""
 
 #: src/ui.c:493
-msgid "Failed to load Psensor icon."
-msgstr "Impossibile caricare l'icona di Psensor."
+msgid "Failed to load psensorfork icon."
+msgstr "Impossibile caricare l'icona di psensorfork."
 
 #: src/ui_sensorlist.c:251
 msgid "Hide"
@@ -879,15 +879,15 @@ msgstr "Allarme ventola"
 msgid "Unknown"
 msgstr "Sconosciuto"
 
-#~ msgid "Psensor is a GTK+ application for monitoring hardware sensors"
-#~ msgstr "Psensor è un'applicazione GTK+ per monitorare i sensori hardware"
+#~ msgid "psensorfork is a GTK+ application for monitoring hardware sensors"
+#~ msgstr "psensorfork è un'applicazione GTK+ per monitorare i sensori hardware"
 
 #, fuzzy
 #~ msgid "Copyright(c) 2010-2016 jeanfi@gmail.com"
 #~ msgstr "Copyright(c) 2010-2014 jeanfi@gmail.com"
 
-#~ msgid "Psensor Homepage"
-#~ msgstr "Psensor Homepage"
+#~ msgid "psensorforkHomepage"
+#~ msgstr "psensorforkHomepage"
 
 #~ msgid "lmsensor: lmsensor_psensor_create failure: wrong feature type."
 #~ msgstr "lmsensor: lmsensor_psensor_create fallito: tipo di funzione errata."

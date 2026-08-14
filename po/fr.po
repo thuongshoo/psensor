@@ -54,8 +54,8 @@ msgid "Sensor Preferences"
 msgstr "Préférences des capteurs"
 
 #: src/glade/psensor.glade:99
-msgid "Psensor-fork - Temperature Monitor"
-msgstr "Psensor - Surveillance des températures"
+msgid "psensorfork - Temperature Monitor"
+msgstr "psensorfork - Surveillance des températures"
 
 #: src/glade/psensor.glade:114
 #, fuzzy
@@ -134,9 +134,9 @@ msgstr "Activer le compteur du lanceur de Unity"
 
 #: src/glade/psensor-pref.glade:190
 #, fuzzy
-msgid "Psensor has not been build with Unity Launcher support"
+msgid "psensorfork has not been build with Unity Launcher support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/psensor-pref.glade:215
 msgid "Celsius"
@@ -260,9 +260,9 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:974
 #, fuzzy
-msgid "Psensor has not been build with NVCtrl support"
+msgid "psensorfork has not been build with NVCtrl support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/psensor-pref.glade:989
 msgid "Enable support of ATI ADL"
@@ -270,9 +270,9 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:993
 #, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
+msgid "psensorfork has not been build with ATI ADL support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/psensor-pref.glade:1008
 msgid "Enable support of gtop2"
@@ -280,9 +280,9 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1012
 #, fuzzy
-msgid "Psensor has not been build with gtop2 support"
+msgid "psensorfork has not been build with gtop2 support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/psensor-pref.glade:1027
 msgid "Enable support of hddtemp daemon"
@@ -294,9 +294,9 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1049
 #, fuzzy
-msgid "Psensor has not been build with libatasmart support"
+msgid "psensorfork has not been build with libatasmart support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/psensor-pref.glade:1064
 msgid "Enable support of udisks2"
@@ -304,9 +304,9 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1068
 #, fuzzy
-msgid "Psensor has not been build with udisks2 support"
+msgid "psensorfork has not been build with udisks2 support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/psensor-pref.glade:1090
 msgid "The changes are applied after the restart of psensor."
@@ -421,9 +421,9 @@ msgstr "Afficher le capteur dans le menu"
 
 #: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
 #, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
+msgid "psensorfork has not been build with AppIndicator support"
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/glade/sensor-edit.glade:719
 #, fuzzy
@@ -627,10 +627,10 @@ msgstr "Utilisation : %s [OPTION]...\n"
 
 #: src/main.c:77
 msgid ""
-"Psensor is a GTK+ application for monitoring hardware sensors, including "
+"psensorfork is a GTK+ application for monitoring hardware sensors, including "
 "temperatures and fan speeds."
 msgstr ""
-"Psensor est une application GTK+ pour surveiller les capteurs thermiques et "
+"psensorfork est une application GTK+ pour surveiller les capteurs thermiques et "
 "les vitesses de ventilateurs."
 
 #: src/main.c:81
@@ -653,10 +653,10 @@ msgstr ""
 "  -u, --url=URL       l'URL de psensor-server, example: http://hostname:3131"
 
 #: src/main.c:91
-msgid "  -n, --new-instance  force the creation of a new Psensor application"
+msgid "  -n, --new-instance  force the creation of a new psensorfork application"
 msgstr ""
 "  -n, --new-instance  forcer la création d'une nouvelle occurrence de "
-"l'application Psensor"
+"l'application psensorfork"
 
 #: src/main.c:94
 msgid "  -d, --debug=LEVEL   set the debug level, integer between 0 and 3"
@@ -675,9 +675,9 @@ msgid "%s home page: <%s>\n"
 msgstr "Page d'accueil de %s : <%s>\n"
 
 #: src/main.c:460
-msgid "Psensor has not been compiled with remote sensor support."
+msgid "psensorfork has not been compiled with remote sensor support."
 msgstr ""
-"Psensor n'a pas été compilé avec le support de surveillance à distance."
+"psensorfork n'a pas été compilé avec le support de surveillance à distance."
 
 #: src/main.c:556
 msgid "Enables debug mode."
@@ -689,8 +689,8 @@ msgid "Try `%s --help' for more information.\n"
 msgstr "Essayez « %s --help » pour plus d'informations.\n"
 
 #: src/main.c:585
-msgid "A Psensor instance already exists."
-msgstr "Une instance de Psensor existe déjà."
+msgid "A psensorfork instance already exists."
+msgstr "Une instance de psensorfork existe déjà."
 
 #: src/main.c:632
 msgid "Failed to create thread for monitoring sensors"
@@ -825,10 +825,10 @@ msgstr "Échec de l'activation de la journalisation des capteurs."
 #: src/ui.c:325
 #, fuzzy
 msgid ""
-"Psensor-Fork is a maintained GTK application for monitoring hardware "
+"psensorfork is a maintained GTK application for monitoring hardware "
 "sensors, based on the original psensor by Jean-François Wauthy."
 msgstr ""
-"Psensor est une application GTK+ pour surveiller les capteurs thermiques et "
+"psensorfork est une application GTK+ pour surveiller les capteurs thermiques et "
 "les vitesses de ventilateurs."
 
 #: src/ui.c:327
@@ -839,8 +839,8 @@ msgstr ""
 
 #: src/ui.c:334
 #, fuzzy
-msgid "About Psensor-Fork"
-msgstr "À propos de Psensor"
+msgid "About psensorfork"
+msgstr "À propos de psensorfork"
 
 #: src/ui.c:335
 msgid "translator-credits"
@@ -855,8 +855,8 @@ msgid "Project Page & Issue Tracker"
 msgstr ""
 
 #: src/ui.c:493
-msgid "Failed to load Psensor icon."
-msgstr "Échec du chargement de l’icône de Psensor."
+msgid "Failed to load psensorfork icon."
+msgstr "Échec du chargement de l’icône de psensorfork."
 
 #: src/ui_sensorlist.c:251
 msgid "Hide"
@@ -869,7 +869,7 @@ msgstr ""
 #: src/ui_appindicator.c:165
 #, fuzzy, c-format
 msgid "Failed to load glade file %s: %s"
-msgstr "Échec du chargement de l’icône de Psensor."
+msgstr "Échec du chargement de l’icône de psensorfork."
 
 #: src/ui_notify.c:52
 msgid "gettimeofday failed."
@@ -887,16 +887,16 @@ msgstr "Alerte ventilateur"
 msgid "Unknown"
 msgstr "Inconnu"
 
-#~ msgid "Psensor is a GTK+ application for monitoring hardware sensors"
+#~ msgid "psensorfork is a GTK+ application for monitoring hardware sensors"
 #~ msgstr ""
-#~ "Psensor est une application GTK+ pour surveiller les capteurs thermiques "
+#~ "psensorforkest une application GTK+ pour surveiller les capteurs thermiques "
 #~ "et les ventilateurs."
 
 #, fuzzy
 #~ msgid "Copyright(c) 2010-2016 jeanfi@gmail.com"
 #~ msgstr "Copyright © 2010-2014 jeanfi@gmail.com"
 
-#~ msgid "Psensor Homepage"
+#~ msgid "psensorforkHomepage"
 #~ msgstr "Site internet de Psensor"
 
 #~ msgid "Sensor Information"

@@ -10,8 +10,8 @@ EXTRA_DIST = checkpatch.pl \
 	test-io-dir-list.sh
 
 check_PROGRAMS = test-io-dir-list \
-	test-psensor-fork-type-to-unit-str \
-	test-psensor-fork-value-to-str \
+	test-psensorfork-type-to-unit-str \
+	test-psensorfork-value-to-str \
 	test-url-encode \
 	test-url-normalize
 
@@ -37,8 +37,8 @@ test_url_encode_SOURCES = test_url_encode.c
 test_url_normalize_SOURCES = test_url_normalize.c
 
 TESTS = test-io-dir-list.sh \
-	test-psensor-fork-type-to-unit-str \
-	test-psensor-fork-value-to-str \
+	test-psensorfork-type-to-unit-str \
+	test-psensorfork-value-to-str \
 	test-url-encode \
 	test-url-normalize
 

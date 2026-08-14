@@ -54,8 +54,8 @@ msgid "Sensor Preferences"
 msgstr "传感器首选项"
 
 #: src/glade/psensor.glade:99
-msgid "Psensor-fork - Temperature Monitor"
-msgstr "Psensor - 温度监视器"
+msgid "psensorfork - Temperature Monitor"
+msgstr "psensorfork- 温度监视器"
 
 #: src/glade/psensor.glade:114
 msgid "_Psensor"
@@ -132,8 +132,8 @@ msgid "Enable Unity Launcher counter"
 msgstr "启用 Unity 启动器计数器"
 
 #: src/glade/psensor-pref.glade:190
-msgid "Psensor has not been build with Unity Launcher support"
-msgstr "Psensor 未编译 Unity 启动器支持。"
+msgid "psensorfork has not been build with Unity Launcher support"
+msgstr "psensorfork 未编译 Unity 启动器支持。"
 
 #: src/glade/psensor-pref.glade:215
 msgid "Celsius"
@@ -257,8 +257,8 @@ msgid "Enable support of NVCtrl (NVidia)"
 msgstr ""
 
 #: src/glade/psensor-pref.glade:974
-msgid "Psensor has not been build with NVCtrl support"
-msgstr "Psensor 未编译 NVCtrl 支持。"
+msgid "psensorfork has not been build with NVCtrl support"
+msgstr "psensorfork 未编译 NVCtrl 支持。"
 
 #: src/glade/psensor-pref.glade:989
 msgid "Enable support of ATI ADL"
@@ -266,8 +266,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:993
 #, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
-msgstr "Psensor 不支持远程传感器。"
+msgid "psensorfork has not been build with ATI ADL support"
+msgstr "psensorfork 不支持远程传感器。"
 
 #: src/glade/psensor-pref.glade:1008
 msgid "Enable support of gtop2"
@@ -275,8 +275,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1012
 #, fuzzy
-msgid "Psensor has not been build with gtop2 support"
-msgstr "Psensor 不支持远程传感器。"
+msgid "psensorfork has not been build with gtop2 support"
+msgstr "psensorfork 不支持远程传感器。"
 
 #: src/glade/psensor-pref.glade:1027
 msgid "Enable support of hddtemp daemon"
@@ -288,8 +288,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1049
 #, fuzzy
-msgid "Psensor has not been build with libatasmart support"
-msgstr "Psensor 不支持远程传感器。"
+msgid "psensorfork has not been build with libatasmart support"
+msgstr "psensorfork 不支持远程传感器。"
 
 #: src/glade/psensor-pref.glade:1064
 msgid "Enable support of udisks2"
@@ -297,8 +297,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1068
 #, fuzzy
-msgid "Psensor has not been build with udisks2 support"
-msgstr "Psensor 不支持远程传感器。"
+msgid "psensorfork has not been build with udisks2 support"
+msgstr "psensorfork 不支持远程传感器。"
 
 #: src/glade/psensor-pref.glade:1090
 msgid "The changes are applied after the restart of psensor."
@@ -413,8 +413,8 @@ msgstr "在应用指示器菜单中显示监视器"
 
 #: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
 #, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
-msgstr "Psensor 不支持远程传感器。"
+msgid "psensorfork has not been build with AppIndicator support"
+msgstr "psensorfork 不支持远程传感器。"
 
 #: src/glade/sensor-edit.glade:719
 #, fuzzy
@@ -616,9 +616,9 @@ msgstr "用法：%s [选项]...\n"
 
 #: src/main.c:77
 msgid ""
-"Psensor is a GTK+ application for monitoring hardware sensors, including "
+"psensorfork is a GTK+ application for monitoring hardware sensors, including "
 "temperatures and fan speeds."
-msgstr "Psensor 是一款 GTK+ 应用程序，可监测硬件传感器，包括温度与风扇转速。"
+msgstr "psensorfork 是一款 GTK+ 应用程序，可监测硬件传感器，包括温度与风扇转速。"
 
 #: src/main.c:81
 msgid "Options:"
@@ -641,8 +641,8 @@ msgstr ""
 "                      例如：http://hostname:3131"
 
 #: src/main.c:91
-msgid "  -n, --new-instance  force the creation of a new Psensor application"
-msgstr "  -n, --new-instance  强制创建一个新的 Psensor 例程"
+msgid "  -n, --new-instance  force the creation of a new psensorfork application"
+msgstr "  -n, --new-instance  强制创建一个新的 psensorfork 例程"
 
 #: src/main.c:94
 msgid "  -d, --debug=LEVEL   set the debug level, integer between 0 and 3"
@@ -659,8 +659,8 @@ msgid "%s home page: <%s>\n"
 msgstr "%s 主页：<%s>\n"
 
 #: src/main.c:460
-msgid "Psensor has not been compiled with remote sensor support."
-msgstr "Psensor 不支持远程传感器。"
+msgid "psensorfork has not been compiled with remote sensor support."
+msgstr "psensorfork 不支持远程传感器。"
 
 #: src/main.c:556
 msgid "Enables debug mode."
@@ -672,8 +672,8 @@ msgid "Try `%s --help' for more information.\n"
 msgstr "试用‘%s --help’来获得更多信息。\n"
 
 #: src/main.c:585
-msgid "A Psensor instance already exists."
-msgstr "已存在一个 Psensor 例程。"
+msgid "A psensorfork instance already exists."
+msgstr "已存在一个 psensorfork例程。"
 
 #: src/main.c:632
 #, fuzzy
@@ -801,9 +801,9 @@ msgstr "无法激活监测器日志。"
 #: src/ui.c:325
 #, fuzzy
 msgid ""
-"Psensor-Fork is a maintained GTK application for monitoring hardware "
+"psensorfork is a maintained GTK application for monitoring hardware "
 "sensors, based on the original psensor by Jean-François Wauthy."
-msgstr "Psensor 是一款 GTK+ 应用程序，可监测硬件传感器，包括温度与风扇转速。"
+msgstr "psensorfork 是一款 GTK+ 应用程序，可监测硬件传感器，包括温度与风扇转速。"
 
 #: src/ui.c:327
 msgid ""
@@ -813,7 +813,7 @@ msgstr ""
 
 #: src/ui.c:334
 #, fuzzy
-msgid "About Psensor-Fork"
+msgid "About psensorfork"
 msgstr "关于 Psensor"
 
 #: src/ui.c:335
@@ -830,8 +830,8 @@ msgid "Project Page & Issue Tracker"
 msgstr ""
 
 #: src/ui.c:493
-msgid "Failed to load Psensor icon."
-msgstr "无法加载 Psensor 图标。"
+msgid "Failed to load psensorfork icon."
+msgstr "无法加载 psensorfork图标。"
 
 #: src/ui_sensorlist.c:251
 msgid "Hide"
@@ -864,8 +864,8 @@ msgstr "风扇警报"
 msgid "Unknown"
 msgstr "未知"
 
-#~ msgid "Psensor is a GTK+ application for monitoring hardware sensors"
-#~ msgstr "Psensor 是一款 GTK+ 硬件监测传感应用程序"
+#~ msgid "psensorfork is a GTK+ application for monitoring hardware sensors"
+#~ msgstr "psensorfork 是一款 GTK+ 硬件监测传感应用程序"
 
 #, fuzzy
 #~ msgid "Copyright(c) 2010-2016 jeanfi@gmail.com"
@@ -873,8 +873,8 @@ msgstr "未知"
 #~ "版权所有(c) 2010-2014\n"
 #~ "jeanfi@gmail.com"
 
-#~ msgid "Psensor Homepage"
-#~ msgstr "Psensor 主页"
+#~ msgid "psensorforkHomepage"
+#~ msgstr "psensorfork 主页"
 
 #~ msgid "lmsensor: lmsensor_psensor_create failure: wrong feature type."
 #~ msgstr "lmsensor：lmsensor_psensor_create 失败：错误的功能类型。"

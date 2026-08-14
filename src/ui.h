@@ -26,7 +26,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#if defined(HAVE_APPINDICATOR)
+#ifdef HAVE_APPINDICATOR
 #include "appindicator_compat.h"
 #endif
 

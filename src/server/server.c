@@ -98,7 +98,7 @@ static void print_help(void)
 {
 	printf(_("Usage: %s [OPTION]...\n"), program_name);
 
-	puts(_("psensor-fork-server is an HTTP server for monitoring hardware "
+	puts(_("psensorfork-server is an HTTP server for monitoring hardware "
 		   "sensors remotely."));
 
 	puts("");
@@ -121,7 +121,7 @@ static void print_help(void)
 	puts("");
 	printf(_("Report bugs to: %s\n"), PACKAGE_BUGREPORT);
 	puts("");
-	printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
+	printf(_("%s home page: <%s>\n"), PACKAGE_ORIGINAL_NAME, PACKAGE_URL);
 }
 
 /*
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
 
 	setlocale(LC_ALL, "");
 
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 #endif

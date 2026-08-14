@@ -23,7 +23,7 @@
 
 #include <psensor.h>
 
-#if defined(HAVE_REMOTE_SUPPORT) && HAVE_REMOTE_SUPPORT
+#ifdef HAVE_REMOTE_SUPPORT
 
 static inline bool rsensor_is_supported(void) { return true; }
 

@@ -1,4 +1,6 @@
 build/**
+repo/**
+build-dir/**
 *.o
 *.a
 **/.deps/**
@@ -13,11 +15,13 @@ stamp-*
 Makevars.template
 config.h
 *~
-src/psensor-fork
-src/psensor-fork.1
-src/psensor-fork.gschema.valid
-src/server/psensor-fork-server
-src/server/psensor-fork-server.1
-po/psensor-fork.pot
+src/psensorfork
+src/psensorfork.1
+src/psensorfork.gschema.valid
+src/server/psensorfork-server
+src/server/psensorfork-server.1
+po/psensorfork.pot
 po/POTFILES
 debian/**
+.flatpak-builder/**
+.vscode/vc.*

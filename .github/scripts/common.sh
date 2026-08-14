@@ -72,8 +72,8 @@ extract_package_info() {
     # Lấy thông tin từ tên file
     BASENAME=$(basename "$PACKAGE_FILE" .deb)
     
-    # Parse: psensor-fork_1.2.3_ubuntu24.04_amd64.deb
-    if [[ $BASENAME =~ psensor-fork_([^_]+)_([^_]+)_([^_]+) ]]; then
+    # Parse: psensorfork_1.2.3_ubuntu24.04_amd64.deb
+    if [[ $BASENAME =~ psensorfork_([^_]+)_([^_]+)_([^_]+) ]]; then
         VERSION="${BASH_REMATCH[1]}"
         DISTRO_INFO="${BASH_REMATCH[2]}"
         ARCH="${BASH_REMATCH[3]}"

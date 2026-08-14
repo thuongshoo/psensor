@@ -87,7 +87,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = psensor-fork-server$(EXEEXT)
+bin_PROGRAMS = psensorfork-server$(EXEEXT)
 @GTOP_TRUE@am__append_1 = $(GTOP_CFLAGS)
 @GTOP_TRUE@am__append_2 = $(GTOP_LIBS) 
 @GTOP_TRUE@am__append_3 = sysinfo.h sysinfo.c
@@ -266,7 +266,7 @@ LIBMICROHTTPD_LIBS = @LIBMICROHTTPD_LIBS@
 LIBNOTIFY_CFLAGS = @LIBNOTIFY_CFLAGS@
 LIBNOTIFY_LIBS = @LIBNOTIFY_LIBS@
 LIBOBJS = @LIBOBJS@
-LIBS = ../lib/libpsensor-fork.a $(SENSORS_LIBS) $(JSON_LIBS) \
+LIBS = ../lib/libpsensorfork.a $(SENSORS_LIBS) $(JSON_LIBS) \
 	$(LIBMICROHTTPD_LIBS) $(PTHREAD_LIBS) $(am__append_2) \
 	$(am__append_5)
 LIBUDISKS2_CFLAGS = @LIBUDISKS2_CFLAGS@
@@ -370,7 +370,7 @@ AM_CPPFLAGS = -Wall -Werror -DDEFAULT_WWW_DIR=\""$(pkgdatadir)/www"\" \
 	$(JSON_CFLAGS) $(LIBMICROHTTPD_CFLAGS) $(am__append_1) \
 	$(am__append_4)
 @GTOP_TRUE@AM_LDFLAGS = -Wl,--as-needed
-dist_man_MANS = psensor-fork-server.1
+dist_man_MANS = psensorfork-server.1
 EXTRA_DIST = description.txt
 all: all-am
 
@@ -448,8 +448,8 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-psensor-fork-server$(EXEEXT): $(psensor_fork_server_OBJECTS) $(psensor_fork_server_DEPENDENCIES) $(EXTRA_psensor_fork_server_DEPENDENCIES) 
-	@rm -f psensor-fork-server$(EXEEXT)
+psensorfork-server$(EXEEXT): $(psensor_fork_server_OBJECTS) $(psensor_fork_server_DEPENDENCIES) $(EXTRA_psensor_fork_server_DEPENDENCIES) 
+	@rm -f psensorfork-server$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(psensor_fork_server_OBJECTS) $(psensor_fork_server_LDADD) $(LIBS)
 
 mostlyclean-compile:
@@ -737,9 +737,9 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-@HELP2MAN_TRUE@psensor-fork-server.1: server.c $(top_srcdir)/configure.ac
-@HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) psensor-fork-server$(EXEEXT)
-@HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature and system monitoring Web server" --output=psensor-fork-server.1 ./psensor-fork-server$(EXEEXT)
+@HELP2MAN_TRUE@psensorfork-server.1: server.c $(top_srcdir)/configure.ac
+@HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) psensorfork-server$(EXEEXT)
+@HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature and system monitoring Web server" --output=psensorfork-server.1 ./psensorfork-server$(EXEEXT)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

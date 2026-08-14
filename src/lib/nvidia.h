@@ -22,8 +22,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-
-#if defined(HAVE_NVIDIA) && HAVE_NVIDIA
+#ifdef HAVE_NVIDIA
 
 static inline bool nvidia_is_supported(void) { return true; }
 

@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/build/",
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/src/lib/",
+                "${workspaceFolder}/src/server/",
+                "/usr/include/gtk-3.0/",
+                "/usr/include/glib-2.0/",
+                "/usr/lib/x86_64-linux-gnu/glib-2.0/include/",
+                "/usr/include/pango-1.0/",
+                "/usr/include/harfbuzz/",
+                "/usr/include/cairo/",
+                "/usr/include/gdk-pixbuf-2.0",
+                "/usr/include/atk-1.0/",
+                "/usr/include/libgtop-2.0",
+                "/usr/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c23",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}

@@ -55,7 +55,7 @@ msgstr "Налаштування датчиків"
 
 #: src/glade/psensor.glade:99
 #, fuzzy
-msgid "Psensor-fork - Temperature Monitor"
+msgid "psensorfork - Temperature Monitor"
 msgstr "Одиниця температури:"
 
 #: src/glade/psensor.glade:114
@@ -135,8 +135,8 @@ msgstr "Увімкнути лічильник на панелі запуску U
 
 #: src/glade/psensor-pref.glade:190
 #, fuzzy
-msgid "Psensor has not been build with Unity Launcher support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with Unity Launcher support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/psensor-pref.glade:215
 msgid "Celsius"
@@ -261,8 +261,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:974
 #, fuzzy
-msgid "Psensor has not been build with NVCtrl support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with NVCtrl support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/psensor-pref.glade:989
 msgid "Enable support of ATI ADL"
@@ -270,8 +270,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:993
 #, fuzzy
-msgid "Psensor has not been build with ATI ADL support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with ATI ADL support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/psensor-pref.glade:1008
 msgid "Enable support of gtop2"
@@ -279,8 +279,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1012
 #, fuzzy
-msgid "Psensor has not been build with gtop2 support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with gtop2 support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/psensor-pref.glade:1027
 msgid "Enable support of hddtemp daemon"
@@ -292,8 +292,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1049
 #, fuzzy
-msgid "Psensor has not been build with libatasmart support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with libatasmart support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/psensor-pref.glade:1064
 msgid "Enable support of udisks2"
@@ -301,8 +301,8 @@ msgstr ""
 
 #: src/glade/psensor-pref.glade:1068
 #, fuzzy
-msgid "Psensor has not been build with udisks2 support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with udisks2 support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/psensor-pref.glade:1090
 msgid "The changes are applied after the restart of psensor."
@@ -417,8 +417,8 @@ msgstr ""
 
 #: src/glade/sensor-edit.glade:701 src/glade/sensor-edit.glade:723
 #, fuzzy
-msgid "Psensor has not been build with AppIndicator support"
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been build with AppIndicator support"
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/glade/sensor-edit.glade:719
 msgid "Display sensor in the label (experimental)"
@@ -614,7 +614,7 @@ msgstr "Використання: %s [КЛЮЧ]...\n"
 
 #: src/main.c:77
 msgid ""
-"Psensor is a GTK+ application for monitoring hardware sensors, including "
+"psensorfork is a GTK+ application for monitoring hardware sensors, including "
 "temperatures and fan speeds."
 msgstr ""
 
@@ -638,7 +638,7 @@ msgstr ""
 "  -u, --url=URL       URL psensor-сервера, наприклад: http://hostname:3131"
 
 #: src/main.c:91
-msgid "  -n, --new-instance  force the creation of a new Psensor application"
+msgid "  -n, --new-instance  force the creation of a new psensorfork application"
 msgstr "  -n, --new-instance  примусово створювати нову копію програми Psensor"
 
 #: src/main.c:94
@@ -656,8 +656,8 @@ msgid "%s home page: <%s>\n"
 msgstr "%s домашня сторінка: <%s>\n"
 
 #: src/main.c:460
-msgid "Psensor has not been compiled with remote sensor support."
-msgstr "Psensor не був зібраний з підтримкою віддалених датчиків."
+msgid "psensorfork has not been compiled with remote sensor support."
+msgstr "psensorfork не був зібраний з підтримкою віддалених датчиків."
 
 #: src/main.c:556
 msgid "Enables debug mode."
@@ -669,7 +669,7 @@ msgid "Try `%s --help' for more information.\n"
 msgstr "Спробуйте `%s --help' щоб отримати більше інформації.\n"
 
 #: src/main.c:585
-msgid "A Psensor instance already exists."
+msgid "A psensorfork instance already exists."
 msgstr ""
 
 #: src/main.c:632
@@ -801,7 +801,7 @@ msgstr ""
 
 #: src/ui.c:325
 msgid ""
-"Psensor-Fork is a maintained GTK application for monitoring hardware "
+"psensorfork is a maintained GTK application for monitoring hardware "
 "sensors, based on the original psensor by Jean-François Wauthy."
 msgstr ""
 
@@ -813,7 +813,7 @@ msgstr ""
 
 #: src/ui.c:334
 #, fuzzy
-msgid "About Psensor-Fork"
+msgid "About psensorfork"
 msgstr "Про Psensor"
 
 #: src/ui.c:335
@@ -829,7 +829,7 @@ msgid "Project Page & Issue Tracker"
 msgstr ""
 
 #: src/ui.c:493
-msgid "Failed to load Psensor icon."
+msgid "Failed to load psensorfork icon."
 msgstr "Не вдалося завантажити іконку Psensor."
 
 #: src/ui_sensorlist.c:251
@@ -862,7 +862,7 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#~ msgid "Psensor Homepage"
+#~ msgid "psensorforkHomepage"
 #~ msgstr "Домашня сторінка Psensor"
 
 #~ msgid "Sensor Information"

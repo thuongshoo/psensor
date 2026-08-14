@@ -70,9 +70,9 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgincludedir = $(includedir)/psensor-fork
-pkglibdir = $(libdir)/psensor-fork
-pkglibexecdir = $(libexecdir)/psensor-fork
+pkgincludedir = $(includedir)/psensorfork
+pkglibdir = $(libdir)/psensorfork
+pkglibexecdir = $(libexecdir)/psensorfork
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -153,7 +153,7 @@ DATA = $(dist_doc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-pkgdatadir = /usr/share/psensor-fork
+pkgdatadir = /usr/share/psensorfork
 ACLOCAL = ${SHELL} '/mydata/psensor/missing' aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
@@ -232,11 +232,11 @@ MSGMERGE = /usr/bin/msgmerge
 NVIDIA_CFLAGS = 
 NVIDIA_LIBS = -lXNVCtrl -lX11 -lXext
 OBJEXT = o
-PACKAGE = psensor-fork
+PACKAGE = psensorfork
 PACKAGE_BUGREPORT = yuyoonshoo@gmail.com
-PACKAGE_NAME = psensor-fork
-PACKAGE_STRING = psensor-fork 1.2.1-1
-PACKAGE_TARNAME = psensor-fork
+PACKAGE_NAME = psensorfork
+PACKAGE_STRING = psensorfork 1.2.1-1
+PACKAGE_TARNAME = psensorfork
 PACKAGE_URL = https://github.com/thuongshoo/psensor
 PACKAGE_VERSION = 1.2.1-1
 PATH_SEPARATOR = :

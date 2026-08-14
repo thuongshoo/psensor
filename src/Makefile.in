@@ -124,7 +124,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = paths.h
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = psensor-fork$(EXEEXT)
+am__EXEEXT_1 = psensorfork$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__psensor_fork_SOURCES_DIST = cfg.h cfg.c notify_cmd.c notify_cmd.h \
@@ -134,18 +134,18 @@ am__psensor_fork_SOURCES_DIST = cfg.h cfg.c notify_cmd.c notify_cmd.h \
 	ui_sensorlist.c ui_sensorpref.h ui_sensorpref.c ui_status.h \
 	ui_status.c ui_unity.h ui_notify.c ui_appindicator.c \
 	ui_unity.c rsensor.c
-@LIBNOTIFY_TRUE@am__objects_1 = psensor_fork-ui_notify.$(OBJEXT)
-@HAVE_APPINDICATOR_TRUE@am__objects_2 = psensor_fork-ui_appindicator.$(OBJEXT)
-@UNITY_TRUE@am__objects_3 = psensor_fork-ui_unity.$(OBJEXT)
-@CURL_TRUE@@JSON_TRUE@am__objects_4 = psensor_fork-rsensor.$(OBJEXT)
-am_psensor_fork_OBJECTS = psensor_fork-cfg.$(OBJEXT) \
-	psensor_fork-notify_cmd.$(OBJEXT) psensor_fork-graph.$(OBJEXT) \
-	psensor_fork-main.$(OBJEXT) psensor_fork-pxdg.$(OBJEXT) \
-	psensor_fork-ui.$(OBJEXT) psensor_fork-ui_color.$(OBJEXT) \
-	psensor_fork-ui_graph.$(OBJEXT) psensor_fork-ui_pref.$(OBJEXT) \
-	psensor_fork-ui_sensorlist.$(OBJEXT) \
-	psensor_fork-ui_sensorpref.$(OBJEXT) \
-	psensor_fork-ui_status.$(OBJEXT) $(am__objects_1) \
+@LIBNOTIFY_TRUE@am__objects_1 = psensorfork-ui_notify.$(OBJEXT)
+@HAVE_APPINDICATOR_TRUE@am__objects_2 = psensorfork-ui_appindicator.$(OBJEXT)
+@UNITY_TRUE@am__objects_3 = psensorfork-ui_unity.$(OBJEXT)
+@CURL_TRUE@@JSON_TRUE@am__objects_4 = psensorfork-rsensor.$(OBJEXT)
+am_psensor_fork_OBJECTS = psensorfork-cfg.$(OBJEXT) \
+	psensorfork-notify_cmd.$(OBJEXT) psensorfork-graph.$(OBJEXT) \
+	psensorfork-main.$(OBJEXT) psensorfork-pxdg.$(OBJEXT) \
+	psensorfork-ui.$(OBJEXT) psensorfork-ui_color.$(OBJEXT) \
+	psensorfork-ui_graph.$(OBJEXT) psensorfork-ui_pref.$(OBJEXT) \
+	psensorfork-ui_sensorlist.$(OBJEXT) \
+	psensorfork-ui_sensorpref.$(OBJEXT) \
+	psensorfork-ui_status.$(OBJEXT) $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4)
 psensor_fork_OBJECTS = $(am_psensor_fork_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -166,22 +166,22 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/psensor_fork-cfg.Po \
-	./$(DEPDIR)/psensor_fork-graph.Po \
-	./$(DEPDIR)/psensor_fork-main.Po \
-	./$(DEPDIR)/psensor_fork-notify_cmd.Po \
-	./$(DEPDIR)/psensor_fork-pxdg.Po \
-	./$(DEPDIR)/psensor_fork-rsensor.Po \
-	./$(DEPDIR)/psensor_fork-ui.Po \
-	./$(DEPDIR)/psensor_fork-ui_appindicator.Po \
-	./$(DEPDIR)/psensor_fork-ui_color.Po \
-	./$(DEPDIR)/psensor_fork-ui_graph.Po \
-	./$(DEPDIR)/psensor_fork-ui_notify.Po \
-	./$(DEPDIR)/psensor_fork-ui_pref.Po \
-	./$(DEPDIR)/psensor_fork-ui_sensorlist.Po \
-	./$(DEPDIR)/psensor_fork-ui_sensorpref.Po \
-	./$(DEPDIR)/psensor_fork-ui_status.Po \
-	./$(DEPDIR)/psensor_fork-ui_unity.Po
+am__depfiles_remade = ./$(DEPDIR)/psensorfork-cfg.Po \
+	./$(DEPDIR)/psensorfork-graph.Po \
+	./$(DEPDIR)/psensorfork-main.Po \
+	./$(DEPDIR)/psensorfork-notify_cmd.Po \
+	./$(DEPDIR)/psensorfork-pxdg.Po \
+	./$(DEPDIR)/psensorfork-rsensor.Po \
+	./$(DEPDIR)/psensorfork-ui.Po \
+	./$(DEPDIR)/psensorfork-ui_appindicator.Po \
+	./$(DEPDIR)/psensorfork-ui_color.Po \
+	./$(DEPDIR)/psensorfork-ui_graph.Po \
+	./$(DEPDIR)/psensorfork-ui_notify.Po \
+	./$(DEPDIR)/psensorfork-ui_pref.Po \
+	./$(DEPDIR)/psensorfork-ui_sensorlist.Po \
+	./$(DEPDIR)/psensorfork-ui_sensorpref.Po \
+	./$(DEPDIR)/psensorfork-ui_status.Po \
+	./$(DEPDIR)/psensorfork-ui_unity.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -464,7 +464,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = lib glade $(am__append_1)
-PROJECT_NAME = psensor-fork
+PROJECT_NAME = psensorfork
 psensor_fork_SOURCES = cfg.h cfg.c notify_cmd.c notify_cmd.h graph.h \
 	graph.c main.c pxdg.h pxdg.c rsensor.h ui.h ui.c \
 	ui_appindicator.h ui_color.h ui_color.c ui_graph.h ui_graph.c \
@@ -573,8 +573,8 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-psensor-fork$(EXEEXT): $(psensor_fork_OBJECTS) $(psensor_fork_DEPENDENCIES) $(EXTRA_psensor_fork_DEPENDENCIES) 
-	@rm -f psensor-fork$(EXEEXT)
+psensorfork$(EXEEXT): $(psensor_fork_OBJECTS) $(psensor_fork_DEPENDENCIES) $(EXTRA_psensor_fork_DEPENDENCIES) 
+	@rm -f psensorfork$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(psensor_fork_OBJECTS) $(psensor_fork_LDADD) $(LIBS)
 
 mostlyclean-compile:
@@ -583,22 +583,22 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-cfg.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-graph.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-main.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-notify_cmd.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-pxdg.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-rsensor.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_appindicator.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_color.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_graph.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_notify.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_pref.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_sensorlist.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_sensorpref.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_status.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensor_fork-ui_unity.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-cfg.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-graph.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-notify_cmd.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-pxdg.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-rsensor.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_appindicator.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_color.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_graph.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_notify.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_pref.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_sensorlist.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_sensorpref.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_status.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psensorfork-ui_unity.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -620,229 +620,229 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-psensor_fork-cfg.o: cfg.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-cfg.o -MD -MP -MF $(DEPDIR)/psensor_fork-cfg.Tpo -c -o psensor_fork-cfg.o `test -f 'cfg.c' || echo '$(srcdir)/'`cfg.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-cfg.Tpo $(DEPDIR)/psensor_fork-cfg.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cfg.c' object='psensor_fork-cfg.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-cfg.o: cfg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-cfg.o -MD -MP -MF $(DEPDIR)/psensorfork-cfg.Tpo -c -o psensorfork-cfg.o `test -f 'cfg.c' || echo '$(srcdir)/'`cfg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-cfg.Tpo $(DEPDIR)/psensorfork-cfg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cfg.c' object='psensorfork-cfg.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-cfg.o `test -f 'cfg.c' || echo '$(srcdir)/'`cfg.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-cfg.o `test -f 'cfg.c' || echo '$(srcdir)/'`cfg.c
 
-psensor_fork-cfg.obj: cfg.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-cfg.obj -MD -MP -MF $(DEPDIR)/psensor_fork-cfg.Tpo -c -o psensor_fork-cfg.obj `if test -f 'cfg.c'; then $(CYGPATH_W) 'cfg.c'; else $(CYGPATH_W) '$(srcdir)/cfg.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-cfg.Tpo $(DEPDIR)/psensor_fork-cfg.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cfg.c' object='psensor_fork-cfg.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-cfg.obj: cfg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-cfg.obj -MD -MP -MF $(DEPDIR)/psensorfork-cfg.Tpo -c -o psensorfork-cfg.obj `if test -f 'cfg.c'; then $(CYGPATH_W) 'cfg.c'; else $(CYGPATH_W) '$(srcdir)/cfg.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-cfg.Tpo $(DEPDIR)/psensorfork-cfg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cfg.c' object='psensorfork-cfg.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-cfg.obj `if test -f 'cfg.c'; then $(CYGPATH_W) 'cfg.c'; else $(CYGPATH_W) '$(srcdir)/cfg.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-cfg.obj `if test -f 'cfg.c'; then $(CYGPATH_W) 'cfg.c'; else $(CYGPATH_W) '$(srcdir)/cfg.c'; fi`
 
-psensor_fork-notify_cmd.o: notify_cmd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-notify_cmd.o -MD -MP -MF $(DEPDIR)/psensor_fork-notify_cmd.Tpo -c -o psensor_fork-notify_cmd.o `test -f 'notify_cmd.c' || echo '$(srcdir)/'`notify_cmd.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-notify_cmd.Tpo $(DEPDIR)/psensor_fork-notify_cmd.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='notify_cmd.c' object='psensor_fork-notify_cmd.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-notify_cmd.o: notify_cmd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-notify_cmd.o -MD -MP -MF $(DEPDIR)/psensorfork-notify_cmd.Tpo -c -o psensorfork-notify_cmd.o `test -f 'notify_cmd.c' || echo '$(srcdir)/'`notify_cmd.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-notify_cmd.Tpo $(DEPDIR)/psensorfork-notify_cmd.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='notify_cmd.c' object='psensorfork-notify_cmd.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-notify_cmd.o `test -f 'notify_cmd.c' || echo '$(srcdir)/'`notify_cmd.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-notify_cmd.o `test -f 'notify_cmd.c' || echo '$(srcdir)/'`notify_cmd.c
 
-psensor_fork-notify_cmd.obj: notify_cmd.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-notify_cmd.obj -MD -MP -MF $(DEPDIR)/psensor_fork-notify_cmd.Tpo -c -o psensor_fork-notify_cmd.obj `if test -f 'notify_cmd.c'; then $(CYGPATH_W) 'notify_cmd.c'; else $(CYGPATH_W) '$(srcdir)/notify_cmd.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-notify_cmd.Tpo $(DEPDIR)/psensor_fork-notify_cmd.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='notify_cmd.c' object='psensor_fork-notify_cmd.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-notify_cmd.obj: notify_cmd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-notify_cmd.obj -MD -MP -MF $(DEPDIR)/psensorfork-notify_cmd.Tpo -c -o psensorfork-notify_cmd.obj `if test -f 'notify_cmd.c'; then $(CYGPATH_W) 'notify_cmd.c'; else $(CYGPATH_W) '$(srcdir)/notify_cmd.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-notify_cmd.Tpo $(DEPDIR)/psensorfork-notify_cmd.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='notify_cmd.c' object='psensorfork-notify_cmd.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-notify_cmd.obj `if test -f 'notify_cmd.c'; then $(CYGPATH_W) 'notify_cmd.c'; else $(CYGPATH_W) '$(srcdir)/notify_cmd.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-notify_cmd.obj `if test -f 'notify_cmd.c'; then $(CYGPATH_W) 'notify_cmd.c'; else $(CYGPATH_W) '$(srcdir)/notify_cmd.c'; fi`
 
-psensor_fork-graph.o: graph.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-graph.o -MD -MP -MF $(DEPDIR)/psensor_fork-graph.Tpo -c -o psensor_fork-graph.o `test -f 'graph.c' || echo '$(srcdir)/'`graph.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-graph.Tpo $(DEPDIR)/psensor_fork-graph.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='graph.c' object='psensor_fork-graph.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-graph.o: graph.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-graph.o -MD -MP -MF $(DEPDIR)/psensorfork-graph.Tpo -c -o psensorfork-graph.o `test -f 'graph.c' || echo '$(srcdir)/'`graph.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-graph.Tpo $(DEPDIR)/psensorfork-graph.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='graph.c' object='psensorfork-graph.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-graph.o `test -f 'graph.c' || echo '$(srcdir)/'`graph.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-graph.o `test -f 'graph.c' || echo '$(srcdir)/'`graph.c
 
-psensor_fork-graph.obj: graph.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-graph.obj -MD -MP -MF $(DEPDIR)/psensor_fork-graph.Tpo -c -o psensor_fork-graph.obj `if test -f 'graph.c'; then $(CYGPATH_W) 'graph.c'; else $(CYGPATH_W) '$(srcdir)/graph.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-graph.Tpo $(DEPDIR)/psensor_fork-graph.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='graph.c' object='psensor_fork-graph.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-graph.obj: graph.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-graph.obj -MD -MP -MF $(DEPDIR)/psensorfork-graph.Tpo -c -o psensorfork-graph.obj `if test -f 'graph.c'; then $(CYGPATH_W) 'graph.c'; else $(CYGPATH_W) '$(srcdir)/graph.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-graph.Tpo $(DEPDIR)/psensorfork-graph.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='graph.c' object='psensorfork-graph.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-graph.obj `if test -f 'graph.c'; then $(CYGPATH_W) 'graph.c'; else $(CYGPATH_W) '$(srcdir)/graph.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-graph.obj `if test -f 'graph.c'; then $(CYGPATH_W) 'graph.c'; else $(CYGPATH_W) '$(srcdir)/graph.c'; fi`
 
-psensor_fork-main.o: main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-main.o -MD -MP -MF $(DEPDIR)/psensor_fork-main.Tpo -c -o psensor_fork-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-main.Tpo $(DEPDIR)/psensor_fork-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='psensor_fork-main.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-main.o: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-main.o -MD -MP -MF $(DEPDIR)/psensorfork-main.Tpo -c -o psensorfork-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-main.Tpo $(DEPDIR)/psensorfork-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='psensorfork-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 
-psensor_fork-main.obj: main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-main.obj -MD -MP -MF $(DEPDIR)/psensor_fork-main.Tpo -c -o psensor_fork-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-main.Tpo $(DEPDIR)/psensor_fork-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='psensor_fork-main.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-main.obj: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-main.obj -MD -MP -MF $(DEPDIR)/psensorfork-main.Tpo -c -o psensorfork-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-main.Tpo $(DEPDIR)/psensorfork-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='psensorfork-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
-psensor_fork-pxdg.o: pxdg.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-pxdg.o -MD -MP -MF $(DEPDIR)/psensor_fork-pxdg.Tpo -c -o psensor_fork-pxdg.o `test -f 'pxdg.c' || echo '$(srcdir)/'`pxdg.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-pxdg.Tpo $(DEPDIR)/psensor_fork-pxdg.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pxdg.c' object='psensor_fork-pxdg.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-pxdg.o: pxdg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-pxdg.o -MD -MP -MF $(DEPDIR)/psensorfork-pxdg.Tpo -c -o psensorfork-pxdg.o `test -f 'pxdg.c' || echo '$(srcdir)/'`pxdg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-pxdg.Tpo $(DEPDIR)/psensorfork-pxdg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pxdg.c' object='psensorfork-pxdg.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-pxdg.o `test -f 'pxdg.c' || echo '$(srcdir)/'`pxdg.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-pxdg.o `test -f 'pxdg.c' || echo '$(srcdir)/'`pxdg.c
 
-psensor_fork-pxdg.obj: pxdg.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-pxdg.obj -MD -MP -MF $(DEPDIR)/psensor_fork-pxdg.Tpo -c -o psensor_fork-pxdg.obj `if test -f 'pxdg.c'; then $(CYGPATH_W) 'pxdg.c'; else $(CYGPATH_W) '$(srcdir)/pxdg.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-pxdg.Tpo $(DEPDIR)/psensor_fork-pxdg.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pxdg.c' object='psensor_fork-pxdg.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-pxdg.obj: pxdg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-pxdg.obj -MD -MP -MF $(DEPDIR)/psensorfork-pxdg.Tpo -c -o psensorfork-pxdg.obj `if test -f 'pxdg.c'; then $(CYGPATH_W) 'pxdg.c'; else $(CYGPATH_W) '$(srcdir)/pxdg.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-pxdg.Tpo $(DEPDIR)/psensorfork-pxdg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pxdg.c' object='psensorfork-pxdg.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-pxdg.obj `if test -f 'pxdg.c'; then $(CYGPATH_W) 'pxdg.c'; else $(CYGPATH_W) '$(srcdir)/pxdg.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-pxdg.obj `if test -f 'pxdg.c'; then $(CYGPATH_W) 'pxdg.c'; else $(CYGPATH_W) '$(srcdir)/pxdg.c'; fi`
 
-psensor_fork-ui.o: ui.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui.Tpo -c -o psensor_fork-ui.o `test -f 'ui.c' || echo '$(srcdir)/'`ui.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui.Tpo $(DEPDIR)/psensor_fork-ui.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui.c' object='psensor_fork-ui.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui.o: ui.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui.o -MD -MP -MF $(DEPDIR)/psensorfork-ui.Tpo -c -o psensorfork-ui.o `test -f 'ui.c' || echo '$(srcdir)/'`ui.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui.Tpo $(DEPDIR)/psensorfork-ui.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui.c' object='psensorfork-ui.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui.o `test -f 'ui.c' || echo '$(srcdir)/'`ui.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui.o `test -f 'ui.c' || echo '$(srcdir)/'`ui.c
 
-psensor_fork-ui.obj: ui.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui.Tpo -c -o psensor_fork-ui.obj `if test -f 'ui.c'; then $(CYGPATH_W) 'ui.c'; else $(CYGPATH_W) '$(srcdir)/ui.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui.Tpo $(DEPDIR)/psensor_fork-ui.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui.c' object='psensor_fork-ui.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui.obj: ui.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui.Tpo -c -o psensorfork-ui.obj `if test -f 'ui.c'; then $(CYGPATH_W) 'ui.c'; else $(CYGPATH_W) '$(srcdir)/ui.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui.Tpo $(DEPDIR)/psensorfork-ui.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui.c' object='psensorfork-ui.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui.obj `if test -f 'ui.c'; then $(CYGPATH_W) 'ui.c'; else $(CYGPATH_W) '$(srcdir)/ui.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui.obj `if test -f 'ui.c'; then $(CYGPATH_W) 'ui.c'; else $(CYGPATH_W) '$(srcdir)/ui.c'; fi`
 
-psensor_fork-ui_color.o: ui_color.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_color.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_color.Tpo -c -o psensor_fork-ui_color.o `test -f 'ui_color.c' || echo '$(srcdir)/'`ui_color.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_color.Tpo $(DEPDIR)/psensor_fork-ui_color.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_color.c' object='psensor_fork-ui_color.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_color.o: ui_color.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_color.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_color.Tpo -c -o psensorfork-ui_color.o `test -f 'ui_color.c' || echo '$(srcdir)/'`ui_color.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_color.Tpo $(DEPDIR)/psensorfork-ui_color.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_color.c' object='psensorfork-ui_color.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_color.o `test -f 'ui_color.c' || echo '$(srcdir)/'`ui_color.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_color.o `test -f 'ui_color.c' || echo '$(srcdir)/'`ui_color.c
 
-psensor_fork-ui_color.obj: ui_color.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_color.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_color.Tpo -c -o psensor_fork-ui_color.obj `if test -f 'ui_color.c'; then $(CYGPATH_W) 'ui_color.c'; else $(CYGPATH_W) '$(srcdir)/ui_color.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_color.Tpo $(DEPDIR)/psensor_fork-ui_color.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_color.c' object='psensor_fork-ui_color.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_color.obj: ui_color.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_color.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_color.Tpo -c -o psensorfork-ui_color.obj `if test -f 'ui_color.c'; then $(CYGPATH_W) 'ui_color.c'; else $(CYGPATH_W) '$(srcdir)/ui_color.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_color.Tpo $(DEPDIR)/psensorfork-ui_color.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_color.c' object='psensorfork-ui_color.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_color.obj `if test -f 'ui_color.c'; then $(CYGPATH_W) 'ui_color.c'; else $(CYGPATH_W) '$(srcdir)/ui_color.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_color.obj `if test -f 'ui_color.c'; then $(CYGPATH_W) 'ui_color.c'; else $(CYGPATH_W) '$(srcdir)/ui_color.c'; fi`
 
-psensor_fork-ui_graph.o: ui_graph.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_graph.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_graph.Tpo -c -o psensor_fork-ui_graph.o `test -f 'ui_graph.c' || echo '$(srcdir)/'`ui_graph.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_graph.Tpo $(DEPDIR)/psensor_fork-ui_graph.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_graph.c' object='psensor_fork-ui_graph.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_graph.o: ui_graph.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_graph.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_graph.Tpo -c -o psensorfork-ui_graph.o `test -f 'ui_graph.c' || echo '$(srcdir)/'`ui_graph.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_graph.Tpo $(DEPDIR)/psensorfork-ui_graph.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_graph.c' object='psensorfork-ui_graph.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_graph.o `test -f 'ui_graph.c' || echo '$(srcdir)/'`ui_graph.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_graph.o `test -f 'ui_graph.c' || echo '$(srcdir)/'`ui_graph.c
 
-psensor_fork-ui_graph.obj: ui_graph.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_graph.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_graph.Tpo -c -o psensor_fork-ui_graph.obj `if test -f 'ui_graph.c'; then $(CYGPATH_W) 'ui_graph.c'; else $(CYGPATH_W) '$(srcdir)/ui_graph.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_graph.Tpo $(DEPDIR)/psensor_fork-ui_graph.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_graph.c' object='psensor_fork-ui_graph.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_graph.obj: ui_graph.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_graph.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_graph.Tpo -c -o psensorfork-ui_graph.obj `if test -f 'ui_graph.c'; then $(CYGPATH_W) 'ui_graph.c'; else $(CYGPATH_W) '$(srcdir)/ui_graph.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_graph.Tpo $(DEPDIR)/psensorfork-ui_graph.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_graph.c' object='psensorfork-ui_graph.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_graph.obj `if test -f 'ui_graph.c'; then $(CYGPATH_W) 'ui_graph.c'; else $(CYGPATH_W) '$(srcdir)/ui_graph.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_graph.obj `if test -f 'ui_graph.c'; then $(CYGPATH_W) 'ui_graph.c'; else $(CYGPATH_W) '$(srcdir)/ui_graph.c'; fi`
 
-psensor_fork-ui_pref.o: ui_pref.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_pref.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_pref.Tpo -c -o psensor_fork-ui_pref.o `test -f 'ui_pref.c' || echo '$(srcdir)/'`ui_pref.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_pref.Tpo $(DEPDIR)/psensor_fork-ui_pref.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_pref.c' object='psensor_fork-ui_pref.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_pref.o: ui_pref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_pref.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_pref.Tpo -c -o psensorfork-ui_pref.o `test -f 'ui_pref.c' || echo '$(srcdir)/'`ui_pref.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_pref.Tpo $(DEPDIR)/psensorfork-ui_pref.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_pref.c' object='psensorfork-ui_pref.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_pref.o `test -f 'ui_pref.c' || echo '$(srcdir)/'`ui_pref.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_pref.o `test -f 'ui_pref.c' || echo '$(srcdir)/'`ui_pref.c
 
-psensor_fork-ui_pref.obj: ui_pref.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_pref.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_pref.Tpo -c -o psensor_fork-ui_pref.obj `if test -f 'ui_pref.c'; then $(CYGPATH_W) 'ui_pref.c'; else $(CYGPATH_W) '$(srcdir)/ui_pref.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_pref.Tpo $(DEPDIR)/psensor_fork-ui_pref.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_pref.c' object='psensor_fork-ui_pref.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_pref.obj: ui_pref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_pref.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_pref.Tpo -c -o psensorfork-ui_pref.obj `if test -f 'ui_pref.c'; then $(CYGPATH_W) 'ui_pref.c'; else $(CYGPATH_W) '$(srcdir)/ui_pref.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_pref.Tpo $(DEPDIR)/psensorfork-ui_pref.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_pref.c' object='psensorfork-ui_pref.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_pref.obj `if test -f 'ui_pref.c'; then $(CYGPATH_W) 'ui_pref.c'; else $(CYGPATH_W) '$(srcdir)/ui_pref.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_pref.obj `if test -f 'ui_pref.c'; then $(CYGPATH_W) 'ui_pref.c'; else $(CYGPATH_W) '$(srcdir)/ui_pref.c'; fi`
 
-psensor_fork-ui_sensorlist.o: ui_sensorlist.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_sensorlist.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_sensorlist.Tpo -c -o psensor_fork-ui_sensorlist.o `test -f 'ui_sensorlist.c' || echo '$(srcdir)/'`ui_sensorlist.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_sensorlist.Tpo $(DEPDIR)/psensor_fork-ui_sensorlist.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorlist.c' object='psensor_fork-ui_sensorlist.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_sensorlist.o: ui_sensorlist.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_sensorlist.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_sensorlist.Tpo -c -o psensorfork-ui_sensorlist.o `test -f 'ui_sensorlist.c' || echo '$(srcdir)/'`ui_sensorlist.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_sensorlist.Tpo $(DEPDIR)/psensorfork-ui_sensorlist.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorlist.c' object='psensorfork-ui_sensorlist.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_sensorlist.o `test -f 'ui_sensorlist.c' || echo '$(srcdir)/'`ui_sensorlist.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_sensorlist.o `test -f 'ui_sensorlist.c' || echo '$(srcdir)/'`ui_sensorlist.c
 
-psensor_fork-ui_sensorlist.obj: ui_sensorlist.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_sensorlist.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_sensorlist.Tpo -c -o psensor_fork-ui_sensorlist.obj `if test -f 'ui_sensorlist.c'; then $(CYGPATH_W) 'ui_sensorlist.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorlist.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_sensorlist.Tpo $(DEPDIR)/psensor_fork-ui_sensorlist.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorlist.c' object='psensor_fork-ui_sensorlist.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_sensorlist.obj: ui_sensorlist.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_sensorlist.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_sensorlist.Tpo -c -o psensorfork-ui_sensorlist.obj `if test -f 'ui_sensorlist.c'; then $(CYGPATH_W) 'ui_sensorlist.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorlist.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_sensorlist.Tpo $(DEPDIR)/psensorfork-ui_sensorlist.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorlist.c' object='psensorfork-ui_sensorlist.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_sensorlist.obj `if test -f 'ui_sensorlist.c'; then $(CYGPATH_W) 'ui_sensorlist.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorlist.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_sensorlist.obj `if test -f 'ui_sensorlist.c'; then $(CYGPATH_W) 'ui_sensorlist.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorlist.c'; fi`
 
-psensor_fork-ui_sensorpref.o: ui_sensorpref.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_sensorpref.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_sensorpref.Tpo -c -o psensor_fork-ui_sensorpref.o `test -f 'ui_sensorpref.c' || echo '$(srcdir)/'`ui_sensorpref.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_sensorpref.Tpo $(DEPDIR)/psensor_fork-ui_sensorpref.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorpref.c' object='psensor_fork-ui_sensorpref.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_sensorpref.o: ui_sensorpref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_sensorpref.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_sensorpref.Tpo -c -o psensorfork-ui_sensorpref.o `test -f 'ui_sensorpref.c' || echo '$(srcdir)/'`ui_sensorpref.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_sensorpref.Tpo $(DEPDIR)/psensorfork-ui_sensorpref.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorpref.c' object='psensorfork-ui_sensorpref.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_sensorpref.o `test -f 'ui_sensorpref.c' || echo '$(srcdir)/'`ui_sensorpref.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_sensorpref.o `test -f 'ui_sensorpref.c' || echo '$(srcdir)/'`ui_sensorpref.c
 
-psensor_fork-ui_sensorpref.obj: ui_sensorpref.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_sensorpref.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_sensorpref.Tpo -c -o psensor_fork-ui_sensorpref.obj `if test -f 'ui_sensorpref.c'; then $(CYGPATH_W) 'ui_sensorpref.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorpref.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_sensorpref.Tpo $(DEPDIR)/psensor_fork-ui_sensorpref.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorpref.c' object='psensor_fork-ui_sensorpref.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_sensorpref.obj: ui_sensorpref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_sensorpref.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_sensorpref.Tpo -c -o psensorfork-ui_sensorpref.obj `if test -f 'ui_sensorpref.c'; then $(CYGPATH_W) 'ui_sensorpref.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorpref.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_sensorpref.Tpo $(DEPDIR)/psensorfork-ui_sensorpref.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_sensorpref.c' object='psensorfork-ui_sensorpref.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_sensorpref.obj `if test -f 'ui_sensorpref.c'; then $(CYGPATH_W) 'ui_sensorpref.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorpref.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_sensorpref.obj `if test -f 'ui_sensorpref.c'; then $(CYGPATH_W) 'ui_sensorpref.c'; else $(CYGPATH_W) '$(srcdir)/ui_sensorpref.c'; fi`
 
-psensor_fork-ui_status.o: ui_status.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_status.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_status.Tpo -c -o psensor_fork-ui_status.o `test -f 'ui_status.c' || echo '$(srcdir)/'`ui_status.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_status.Tpo $(DEPDIR)/psensor_fork-ui_status.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_status.c' object='psensor_fork-ui_status.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_status.o: ui_status.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_status.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_status.Tpo -c -o psensorfork-ui_status.o `test -f 'ui_status.c' || echo '$(srcdir)/'`ui_status.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_status.Tpo $(DEPDIR)/psensorfork-ui_status.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_status.c' object='psensorfork-ui_status.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_status.o `test -f 'ui_status.c' || echo '$(srcdir)/'`ui_status.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_status.o `test -f 'ui_status.c' || echo '$(srcdir)/'`ui_status.c
 
-psensor_fork-ui_status.obj: ui_status.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_status.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_status.Tpo -c -o psensor_fork-ui_status.obj `if test -f 'ui_status.c'; then $(CYGPATH_W) 'ui_status.c'; else $(CYGPATH_W) '$(srcdir)/ui_status.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_status.Tpo $(DEPDIR)/psensor_fork-ui_status.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_status.c' object='psensor_fork-ui_status.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_status.obj: ui_status.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_status.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_status.Tpo -c -o psensorfork-ui_status.obj `if test -f 'ui_status.c'; then $(CYGPATH_W) 'ui_status.c'; else $(CYGPATH_W) '$(srcdir)/ui_status.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_status.Tpo $(DEPDIR)/psensorfork-ui_status.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_status.c' object='psensorfork-ui_status.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_status.obj `if test -f 'ui_status.c'; then $(CYGPATH_W) 'ui_status.c'; else $(CYGPATH_W) '$(srcdir)/ui_status.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_status.obj `if test -f 'ui_status.c'; then $(CYGPATH_W) 'ui_status.c'; else $(CYGPATH_W) '$(srcdir)/ui_status.c'; fi`
 
-psensor_fork-ui_notify.o: ui_notify.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_notify.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_notify.Tpo -c -o psensor_fork-ui_notify.o `test -f 'ui_notify.c' || echo '$(srcdir)/'`ui_notify.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_notify.Tpo $(DEPDIR)/psensor_fork-ui_notify.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_notify.c' object='psensor_fork-ui_notify.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_notify.o: ui_notify.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_notify.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_notify.Tpo -c -o psensorfork-ui_notify.o `test -f 'ui_notify.c' || echo '$(srcdir)/'`ui_notify.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_notify.Tpo $(DEPDIR)/psensorfork-ui_notify.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_notify.c' object='psensorfork-ui_notify.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_notify.o `test -f 'ui_notify.c' || echo '$(srcdir)/'`ui_notify.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_notify.o `test -f 'ui_notify.c' || echo '$(srcdir)/'`ui_notify.c
 
-psensor_fork-ui_notify.obj: ui_notify.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_notify.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_notify.Tpo -c -o psensor_fork-ui_notify.obj `if test -f 'ui_notify.c'; then $(CYGPATH_W) 'ui_notify.c'; else $(CYGPATH_W) '$(srcdir)/ui_notify.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_notify.Tpo $(DEPDIR)/psensor_fork-ui_notify.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_notify.c' object='psensor_fork-ui_notify.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_notify.obj: ui_notify.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_notify.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_notify.Tpo -c -o psensorfork-ui_notify.obj `if test -f 'ui_notify.c'; then $(CYGPATH_W) 'ui_notify.c'; else $(CYGPATH_W) '$(srcdir)/ui_notify.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_notify.Tpo $(DEPDIR)/psensorfork-ui_notify.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_notify.c' object='psensorfork-ui_notify.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_notify.obj `if test -f 'ui_notify.c'; then $(CYGPATH_W) 'ui_notify.c'; else $(CYGPATH_W) '$(srcdir)/ui_notify.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_notify.obj `if test -f 'ui_notify.c'; then $(CYGPATH_W) 'ui_notify.c'; else $(CYGPATH_W) '$(srcdir)/ui_notify.c'; fi`
 
-psensor_fork-ui_appindicator.o: ui_appindicator.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_appindicator.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_appindicator.Tpo -c -o psensor_fork-ui_appindicator.o `test -f 'ui_appindicator.c' || echo '$(srcdir)/'`ui_appindicator.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_appindicator.Tpo $(DEPDIR)/psensor_fork-ui_appindicator.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_appindicator.c' object='psensor_fork-ui_appindicator.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_appindicator.o: ui_appindicator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_appindicator.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_appindicator.Tpo -c -o psensorfork-ui_appindicator.o `test -f 'ui_appindicator.c' || echo '$(srcdir)/'`ui_appindicator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_appindicator.Tpo $(DEPDIR)/psensorfork-ui_appindicator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_appindicator.c' object='psensorfork-ui_appindicator.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_appindicator.o `test -f 'ui_appindicator.c' || echo '$(srcdir)/'`ui_appindicator.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_appindicator.o `test -f 'ui_appindicator.c' || echo '$(srcdir)/'`ui_appindicator.c
 
-psensor_fork-ui_appindicator.obj: ui_appindicator.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_appindicator.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_appindicator.Tpo -c -o psensor_fork-ui_appindicator.obj `if test -f 'ui_appindicator.c'; then $(CYGPATH_W) 'ui_appindicator.c'; else $(CYGPATH_W) '$(srcdir)/ui_appindicator.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_appindicator.Tpo $(DEPDIR)/psensor_fork-ui_appindicator.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_appindicator.c' object='psensor_fork-ui_appindicator.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_appindicator.obj: ui_appindicator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_appindicator.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_appindicator.Tpo -c -o psensorfork-ui_appindicator.obj `if test -f 'ui_appindicator.c'; then $(CYGPATH_W) 'ui_appindicator.c'; else $(CYGPATH_W) '$(srcdir)/ui_appindicator.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_appindicator.Tpo $(DEPDIR)/psensorfork-ui_appindicator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_appindicator.c' object='psensorfork-ui_appindicator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_appindicator.obj `if test -f 'ui_appindicator.c'; then $(CYGPATH_W) 'ui_appindicator.c'; else $(CYGPATH_W) '$(srcdir)/ui_appindicator.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_appindicator.obj `if test -f 'ui_appindicator.c'; then $(CYGPATH_W) 'ui_appindicator.c'; else $(CYGPATH_W) '$(srcdir)/ui_appindicator.c'; fi`
 
-psensor_fork-ui_unity.o: ui_unity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_unity.o -MD -MP -MF $(DEPDIR)/psensor_fork-ui_unity.Tpo -c -o psensor_fork-ui_unity.o `test -f 'ui_unity.c' || echo '$(srcdir)/'`ui_unity.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_unity.Tpo $(DEPDIR)/psensor_fork-ui_unity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_unity.c' object='psensor_fork-ui_unity.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_unity.o: ui_unity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_unity.o -MD -MP -MF $(DEPDIR)/psensorfork-ui_unity.Tpo -c -o psensorfork-ui_unity.o `test -f 'ui_unity.c' || echo '$(srcdir)/'`ui_unity.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_unity.Tpo $(DEPDIR)/psensorfork-ui_unity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_unity.c' object='psensorfork-ui_unity.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_unity.o `test -f 'ui_unity.c' || echo '$(srcdir)/'`ui_unity.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_unity.o `test -f 'ui_unity.c' || echo '$(srcdir)/'`ui_unity.c
 
-psensor_fork-ui_unity.obj: ui_unity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-ui_unity.obj -MD -MP -MF $(DEPDIR)/psensor_fork-ui_unity.Tpo -c -o psensor_fork-ui_unity.obj `if test -f 'ui_unity.c'; then $(CYGPATH_W) 'ui_unity.c'; else $(CYGPATH_W) '$(srcdir)/ui_unity.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-ui_unity.Tpo $(DEPDIR)/psensor_fork-ui_unity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_unity.c' object='psensor_fork-ui_unity.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-ui_unity.obj: ui_unity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-ui_unity.obj -MD -MP -MF $(DEPDIR)/psensorfork-ui_unity.Tpo -c -o psensorfork-ui_unity.obj `if test -f 'ui_unity.c'; then $(CYGPATH_W) 'ui_unity.c'; else $(CYGPATH_W) '$(srcdir)/ui_unity.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-ui_unity.Tpo $(DEPDIR)/psensorfork-ui_unity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ui_unity.c' object='psensorfork-ui_unity.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-ui_unity.obj `if test -f 'ui_unity.c'; then $(CYGPATH_W) 'ui_unity.c'; else $(CYGPATH_W) '$(srcdir)/ui_unity.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-ui_unity.obj `if test -f 'ui_unity.c'; then $(CYGPATH_W) 'ui_unity.c'; else $(CYGPATH_W) '$(srcdir)/ui_unity.c'; fi`
 
-psensor_fork-rsensor.o: rsensor.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-rsensor.o -MD -MP -MF $(DEPDIR)/psensor_fork-rsensor.Tpo -c -o psensor_fork-rsensor.o `test -f 'rsensor.c' || echo '$(srcdir)/'`rsensor.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-rsensor.Tpo $(DEPDIR)/psensor_fork-rsensor.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsensor.c' object='psensor_fork-rsensor.o' libtool=no @AMDEPBACKSLASH@
+psensorfork-rsensor.o: rsensor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-rsensor.o -MD -MP -MF $(DEPDIR)/psensorfork-rsensor.Tpo -c -o psensorfork-rsensor.o `test -f 'rsensor.c' || echo '$(srcdir)/'`rsensor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-rsensor.Tpo $(DEPDIR)/psensorfork-rsensor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsensor.c' object='psensorfork-rsensor.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-rsensor.o `test -f 'rsensor.c' || echo '$(srcdir)/'`rsensor.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-rsensor.o `test -f 'rsensor.c' || echo '$(srcdir)/'`rsensor.c
 
-psensor_fork-rsensor.obj: rsensor.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensor_fork-rsensor.obj -MD -MP -MF $(DEPDIR)/psensor_fork-rsensor.Tpo -c -o psensor_fork-rsensor.obj `if test -f 'rsensor.c'; then $(CYGPATH_W) 'rsensor.c'; else $(CYGPATH_W) '$(srcdir)/rsensor.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensor_fork-rsensor.Tpo $(DEPDIR)/psensor_fork-rsensor.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsensor.c' object='psensor_fork-rsensor.obj' libtool=no @AMDEPBACKSLASH@
+psensorfork-rsensor.obj: rsensor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT psensorfork-rsensor.obj -MD -MP -MF $(DEPDIR)/psensorfork-rsensor.Tpo -c -o psensorfork-rsensor.obj `if test -f 'rsensor.c'; then $(CYGPATH_W) 'rsensor.c'; else $(CYGPATH_W) '$(srcdir)/rsensor.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/psensorfork-rsensor.Tpo $(DEPDIR)/psensorfork-rsensor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsensor.c' object='psensorfork-rsensor.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensor_fork-rsensor.obj `if test -f 'rsensor.c'; then $(CYGPATH_W) 'rsensor.c'; else $(CYGPATH_W) '$(srcdir)/rsensor.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(psensor_fork_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o psensorfork-rsensor.obj `if test -f 'rsensor.c'; then $(CYGPATH_W) 'rsensor.c'; else $(CYGPATH_W) '$(srcdir)/rsensor.c'; fi`
 install-man1: $(dist_man_MANS)
 	@$(NORMAL_INSTALL)
 	@list1=''; \
@@ -1086,22 +1086,22 @@ clean: clean-recursive
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
-		-rm -f ./$(DEPDIR)/psensor_fork-cfg.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-graph.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-main.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-notify_cmd.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-pxdg.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-rsensor.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_appindicator.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_color.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_graph.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_notify.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_pref.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_sensorlist.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_sensorpref.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_status.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_unity.Po
+		-rm -f ./$(DEPDIR)/psensorfork-cfg.Po
+	-rm -f ./$(DEPDIR)/psensorfork-graph.Po
+	-rm -f ./$(DEPDIR)/psensorfork-main.Po
+	-rm -f ./$(DEPDIR)/psensorfork-notify_cmd.Po
+	-rm -f ./$(DEPDIR)/psensorfork-pxdg.Po
+	-rm -f ./$(DEPDIR)/psensorfork-rsensor.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_appindicator.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_color.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_graph.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_notify.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_pref.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_sensorlist.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_sensorpref.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_status.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_unity.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1147,22 +1147,22 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-		-rm -f ./$(DEPDIR)/psensor_fork-cfg.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-graph.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-main.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-notify_cmd.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-pxdg.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-rsensor.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_appindicator.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_color.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_graph.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_notify.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_pref.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_sensorlist.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_sensorpref.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_status.Po
-	-rm -f ./$(DEPDIR)/psensor_fork-ui_unity.Po
+		-rm -f ./$(DEPDIR)/psensorfork-cfg.Po
+	-rm -f ./$(DEPDIR)/psensorfork-graph.Po
+	-rm -f ./$(DEPDIR)/psensorfork-main.Po
+	-rm -f ./$(DEPDIR)/psensorfork-notify_cmd.Po
+	-rm -f ./$(DEPDIR)/psensorfork-pxdg.Po
+	-rm -f ./$(DEPDIR)/psensorfork-rsensor.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_appindicator.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_color.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_graph.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_notify.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_pref.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_sensorlist.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_sensorpref.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_status.Po
+	-rm -f ./$(DEPDIR)/psensorfork-ui_unity.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1203,7 +1203,7 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-@HELP2MAN_TRUE@psensor-fork.1: main.c $(top_srcdir)/configure.ac
+@HELP2MAN_TRUE@psensorfork.1: main.c $(top_srcdir)/configure.ac
 @HELP2MAN_TRUE@	$(MAKE) $(AM_MAKEFLAGS) $(PROJECT_NAME)$(EXEEXT)
 @HELP2MAN_TRUE@	help2man --include=description.txt -N --name="Temperature monitoring application" --output=$(PROJECT_NAME).1 ./$(PROJECT_NAME)$(EXEEXT)
 

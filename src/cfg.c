@@ -541,12 +541,20 @@ const char *get_psensor_user_dir(void)
 
     if (nullptr == s_user_dir)
     {
-        const char *home = getenv("HOME");
-
-        if (nullptr == home)
-            return nullptr;
-
-        s_user_dir = path_append(home, PACKAGE_USER_FOLDER);
+        const char *base_dir = nullptr;
+        if (getenv("container") != nullptr)
+        {
+            base_dir = getenv("XDG_CONFIG_HOME"); /* Flatpak: luôn có */
+            if (base_dir == nullptr)
+                return nullptr;
+        }
+        else
+        {
+            base_dir = getenv("HOME"); /* Host: giữ nguyên */
+            if (base_dir == nullptr)
+                return nullptr;
+        }
+        s_user_dir = path_append(base_dir, PACKAGE_USER_FOLDER);
 
         if (mkdir(s_user_dir, 0700) == -1 && errno != EEXIST)
         {
@@ -560,7 +568,6 @@ const char *get_psensor_user_dir(void)
     }
 
     log_functionname_exit();
-
     return s_user_dir;
 }
 

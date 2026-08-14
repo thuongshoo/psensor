@@ -16,10 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-
 #include <bool.h>
 
+#include <libintl.h>
 #include <locale.h>
+
+#define _(str) gettext(str)
 
 #include <sched.h>
 #include <getopt.h>
@@ -63,17 +65,18 @@ static const uint32_t ONE_SECOND = 1000U;
 
 static void print_version(void)
 {
-    printf("%s %s\n", PACKAGE_NAME, VERSION);
+    printf("%s %s\n", PACKAGE_ORIGINAL_NAME, VERSION);
     printf(_(PSENSOR_COPYRIGHT_CLI),
            PSENSOR_ORIGINAL_YEARS, PSENSOR_ORIGINAL_EMAIL,
            PSENSOR_CURRENT_YEARS, PSENSOR_CURRENT_EMAIL);
+    printf("%s\n", _("Bottom"));
 }
 
 static void print_help(const char *program_name)
 {
     printf(_("Usage: %s [OPTION]...\n"), program_name);
 
-    puts(_("Psensor is a GTK+ application for monitoring hardware sensors, "
+    puts(_("psensorfork is a GTK+ application for monitoring hardware sensors, "
            "including temperatures and fan speeds."));
 
     puts("");
@@ -87,7 +90,7 @@ static void print_help(const char *program_name)
         "  -u, --url=URL       the URL of the psensor-server,\n"
         "                      example: http://hostname:3131"));
     puts(_(
-        "  -n, --new-instance  force the creation of a new Psensor application"));
+        "  -n, --new-instance  force the creation of a new psensorfork application"));
     puts("");
 
     puts(_("  -d, --debug=LEVEL   "
@@ -97,7 +100,7 @@ static void print_help(const char *program_name)
 
     printf(_("Report bugs to: %s\n"), PACKAGE_BUGREPORT);
     puts("");
-    printf(_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
+    printf(_("%s home page: <%s>\n"), PACKAGE_ORIGINAL_NAME, PACKAGE_URL);
 }
 
 static int update_measures_lock(pthread_mutex_t *m)
@@ -513,7 +516,7 @@ static Psensor **create_sensors_list(const char *url, const Pconfig *config)
         }
         else
         {
-            log_err(_("Psensor has not been compiled with remote "
+            log_err(_("psensorfork has not been compiled with remote "
                       "sensor support."));
             exit(EXIT_FAILURE);
         }
@@ -676,11 +679,6 @@ static void free_url(AppContext *ctx)
 /* ============ 3. Initialize application ============ */
 static int initialize_application(AppContext *ctx)
 {
-    // Setup NLS
-#if ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-#endif
 
     // Setup logging
     log_init();
@@ -696,13 +694,18 @@ static int initialize_application(AppContext *ctx)
 
     // Create GApplication
     ctx->app = g_application_new(PACKAGE_GSETTING, 0);
+    if (ctx->app == nullptr)
+    {
+        log_err("Failed to Create GApplication %s", PACKAGE_GSETTING);
+        return 0;
+    }
     g_application_register(ctx->app, nullptr, nullptr);
 
     // Check remote instance
     if (!ctx->options.new_instance && g_application_get_is_remote(ctx->app))
     {
         g_application_activate(ctx->app);
-        log_warn(_("A Psensor instance already exists."));
+        log_warn(_("A psensorfork instance already exists."));
         return 0;
     }
 
@@ -843,6 +846,17 @@ int main(int argc, char **argv)
 {
     AppContext ctx = {0}; // Gom tất cả biến vào struct
     int ret = EXIT_SUCCESS;
+
+// Setup NLS
+#ifdef ENABLE_NLS
+
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
+    // bind_textdomain_codeset("psensorfork", "UTF-8");
+    // textdomain("psensorfork");
+
+#endif
 
     // 1. Parse arguments
     if (!parse_arguments(argc, argv, &ctx.options))

@@ -293,15 +293,15 @@ static void ui_show_about_dialog(GtkWindow *parent)
     gtk_show_about_dialog(parent,
                           "authors", authors,
                           "comments",
-                          _("Psensor-Fork is a maintained GTK application for monitoring hardware sensors, based on the original psensor by Jean-François Wauthy."),
+                          _("psensorfork is a maintained GTK application for monitoring hardware sensors, based on the original psensor by Jean-François Wauthy."),
                           "copyright",
                           _(PSENSOR_COPYRIGHT_GTK),
 #if GTK_CHECK_VERSION(3, 12, 0)
                           "license-type", GTK_LICENSE_GPL_2_0,
 #endif
-                          "logo-icon-name", PACKAGE_NAME,
-                          "program-name", "Psensor-Fork",
-                          "title", _("About Psensor-Fork"),
+                          "logo-icon-name", PACKAGE_GSETTING,
+                          "program-name", "psensorfork",
+                          "title", _("About psensorfork"),
                           "translator-credits", _("translator-credits"),
                           "version", VERSION,
                           "website", "https://github.com/thuongshoo/psensor",
@@ -410,7 +410,7 @@ void ui_window_create(UI_psensor *ui)
 
     const char *str_format = "%s/%s.glade";
     char *glade_path;
-    if (-1 == asprintf(&glade_path, str_format, data_path, PACKAGE_NAME))
+    if (-1 == asprintf(&glade_path, str_format, data_path, PACKAGE_ORIGINAL_NAME))
     {
         log_printf(LOG_ERR, "Cannot load %s .Data path: %s", str_format, data_path);
         return;
@@ -448,7 +448,7 @@ void ui_window_create(UI_psensor *ui)
     if (icon)
         gtk_window_set_icon(GTK_WINDOW(window), icon);
     else
-        log_err(_("Failed to load Psensor icon."));
+        log_err(_("Failed to load psensorfork icon."));
 
     g_signal_connect(window,
                      "delete_event", G_CALLBACK(on_delete_event_cb), ui);

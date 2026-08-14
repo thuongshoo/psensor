@@ -1,19 +1,19 @@
 name: Build and Test Packages
 
 on:
-# Cách 1: Khi push tag v*
+  # Cách 1: Khi push tag v*
   push:
-    tags: ['v*']
+    tags: ["v*"]
   # Cách 2: Trigger bằng tay từ UI GitHub
   workflow_dispatch:
     inputs:
       use_dev_version:
-        description: 'Use dev version (git hash) instead of tag'
+        description: "Use dev version (git hash) instead of tag"
         required: false
         default: false
         type: boolean
       force_build:
-        description: 'Force build even if no changes'
+        description: "Force build even if no changes"
         required: false
         default: false
         type: boolean
@@ -30,7 +30,7 @@ jobs:
             distro_version: "24.04"
             arch: amd64
             package_type: deb
-         
+
           # - name: "Ubuntu latest amd64" At this time on github ubuntu latest is 24.04, not 25.03
           #   runner: ubuntu-latest
           #   distro: ubuntu
@@ -39,12 +39,12 @@ jobs:
           #   package_type: deb
 
           - name: "Ubuntu 24.04 arm64"
-            runner: ubuntu-24.04-arm 
+            runner: ubuntu-24.04-arm
             distro: ubuntu
             distro_version: "24.04"
             arch: arm64
             package_type: deb
-            
+
           - name: "Debian 12 amd64"
             runner: ubuntu-24.04
             distro: debian
@@ -56,7 +56,9 @@ jobs:
     steps:
       - name: Checkout code (with debian/ directory)
         uses: actions/checkout@v4
-      
+        with:
+          submodules: recursive
+
       - name: Get version from tag
         id: version
         shell: bash
@@ -95,7 +97,7 @@ jobs:
           #   VERSION="0.0.0-dev"
           # fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      
+
           # Determine OS version dynamically if set to "latest"
           if [[ "${{ matrix.distro_version }}" == "latest" ]]; then
             # First, try /etc/os-release (standard location)
@@ -122,7 +124,7 @@ jobs:
           else
             echo "distro_version=${{ matrix.distro_version }}" >> $GITHUB_OUTPUT
           fi
-            
+
       - name: Build package
         id: build
         shell: bash
@@ -147,7 +149,7 @@ jobs:
               "./artifacts" 2>&1
             
             BUILD_EXIT=$?
-            PACKAGE_PATH=$(find . -name "psensor-fork_*_${{ matrix.distro }}${{ steps.version.outputs.distro_version }}_${{ matrix.arch }}.deb" -type f | head -1)
+            PACKAGE_PATH=$(find . -name "psensorfork_*_${{ matrix.distro }}${{ steps.version.outputs.distro_version }}_${{ matrix.arch }}.deb" -type f | head -1)
             
             if [ $BUILD_EXIT -eq 0 ] && [ -n "$PACKAGE_PATH" ]; then
               echo "package_path=$PACKAGE_PATH" >> $GITHUB_OUTPUT
@@ -164,29 +166,29 @@ jobs:
         run: |
           echo "🧪 Running installation test..."
           PACKAGE_FILE="${{ steps.build.outputs.package_path }}"
-          
+
           if [ ! -f "$PACKAGE_FILE" ]; then
             echo "❌ ERROR: Package file not found at: $PACKAGE_FILE"
             exit 1
           fi
-          
+
           chmod +x .github/scripts/test-package.sh
           ./.github/scripts/test-package.sh \
             "$PACKAGE_FILE" \
             "${{ matrix.distro }}" \
             "${{ steps.version.outputs.distro_version }}" \
             "${{ matrix.arch }}"
-          
+
           echo "✅ Installation test completed successfully."
 
       # --- Bước 4: Upload Artifact (Chỉ khi cả build và test đều pass) ---
       - name: Upload successful package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: psensor-fork-${{ matrix.distro }}-${{ steps.version.outputs.distro_version }}-${{ matrix.arch }}-v${{ steps.version.outputs.version }}
+          name: psensorfork-${{ matrix.distro }}-${{ steps.version.outputs.distro_version }}-${{ matrix.arch }}-v${{ steps.version.outputs.version }}
           path: ${{ steps.build.outputs.package_path }}
           retention-days: 7
-      
+
       # # --- Bước 5: Upload Logs (Tùy chọn) ---
       # - name: Upload build logs
       #   if: always()
@@ -207,7 +209,7 @@ jobs:
           merge-multiple: true
           # Tùy chọn: Đặt tên thư mục đích
           # path: release-packages
-      
+
       - name: Debug - Show downloaded files
         run: |
           echo "=== Current directory structure ==="
@@ -217,7 +219,7 @@ jobs:
           find . -name "*.deb" -type f | xargs ls -lh
           echo "=== Total .deb files found: ==="
           find . -name "*.deb" -type f | wc -l
-      
+
       - name: Create Release with all .deb files
         uses: softprops/action-gh-release@v1
         with:

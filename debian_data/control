@@ -1,4 +1,4 @@
-Source: psensor-fork
+Source: psensorfork
 Section: utils
 Priority: optional
 Maintainer: thuongshoo <yuyoonshoo@gmail.com>
@@ -20,12 +20,12 @@ Build-Depends: debhelper (>= 13),
                gettext,
                asciidoc
 
-Package: psensor-fork
+Package: psensorfork
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
 Description: Hardware temperature monitor
- Psensor-fork is a graphical hardware temperature monitor for Linux.
+ psensorfork is a graphical hardware temperature monitor for Linux.
  .
  It can monitor:
   * the temperature of the motherboard and CPU sensors

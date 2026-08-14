@@ -1,16 +1,14 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Psensor-fork
+Name=psensorfork
 GenericName=Temperature Monitor
-Comment=Psensor-fork is a graphical temperature monitor for Linux
+Comment=psensorfork is a graphical temperature monitor for Linux
 Keywords=temperature;fan;monitoring;indicator;sensors;hardware;
-Icon=psensor-fork
-TryExec=psensor-fork
-Exec=psensor-fork
-Categories=System;Monitor;Settings;
+Icon=psensorfork
+TryExec=psensorfork
+Exec=psensorfork
 StartupNotify=true
 Categories=System;Monitor;
 X-GNOME-Autostart-Delay=30
-StartupNotify=true
 

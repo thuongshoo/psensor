@@ -23,7 +23,7 @@
 
 #include <ui.h>
 
-#if defined(HAVE_APPINDICATOR) && HAVE_APPINDICATOR
+#ifdef HAVE_APPINDICATOR
 
 bool is_appindicator_supported(void);
 

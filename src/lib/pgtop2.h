@@ -22,7 +22,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-#if defined(HAVE_GTOP) && HAVE_GTOP
+#ifdef HAVE_GTOP
 
 static inline bool gtop2_is_supported(void) { return true; }
 

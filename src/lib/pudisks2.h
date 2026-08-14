@@ -22,7 +22,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-#if defined(HAVE_LIBUDISKS2) && HAVE_LIBUDISKS2
+#ifdef HAVE_LIBUDISKS2
 
 static inline bool udisks2_is_supported(void) { return true; }
 

@@ -22,7 +22,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-#if defined(HAVE_LIBSENSORS) && HAVE_LIBSENSORS
+#ifdef HAVE_LIBSENSORS
 
 static inline bool lmsensor_is_supported(void) { return true; }
 
@@ -34,7 +34,7 @@ void lmsensor_cleanup(void);
 
 static inline bool lmsensor_is_supported(void) { return false; }
 
-static inline size_t lmsensor_psensor_list_update(Psensor **s) { return 0;}
+static inline size_t lmsensor_psensor_list_update(Psensor **s) { return 0; }
 static inline void lmsensor_psensor_list_append(Psensor ***s, unsigned int n) {}
 static inline void lmsensor_cleanup(void) {}
 

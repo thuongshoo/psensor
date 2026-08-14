@@ -1,4 +1,4 @@
-bin_PROGRAMS =  psensor-fork-server
+bin_PROGRAMS =  psensorfork-server
 psensor_fork_server_SOURCES = server.c server.h
 
 AM_CPPFLAGS = -Wall -Werror -DDEFAULT_WWW_DIR=\""$(pkgdatadir)/www"\"\
@@ -11,7 +11,7 @@ AM_CPPFLAGS = -Wall -Werror -DDEFAULT_WWW_DIR=\""$(pkgdatadir)/www"\"\
 DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 LIBS = \
-	../lib/libpsensor-fork.a \
+	../lib/libpsensorfork.a \
 	$(SENSORS_LIBS) \
 	$(JSON_LIBS) \
 	$(LIBMICROHTTPD_LIBS) \
@@ -30,10 +30,10 @@ LIBS += $(ATASMART_LIBS)
 endif
 
 if HELP2MAN
-psensor-fork-server.1: server.c $(top_srcdir)/configure.ac
-	$(MAKE) $(AM_MAKEFLAGS) psensor-fork-server$(EXEEXT)
-	help2man --include=description.txt -N --name="Temperature and system monitoring Web server" --output=psensor-fork-server.1 ./psensor-fork-server$(EXEEXT)
+psensorfork-server.1: server.c $(top_srcdir)/configure.ac
+	$(MAKE) $(AM_MAKEFLAGS) psensorfork-server$(EXEEXT)
+	help2man --include=description.txt -N --name="Temperature and system monitoring Web server" --output=psensorfork-server.1 ./psensorfork-server$(EXEEXT)
 endif
 
-dist_man_MANS =  psensor-fork-server.1
+dist_man_MANS =  psensorfork-server.1
 EXTRA_DIST = description.txt

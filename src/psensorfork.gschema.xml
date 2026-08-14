@@ -1,5 +1,5 @@
 <schemalist>
-  <schema id="com.github.thuongshoo.psensor-fork" path="/com/github/thuongshoo/psensor-fork/">
+  <schema id="com.github.thuongshoo.psensorfork" path="/com/github/thuongshoo/psensorfork/">
     <key name="graph-alpha-channel-enabled" type="b">
       <default>false</default>
       <summary>Whether the alpha channel is enabled</summary>

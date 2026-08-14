@@ -22,7 +22,7 @@
 #include <bool.h>
 #include <psensor.h>
 
-#if defined(HAVE_UNITY) && HAVE_UNITY
+#ifdef HAVE_UNITY
 
 static inline bool ui_unity_is_supported(void) { return true; }
 

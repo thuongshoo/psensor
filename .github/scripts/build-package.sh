@@ -68,7 +68,7 @@ apt-get install -y \
     libx11-dev \
     libxnvctrl-dev \
     libunity-dev \
-    asciidoc
+    asciidoc bison flex
 
 # 2. BUILD
 echo "--- Building package ---"
@@ -92,7 +92,7 @@ dpkg-buildpackage -us -uc -b --no-sign
 
 # 3. FIND AND COPY PACKAGE
 echo "--- Finding package ---"
-PKG_PATH=$(find .. -maxdepth 1 -name "psensor-fork_*.deb" -type f | head -1)
+PKG_PATH=$(find .. -maxdepth 1 -name "psensorfork_*.deb" -type f | head -1)
 
 if [ -z "$PKG_PATH" ]; then
     echo "ERROR: No package found!"
@@ -164,7 +164,7 @@ if [ ! -f "$PACKAGE_NAME" ]; then
 fi
 
 # Đổi tên
-NEW_NAME="psensor-fork_${VERSION}_${DISTRO}${DISTRO_VERSION}_${ARCH}.deb"
+NEW_NAME="psensorfork_${VERSION}_${DISTRO}${DISTRO_VERSION}_${ARCH}.deb"
 mv "$PACKAGE_NAME" "$NEW_NAME"
 
 # Di chuyển đến output directory

@@ -33,8 +33,8 @@
 #include <ui_pref.h>
 #include <paths.h>
 
-static const char *ICON = "psensor-fork_normal";
-static const char *ATTENTION_ICON = "psensor-fork_hot";
+static const char *ICON = "psensorfork_normal";
+static const char *ATTENTION_ICON = "psensorfork_hot";
 
 /* Build GLADE path at runtime using get_data_path() so the installed
  * data directory is resolved the same way as the main UI. */
@@ -146,7 +146,7 @@ static GtkMenu *load_menu(UI_psensor *ui)
      * used elsewhere (handles PSENSOR_DATA_DIR overrides, relative paths, etc.) */
     char *data_path = get_data_path();
     gchar *glade_file = g_strdup_printf("%s%s%s-appindicator.glade",
-                                        data_path, G_DIR_SEPARATOR_S, PACKAGE_NAME);
+                                        data_path, G_DIR_SEPARATOR_S, PACKAGE_GLADE_FILENAME);
     ok = gtk_builder_add_from_file(builder, glade_file, &error);
 
     if (!ok)

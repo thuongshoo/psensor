@@ -1,4 +1,4 @@
-= Psensor NEWS
+= psensorforkNEWS
 :docinfo2:
 
 1.4.0
@@ -145,7 +145,7 @@ v1.0.1
 * Sensors displayed directly in the top bar (experimental).
 * Improved status icon in hicolor theme to fit well with white
   background. (LP: #1310323).
-* Psensor not autostarted by default.
+* psensorforknot autostarted by default.
 * Added a setting to launch psensor on session startup. (Closes:
   #728754)
 * Fixed minor GUI bugs (widget alignments, padding, layout policy,
@@ -728,7 +728,7 @@ v0.4.0
 * Fixed BR3: sensors with the same name but different chips share the same color configuration
 * Fixed BR4: wrong OBJS variable and gconf when calling pkg-config in Makefile.distrib for compiling with NVidia support
 Changed website URL
-* Fixed BR5: Psensor crashes during startup with "You forgot to call g_type_init()"
+* Fixed BR5: psensorforkcrashes during startup with "You forgot to call g_type_init()"
 
 v0.3.3
 ------
@@ -741,7 +741,7 @@ v0.3.2
 
 * Fixed BR4: wrong OBJS variable and gconf when calling pkg-config in Makefile.distrib for compiling with NVidia support
 * Changed website URL
-* Fixed BR5: Psensor crashes during startup with "You forgot to call g_type_init()"
+* Fixed BR5: psensorforkcrashes during startup with "You forgot to call g_type_init()"
 
 v0.3.1
 ------

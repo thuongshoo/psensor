@@ -120,19 +120,19 @@
 #define LOCALEDIR "/usr/share/locale"
 
 /* Name of package */
-#define PACKAGE "psensor-fork"
+#define PACKAGE "psensorfork"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT "yuyoonshoo@gmail.com"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "psensor-fork"
+#define PACKAGE_NAME "psensorfork"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "psensor-fork 1.2.1-1"
+#define PACKAGE_STRING "psensorfork 1.2.1-1"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "psensor-fork"
+#define PACKAGE_TARNAME "psensorfork"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL "https://github.com/thuongshoo/psensor"
